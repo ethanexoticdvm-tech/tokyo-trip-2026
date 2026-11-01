@@ -1,0 +1,1236 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>新宿・橫濱・箱根 6日遊隨身戰情室 v1.1.0</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#090d16">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍁</text></svg>">
+  <style>
+    :root {
+      --bg: #090d16;
+      --card-bg: #121929;
+      --card-border: rgba(255, 255, 255, 0.08);
+      --card-hover: rgba(255, 255, 255, 0.12);
+      --primary: #f43f5e;
+      --primary-glow: rgba(244, 63, 94, 0.25);
+      --accent: #38bdf8;
+      --accent-purple: #c084fc;
+      --warning: #f59e0b;
+      --success: #10b981;
+      --text-1: #f8fafc;
+      --text-2: #94a3b8;
+      --text-3: #64748b;
+      --radius-lg: 18px;
+      --radius-md: 12px;
+      --radius-sm: 8px;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, "Noto Sans TC", sans-serif;
+    }
+    body {
+      background: var(--bg);
+      color: var(--text-1);
+      min-height: 100vh;
+      overflow-x: hidden;
+      padding-bottom: calc(75px + env(safe-area-inset-bottom));
+    }
+    
+    /* Top Sticky App Bar */
+    header {
+      position: sticky;
+      top: 0;
+      background: rgba(9, 13, 22, 0.88);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      z-index: 100;
+      border-bottom: 1px solid var(--card-border);
+      padding: max(12px, env(safe-area-inset-top)) 16px 12px;
+    }
+    .header-inner {
+      max-width: 620px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .logo-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 800;
+      font-size: 1.05rem;
+      letter-spacing: -0.3px;
+    }
+    .badge-tag {
+      background: linear-gradient(135deg, #f43f5e, #fb7185);
+      color: white;
+      font-size: 0.65rem;
+      padding: 2px 7px;
+      border-radius: 999px;
+      font-weight: 800;
+    }
+    .header-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .top-pill {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--card-border);
+      color: var(--text-1);
+      font-size: 0.76rem;
+      padding: 7px 12px;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      text-decoration: none;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .top-pill:active { transform: scale(0.96); }
+    .top-pill-primary {
+      background: linear-gradient(135deg, #2563eb, #3b82f6);
+      border: none;
+      color: white;
+      box-shadow: 0 2px 10px rgba(37, 99, 235, 0.35);
+    }
+
+    /* Container */
+    .app-container {
+      max-width: 620px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    /* Hero Banner */
+    .hero-card {
+      background: linear-gradient(145deg, #1e293b 0%, #0f172a 100%);
+      border: 1px solid rgba(244, 63, 94, 0.25);
+      border-radius: var(--radius-lg);
+      padding: 18px;
+      margin-bottom: 16px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+    }
+    .hero-card::after {
+      content: '🍁';
+      position: absolute;
+      right: 12px;
+      bottom: -10px;
+      font-size: 5rem;
+      opacity: 0.15;
+      pointer-events: none;
+    }
+    .hero-sub {
+      font-size: 0.78rem;
+      color: #fda4af;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+    .hero-title {
+      font-size: 1.25rem;
+      font-weight: 900;
+      color: #fff;
+      margin-bottom: 6px;
+    }
+    .hero-meta {
+      font-size: 0.8rem;
+      color: var(--text-2);
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    /* Segmented Navigation Tabs */
+    .seg-bar {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding: 4px;
+      background: rgba(18, 25, 41, 0.9);
+      border: 1px solid var(--card-border);
+      border-radius: 999px;
+      margin-bottom: 18px;
+      scrollbar-width: none;
+    }
+    .seg-bar::-webkit-scrollbar { display: none; }
+    .seg-btn {
+      flex: 1 0 auto;
+      background: transparent;
+      border: none;
+      color: var(--text-2);
+      padding: 8px 16px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      white-space: nowrap;
+    }
+    .seg-btn.active {
+      background: var(--primary);
+      color: white;
+      box-shadow: 0 2px 10px var(--primary-glow);
+    }
+
+    /* Cards */
+    .content-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+    .card-title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .card-title {
+      font-size: 0.98rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Alerts / Deadlines */
+    .deadline-item {
+      background: rgba(244, 63, 94, 0.08);
+      border-left: 4px solid var(--primary);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      padding: 12px 14px;
+      margin-bottom: 10px;
+    }
+    .deadline-item.warning {
+      background: rgba(245, 158, 11, 0.08);
+      border-color: var(--warning);
+    }
+    .deadline-item.info {
+      background: rgba(56, 189, 248, 0.08);
+      border-color: var(--accent);
+    }
+    .deadline-head {
+      font-size: 0.88rem;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .deadline-body {
+      font-size: 0.8rem;
+      color: var(--text-2);
+      line-height: 1.45;
+    }
+
+    /* Tickets */
+    .ticket-badge {
+      background: linear-gradient(135deg, #1e293b, #0f172a);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      border-radius: var(--radius-md);
+      padding: 14px;
+      margin-bottom: 12px;
+    }
+    .ticket-tag {
+      font-size: 0.7rem;
+      font-weight: 800;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+    .ticket-route {
+      font-size: 1.05rem;
+      font-weight: 900;
+      color: #fff;
+      margin-bottom: 6px;
+    }
+    .ticket-seats {
+      display: inline-block;
+      background: rgba(254, 240, 138, 0.12);
+      border: 1px solid rgba(254, 240, 138, 0.3);
+      color: #fef08a;
+      font-size: 0.82rem;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 6px;
+    }
+
+    /* Timeline Day Filter */
+    .day-chip-bar {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding-bottom: 10px;
+      margin-bottom: 12px;
+      scrollbar-width: none;
+    }
+    .day-chip-bar::-webkit-scrollbar { display: none; }
+    .day-chip {
+      flex: 0 0 auto;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--card-border);
+      color: var(--text-2);
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 6px 12px;
+      border-radius: 999px;
+      cursor: pointer;
+    }
+    .day-chip.active {
+      background: var(--text-1);
+      color: #090d16;
+      border-color: var(--text-1);
+    }
+
+    /* Spot Items */
+    .spot-box {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      margin-bottom: 10px;
+      transition: background 0.2s;
+    }
+    .spot-box:active {
+      background: rgba(255, 255, 255, 0.06);
+    }
+    .spot-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+    .spot-time-pill {
+      background: rgba(56, 189, 248, 0.12);
+      color: var(--accent);
+      font-size: 0.75rem;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 6px;
+    }
+    .spot-stay {
+      font-size: 0.72rem;
+      color: var(--text-3);
+    }
+    .spot-name-text {
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 6px;
+    }
+    .spot-note-box {
+      font-size: 0.78rem;
+      color: var(--text-2);
+      background: rgba(0, 0, 0, 0.25);
+      border-radius: var(--radius-sm);
+      padding: 8px 10px;
+      margin-bottom: 8px;
+      line-height: 1.45;
+    }
+    .btn-maps {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: #0284c7;
+      color: white;
+      text-decoration: none;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 6px 12px;
+      border-radius: 6px;
+      min-height: 36px;
+    }
+    .btn-maps:active { background: #0369a1; }
+
+    /* Pokemon List */
+    .poke-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      margin-bottom: 10px;
+      gap: 12px;
+    }
+    .poke-check-btn {
+      width: 26px;
+      height: 26px;
+      border-radius: 8px;
+      border: 2px solid #475569;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 0.85rem;
+      transition: all 0.2s;
+    }
+    .poke-check-btn.checked {
+      background: var(--success);
+      border-color: var(--success);
+      color: white;
+    }
+
+    /* Flashcards */
+    .flash-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+    @media (min-width: 480px) {
+      .flash-grid { grid-template-columns: 1fr 1fr; }
+    }
+    .flash-card-item {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-md);
+      padding: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .flash-card-item:active {
+      transform: scale(0.98);
+      border-color: var(--accent);
+    }
+    .flash-card-tag {
+      font-size: 0.7rem;
+      font-weight: 800;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+    .flash-card-zh {
+      font-size: 0.8rem;
+      color: var(--text-2);
+      margin-bottom: 8px;
+    }
+    .flash-card-ja {
+      font-size: 1rem;
+      font-weight: 900;
+      color: #fef08a;
+      line-height: 1.35;
+    }
+
+    /* Gemini AI Card */
+    .gemini-container {
+      background: linear-gradient(145deg, rgba(30, 27, 75, 0.6) 0%, rgba(15, 23, 42, 0.8) 100%);
+      border: 1px solid rgba(168, 85, 247, 0.35);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+    .key-status-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: var(--radius-sm);
+      padding: 8px 12px;
+      font-size: 0.78rem;
+      margin-bottom: 12px;
+    }
+    .chip-scroll {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      margin-bottom: 12px;
+      scrollbar-width: none;
+    }
+    .chip-scroll::-webkit-scrollbar { display: none; }
+    .chat-chip {
+      flex: 0 0 auto;
+      background: rgba(168, 85, 247, 0.15);
+      border: 1px solid rgba(168, 85, 247, 0.3);
+      color: #e9d5ff;
+      font-size: 0.74rem;
+      padding: 6px 12px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .chat-chip:active { background: rgba(168, 85, 247, 0.35); }
+    .chat-messages {
+      background: rgba(11, 15, 25, 0.7);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      min-height: 120px;
+      max-height: 280px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .bubble {
+      padding: 9px 12px;
+      border-radius: var(--radius-md);
+      font-size: 0.82rem;
+      line-height: 1.45;
+      max-width: 88%;
+    }
+    .bubble.user {
+      align-self: flex-end;
+      background: var(--primary);
+      color: white;
+    }
+    .bubble.ai {
+      align-self: flex-start;
+      background: #1e293b;
+      color: #f1f5f9;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .chat-input-row {
+      display: flex;
+      gap: 8px;
+    }
+    .chat-input-row input {
+      flex: 1;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-md);
+      color: white;
+      padding: 10px 12px;
+      font-size: 0.82rem;
+      outline: none;
+      min-height: 44px;
+    }
+    .chat-input-row button {
+      background: linear-gradient(135deg, #a855f7, #9333ea);
+      border: none;
+      color: white;
+      padding: 0 16px;
+      border-radius: var(--radius-md);
+      font-weight: 800;
+      font-size: 0.82rem;
+      cursor: pointer;
+      min-height: 44px;
+    }
+
+    /* Fixed Bottom Bar for Mobile */
+    .bottom-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(9, 13, 22, 0.94);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-top: 1px solid var(--card-border);
+      display: flex;
+      justify-content: space-around;
+      padding: 8px 4px calc(8px + env(safe-area-inset-bottom));
+      z-index: 90;
+    }
+    .bottom-tab {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      background: transparent;
+      border: none;
+      color: var(--text-3);
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 4px 8px;
+      cursor: pointer;
+    }
+    .bottom-tab.active { color: var(--primary); }
+    .bottom-tab svg { width: 22px; height: 22px; stroke-width: 2.2; }
+
+    /* Flashcard Modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.85);
+      z-index: 300;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-card {
+      background: #182234;
+      border: 2px solid var(--accent);
+      border-radius: var(--radius-lg);
+      padding: 26px 20px;
+      max-width: 90%;
+      width: 420px;
+      text-align: center;
+    }
+    .big-ja {
+      font-size: 1.6rem;
+      font-weight: 900;
+      color: #fef08a;
+      margin: 18px 0;
+      line-height: 1.4;
+    }
+    .sub-zh {
+      font-size: 0.95rem;
+      color: var(--text-2);
+      margin-bottom: 22px;
+    }
+    .btn-close-modal {
+      background: #334155;
+      color: white;
+      border: none;
+      padding: 10px 28px;
+      border-radius: var(--radius-sm);
+      font-weight: 800;
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Sticky Bar -->
+  <header>
+    <div class="header-inner">
+      <div class="logo-badge">
+        🍁 新宿6日戰情室 <span class="badge-tag">v1.1.0</span>
+      </div>
+      <div class="header-actions">
+        <a href="javascript:void(0)" onclick="openGoogleTranslateApp()" class="top-pill top-pill-primary" id="btnTranslate">
+          🌐 翻譯App
+        </a>
+        <a href="https://www.google.com/maps/search/?api=1&query=Apartment+hotel+Yumenoya+Shinjuku" class="top-pill" target="_blank">
+          🏨 回飯店
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <div class="app-container">
+
+    <!-- Hero Card -->
+    <div class="hero-card">
+      <div class="hero-sub">Family Tokyo Trip 2026</div>
+      <div class="hero-title">新宿・橫濱・箱根 6日遊</div>
+      <div class="hero-meta">
+        <span>📅 2026/11/26 – 12/01</span>
+        <span>👨‍👩‍👧‍👦 2 大 2 小隨身神隊友</span>
+      </div>
+    </div>
+
+    <!-- Segmented Navigation Bar -->
+    <div class="seg-bar" id="segBar">
+      <button class="seg-btn active" onclick="switchMainView('timeline', this)">📅 每日行程</button>
+      <button class="seg-btn" onclick="switchMainView('deadlines', this)">⚡ 核心死線</button>
+      <button class="seg-btn" onclick="switchMainView('tickets', this)">🎫 車票座位</button>
+      <button class="seg-btn" onclick="switchMainView('gemini', this)">🤖 Gemini大腦</button>
+      <button class="seg-btn" onclick="switchMainView('pokemon', this)">🎮 寶可夢(<span id="tabPokeCount">0</span>/7)</button>
+      <button class="seg-btn" onclick="switchMainView('flashcards', this)">🗣️ 日文卡</button>
+    </div>
+
+    <!-- 1. 每日行程 (Timeline) -->
+    <div id="viewTimeline">
+      <div class="day-chip-bar">
+        <button class="day-chip active" onclick="filterDay('all', this)">全部 6 天</button>
+        <button class="day-chip" onclick="filterDay('d1', this)">D1 抵達</button>
+        <button class="day-chip" onclick="filterDay('d2', this)">D2 市區紅葉</button>
+        <button class="day-chip" onclick="filterDay('d3', this)">D3 橫濱</button>
+        <button class="day-chip" onclick="filterDay('d4', this)">D4 鎌倉江之島</button>
+        <button class="day-chip" onclick="filterDay('d5', this)">D5 箱根環線</button>
+        <button class="day-chip" onclick="filterDay('d6', this)">D6 返台</button>
+      </div>
+      <div id="timelineContainer"></div>
+    </div>
+
+    <!-- 2. 核心死線 (Deadlines) -->
+    <div id="viewDeadlines" style="display: none;">
+      <div class="content-card">
+        <div class="card-title-row">
+          <div class="card-title">⚡ 行程關鍵死線與交通陷阱</div>
+        </div>
+
+        <div class="deadline-item">
+          <div class="deadline-head">🚨 Day 5 箱根：15:15 大涌谷準時下山（核心死線）</div>
+          <div class="deadline-body">
+            不可延誤！必須按時搭乘：空中纜車 ➔ 早雲山 ➔ 強羅 ➔ 登山電車 返回箱根湯本，確保銜接 <strong>17:46 浪漫特快 (箱根18號 MSE6)</strong>！
+          </div>
+        </div>
+
+        <div class="deadline-item warning">
+          <div class="deadline-head">⚠️ Day 4 鎌倉：13:23 認明【江之電】（切勿搭單軌）</div>
+          <div class="deadline-body">
+            從江之島往長谷寺，務必前往<strong>「江之島電鐵（綠色江之電）江之島站」</strong>直達長谷站！千萬不要走進「湘南單軌電車（往大船繞大遠路）」。
+          </div>
+        </div>
+
+        <div class="deadline-item warning">
+          <div class="deadline-head">🐿️ Day 4 鎌倉：紅谷「核桃糕 (くるみっ子)」時限</div>
+          <div class="deadline-body">
+            週日下午觀光客極多，招牌核桃糕常在中午前後售罄。下午 15:30 逛小町通時若看到特約店有現貨先買！
+          </div>
+        </div>
+
+        <div class="deadline-item info">
+          <div class="deadline-head">🎄 Day 3 橫濱：紅磚倉庫聖誕市集 (17:00)</div>
+          <div class="deadline-body">
+            16:00 已點燈。週六傍晚人潮達最高峰，建議持「優先入場票」走專用通道秒進場；若不進木屋區，外圍與商場可免費逛。
+          </div>
+        </div>
+
+        <div class="deadline-item info">
+          <div class="deadline-head">🍜 Day 3 橫濱：合味道紀念館 (10:45)</div>
+          <div class="deadline-body">
+            已預約 11:30/12:00 手作杯麵體驗，走完臨港公園後直接搭電梯至 4 樓吃麵第一波、準時至 3 樓報到。
+          </div>
+        </div>
+
+        <div class="deadline-item">
+          <div class="deadline-head">🥩 Day 1 新宿：牛たんの檸檬 (20:34)</div>
+          <div class="deadline-body">
+            極厚切牛舌排隊名店，務必確認已在 TableCheck 完成預約，避免第一晚帶小孩舟車勞頓現場久候。
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. 離線車票 (Tickets) -->
+    <div id="viewTickets" style="display: none;">
+      <div class="content-card">
+        <div class="card-title-row">
+          <div class="card-title">🎫 離線車票與座位速查（斷網可用）</div>
+        </div>
+
+        <div class="ticket-badge">
+          <div class="ticket-tag">Day 4 (11/29 週日) 浪漫特快</div>
+          <div class="ticket-route">江之島33號 (EXE4)</div>
+          <div style="font-size:0.85rem; color:#94a3b8; margin-bottom:8px;">新宿 08:20 ➔ 09:28 片瀨江之島</div>
+          <div class="ticket-seats">💺 07號車廂 2A, 2B, 3A, 3B</div>
+        </div>
+
+        <div class="ticket-badge">
+          <div class="ticket-tag">Day 5 (11/30 週一) 去程浪漫特快</div>
+          <div class="ticket-route">箱根41號 (EXE10)</div>
+          <div style="font-size:0.85rem; color:#94a3b8; margin-bottom:8px;">新宿 07:37 ➔ 09:22 箱根湯本</div>
+          <div class="ticket-seats">💺 04號車廂 8C, 8D, 9C, 9D</div>
+        </div>
+
+        <div class="ticket-badge">
+          <div class="ticket-tag">Day 5 (11/30 週一) 回程浪漫特快</div>
+          <div class="ticket-route">箱根18號 (MSE6)</div>
+          <div style="font-size:0.85rem; color:#94a3b8; margin-bottom:8px;">箱根湯本 17:46 ➔ 19:26 新宿</div>
+          <div class="ticket-seats">💺 04號車廂 8C, 8D, 9C, 9D</div>
+        </div>
+
+        <div style="background:rgba(255,255,255,0.03); border:1px solid var(--card-border); border-radius:var(--radius-md); padding:12px; font-size:0.82rem; color:var(--text-2);">
+          <div style="font-weight:800; color:#fff; margin-bottom:4px;">🛫 班機時刻表</div>
+          <div>去程：11/26 11:30 松山 T1 ➔ 17:45 羽田 T3</div>
+          <div>回程：12/01 12:15 羽田 T3 ➔ 14:32 松山 T1</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. 寶可夢人孔蓋 (Pokemon) -->
+    <div id="viewPokemon" style="display: none;">
+      <div class="content-card">
+        <div class="card-title-row">
+          <div class="card-title">🎮 橫濱寶可夢尋寶任務 (<span id="pokeMainCount">0</span>/7)</div>
+        </div>
+        <p style="font-size: 0.8rem; color: var(--text-2); margin-bottom: 12px;">
+          打卡勾選會自動記錄在您的手機，點擊右側按鈕可一鍵直接開啟 Google Maps 精確座標導航！
+        </p>
+        <div id="pokeContainer"></div>
+      </div>
+    </div>
+
+    <!-- 5. 實戰日語卡 (Flashcards) -->
+    <div id="viewFlashcards" style="display: none;">
+      <div class="content-card">
+        <div class="card-title-row">
+          <div class="card-title">🗣️ 實戰日語手指溝通卡</div>
+        </div>
+        <p style="font-size: 0.8rem; color: var(--text-2); margin-bottom: 12px;">
+          點擊任一張小卡可放大全螢幕，直接秀給日本店員／司機／櫃台看：
+        </p>
+        <div class="flash-grid" id="flashGrid"></div>
+      </div>
+    </div>
+
+    <!-- 6. Gemini 3.8 Flash (AI Brain) -->
+    <div id="viewGemini" style="display: none;">
+      <div class="gemini-container">
+        <div class="card-title-row">
+          <div class="card-title" style="color: #c084fc;">🤖 Gemini 3.8 Flash 隨身導遊</div>
+        </div>
+
+        <div class="key-status-bar">
+          <span id="keyStatusText">🟡 未設定 API Key</span>
+          <button onclick="promptApiKey()" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #fff; font-size: 0.72rem; padding: 4px 10px; border-radius: 6px; cursor: pointer;">🔑 設定/更改 Key</button>
+        </div>
+
+        <p style="font-size: 0.78rem; color: var(--text-2); margin-bottom: 10px;">
+          密鑰僅儲存於您各自手機的本地瀏覽器中，<strong>絕不上傳 GitHub 或任何伺服器</strong>，全家皆可安心使用。
+        </p>
+
+        <!-- Quick Chips -->
+        <div class="chip-scroll">
+          <div class="chat-chip" onclick="askChip('拍菜單問推薦：請推薦適合2位大人與2位小孩吃的熱門招牌菜，避開辛辣，告訴我們如何點餐？')">📋 菜單推薦(避辣)</div>
+          <div class="chat-chip" onclick="askChip('小朋友走累了，這附近有什麼可以坐下來休息、喝熱飲或吃甜點的好地方？')">☕ 小朋友累了找休息</div>
+          <div class="chat-chip" onclick="askChip('我們現在在元箱根港，推薦哪間走路3分鐘內不用大排長龍的午餐？')">🍱 元箱根港午餐推薦</div>
+          <div class="chat-chip" onclick="askChip('我們在箱根，回程浪漫特快是幾點幾號車廂？請告訴我幾點必須開始往車站走？')">⏰ 箱根回程車次提醒</div>
+          <div class="chat-chip" onclick="askChip('我們現在迷路了，怎麼走回大久保的飯店 Apartment hotel Yumenoya？')">🗺️ 怎麼走回飯店</div>
+        </div>
+
+        <div class="chat-messages" id="chatMsgBox">
+          <div class="bubble ai">
+            您好！我是您的 <strong>Gemini 3.8 Flash</strong> 專屬隨身導遊。我已經熟記這 6 天所有班次、座位號、死線與大久保飯店資訊。路上有任何突發狀況，隨時問我！
+          </div>
+        </div>
+
+        <div class="chat-input-row">
+          <input type="text" id="chatInputBox" placeholder="問問 Gemini：例如『回大久保飯店要搭哪條線？』" onkeypress="if(event.key==='Enter') sendAiQuery()">
+          <button onclick="sendAiQuery()">發送</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Bottom Floating Navigation -->
+  <nav class="bottom-bar">
+    <button class="bottom-tab active" onclick="switchNavTab('timeline')">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+      行程
+    </button>
+    <button class="bottom-tab" onclick="switchNavTab('deadlines')">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+      死線
+    </button>
+    <button class="bottom-tab" onclick="switchNavTab('tickets')">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"/></svg>
+      車票
+    </button>
+    <button class="bottom-tab" onclick="switchNavTab('gemini')">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+      AI導遊
+    </button>
+    <button class="bottom-tab" onclick="switchNavTab('pokemon')">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      寶可夢
+    </button>
+    <button class="bottom-tab" onclick="switchNavTab('flashcards')">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
+      手指卡
+    </button>
+  </nav>
+
+  <!-- Flashcard Zoom Modal -->
+  <div class="modal-overlay" id="flashModal" onclick="closeModal()">
+    <div class="modal-card" onclick="event.stopPropagation()">
+      <div style="font-size: 0.85rem; color: var(--accent); font-weight: 800;" id="mTag">🚖 預約計程車</div>
+      <div class="big-ja" id="mJa">元箱根港までタクシーでお願いします。</div>
+      <div class="sub-zh" id="mZh">請幫我搭計程車到元箱根港。</div>
+      <button class="btn-close-modal" onclick="closeModal()">關閉</button>
+    </div>
+  </div>
+
+  <script>
+    // --- Data Store ---
+    const ITINERARY_DATA = {
+      d1: {
+        title: "Day 1 (11/26 週四)｜台北松山 ➔ 東京羽田 ➔ 新宿飯店",
+        spots: [
+          { time: "11:30", dur: "2hr", name: "松山機場第一航廈", note: "辦理登機與行李托運，準備出發。" },
+          { time: "17:45", dur: "1hr", name: "東京國際機場 (羽田機場 T3)", note: "入境通關、提領行李，前往單軌電車/京急線或搭乘接駁車。" },
+          { time: "19:19", dur: "1hr", name: "Apartment hotel Yumenoya Shinjuku", note: "大久保平成大樓辦理入住、放置行李，步行前往歌舞伎町商圈。" },
+          { time: "20:34", dur: "1hr", name: "新宿焼肉 牛たんの檸檬 総本店", note: "招牌檸檬極厚牛舌套餐，已預約直接報到入座。" }
+        ]
+      },
+      d2: {
+        title: "Day 2 (11/27 週五)｜明治神宮外苑銀杏 ➔ 吉祥寺 ➔ 荻窪夜楓 ➔ 新宿夜景",
+        spots: [
+          { time: "08:00", dur: "0m", name: "飯店出發", note: "步行前往東新宿或大久保搭車。" },
+          { time: "08:33", dur: "10m", name: "明治神宮外苑銀杏並木", note: "300米黃金銀杏大道見頃巔峰！晨間人流少、拍照最純淨。" },
+          { time: "09:30", dur: "30m", name: "豪德寺", note: "招福貓神社，滿坑滿谷招財貓像與頭頂楓紅交織。" },
+          { time: "11:00", dur: "10m", name: "白髭のシュークリーム工房 吉祥寺店", note: "宮崎駿正版授權龍貓泡芙外帶。" },
+          { time: "11:30", dur: "1hr", name: "Surya Sajilo (吉祥寺)", note: "尼泊爾起司烤餅與咖哩名店，開門第一批入座免排長隊。" },
+          { time: "14:00", dur: "2hr", name: "吉祥寺プティット村", note: "童話貓咪村莊風格造景，極適合家庭拍照散步。" },
+          { time: "16:06", dur: "15m", name: "黑毛和牛炸肉餅 Satou", note: "吉祥寺北口商店街排隊名物，現炸和牛丸。" },
+          { time: "17:00", dur: "30m", name: "大田黑公園 (荻窪)", note: "17:00 準時紅葉夜間點燈！錦鯉水池中火紅楓葉倒影極其震撼。" },
+          { time: "17:56", dur: "1hr", name: "X Space 新宿 (3D巨大三花貓看板)", note: "新宿東口車站廣場仰望 3D 萌貓。" },
+          { time: "19:03", dur: "1hr", name: "センタービーフ (Center Beef) 新宿3丁目店", note: "牛排飯與咖哩，出餐快速、小孩友善。" },
+          { time: "20:11", dur: "1hr", name: "歌舞伎町一番街牌樓 ＆ 哥吉拉巨頭", note: "站在靖國通街口拍發光紅色牌樓，往內走拍 Hotel Gracery 巨大哥吉拉巨頭。" },
+          { time: "21:23", dur: "1hr", name: "返回飯店休息", note: "大久保超市補給點心、好好泡澡休息。" }
+        ]
+      },
+      d3: {
+        title: "Day 3 (11/28 週六)｜橫濱港灣皮卡丘巡禮 ➔ 合味道 ➔ 紅磚聖誕市集",
+        spots: [
+          { time: "08:00", dur: "0m", name: "飯店出發", note: "搭乘 JR 前往橫濱櫻木町站。" },
+          { time: "09:01", dur: "10m", name: "櫻木町站 (寶可夢任務①)", note: "東口廣場地面尋找『公母雙皮卡丘人孔蓋』！" },
+          { time: "09:14", dur: "5m", name: "橫濱櫻木郵便局 (寶可夢任務②)", note: "門口拍攝立體『波加曼郵筒』。" },
+          { time: "09:23", dur: "5m", name: "橫濱市役所 中庭 (寶可夢任務③)", note: "過櫻川橋至市役所戶外步道，拍立體『皮卡丘郵筒』與『伊布郵筒』。" },
+          { time: "09:36", dur: "10m", name: "日本丸紀念公園 (寶可夢任務④)", note: "斜坡高台處拍『皮卡丘＋可達鴨＋腕力人孔蓋』，背景有白色帆船。" },
+          { time: "10:02", dur: "10m", name: "臨港公園 (寶可夢任務⑤)", note: "靠近普卡里碼頭海邊步道拍『海景皮卡丘人孔蓋』。" },
+          { time: "10:30", dur: "3hr", name: "合味道紀念館 橫濱", note: "11:00 4樓吃麵第一波 ➔ 11:30/12:00 3樓手作杯麵 ➔ 2樓參觀展覽。" },
+          { time: "14:00", dur: "10m", name: "橫濱海洋塔 (寶可夢任務⑥)", note: "大噴鸝鳥喙裡的皮卡丘人孔蓋，背景可拍銀色海洋塔。" },
+          { time: "14:30", dur: "2hr", name: "冰川丸號 郵輪博物館", note: "登上歷史巨輪參觀奢華客艙與引擎室，最後入場 16:30。" },
+          { time: "17:00", dur: "2hr", name: "橫濱紅磚倉庫 2號館 (寶可夢任務⑦ ＆ 聖誕市集)", note: "公園旁拍皮卡丘＆阿羅拉雷丘人孔蓋；進入 10 米聖誕樹市集喝熱可可！" },
+          { time: "19:09", dur: "5m", name: "YOKOHAMA AIR CABIN 運河公園站", note: "搭乘空中纜車飛越港灣夜景直達櫻木町站。" },
+          { time: "19:24", dur: "1hr", name: "MOS Premium 櫻木町 Cross Gate 店", note: "櫻木町站前精品摩斯漢堡，舒適坐下來享用晚餐。" },
+          { time: "20:30", dur: "1hr", name: "返回新宿飯店", note: "搭乘電車直達新宿大久保。" }
+        ]
+      },
+      d4: {
+        title: "Day 4 (11/29 週日)｜江之島浪漫特快 ➔ 鎌倉古剎紅葉 ➔ 都廳夜景",
+        spots: [
+          { time: "07:45", dur: "0m", name: "飯店出發", note: "步行前往新宿站西口小田急月台。" },
+          { time: "07:58", dur: "0m", name: "小田急浪漫特快特急券售票處", note: "進站走人工改札口，出示特快券畫面。" },
+          { time: "08:20", dur: "1h8m", name: "搭乘 江之島33號 (08:20發車)", note: "7號車廂 2A/2B/3A/3B，車上吃早餐吹暖氣直達海邊。" },
+          { time: "09:50", dur: "30m", name: "江之島弁財天仲見世通", note: "穿過青銅鳥居，熱鬧江之島老街。" },
+          { time: "10:22", dur: "10m", name: "あさひ本店 頂上店", note: "整隻新鮮章魚現壓巨型香脆仙貝。" },
+          { time: "10:39", dur: "10m", name: "山二つ (Yama-Futatsu)", note: "V字型海蝕斷崖地質奇觀。" },
+          { time: "10:58", dur: "30m", name: "江之島岩屋", note: "拿燭台探索神秘海蝕洞窟。" },
+          { time: "11:30", dur: "1hr", name: "見晴亭 (午餐)", note: "絕美海景餐廳，品嚐江之島名物吻仔魚丼飯。" },
+          { time: "12:34", dur: "30m", name: "弁天丸渡輪 (回程乘船處)", note: "搭船直回大橋端；若風浪大停航則走西側山腰小徑折返。" },
+          { time: "13:23", dur: "10m", name: "江之電 江之島站 (⚠️非單軌！)", note: "走入綠色江之電車站搭車直達長谷站！" },
+          { time: "14:02", dur: "30m", name: "長谷寺 (紅葉見頃！)", note: "鎌倉紅葉巔峰首選，放生池紅楓倒影極美。" },
+          { time: "14:41", dur: "30m", name: "高德院 (鎌倉大佛)", note: "壯麗露天青銅釋迦牟尼佛像。" },
+          { time: "15:30", dur: "45m", name: "鎌倉小町通", note: "鎌倉必逛老街，吃點心、買伴手禮。" },
+          { time: "16:23", dur: "10m", name: "鎌倉紅谷 八幡宮前本店", note: "知名核桃糕名店。" },
+          { time: "16:36", dur: "45m", name: "鶴岡八幡宮", note: "朱紅本宮、舞殿與柳原神池夜間參拜。" },
+          { time: "19:00", dur: "30m", name: "東京都廳舍 (南展望室/光雕秀)", note: "45樓免費俯瞰百萬東京夜景，外牆有金氏世界紀錄光雕投影。" },
+          { time: "19:50", dur: "1hr", name: "返回大久保飯店", note: "回飯店整理戰利品、準備明日箱根大冒險。" }
+        ]
+      },
+      d5: {
+        title: "Day 5 (11/30 週一)｜箱根大環線 ➔ 龍宮殿純泡湯 ➔ 大涌谷下山死線",
+        spots: [
+          { time: "07:00", dur: "0m", name: "飯店出發 (大久保)", note: "步行至新宿站西口小田急月台，順便買早餐。" },
+          { time: "07:37", dur: "1h45m", name: "搭乘 箱根41號浪漫特快", note: "4號車廂 8C/8D/9C/9D，直達箱根湯本。" },
+          { time: "09:22", dur: "10m", name: "抵達箱根湯本站", note: "出站直奔 2 號站牌搭乘登山巴士 H 線 (車程約35分)。" },
+          { time: "10:15", dur: "30m", name: "元箱根港 ➔ 箱根神社 (平和鳥居)", note: "湖中紅色鳥居拍照，拍完原路走回元箱根港。" },
+          { time: "10:55", dur: "1h5m", name: "龍宮殿本館 (純泡湯 ♨️)", note: "搭計程車抵達。請櫃檯預約 12:00 返回計程車！享受富士山湖景露天溫泉。" },
+          { time: "12:10", dur: "1hr", name: "元箱根港自由午餐 (精選美食 🍱)", note: "大正海鮮丼、拉麵或蘆之湖畔披薩，吃飽悠閒走向碼頭。" },
+          { time: "13:25", dur: "25m", name: "搭乘蘆之湖海賊船", note: "橫跨湖面抵達桃源台港，拍照看富士山。" },
+          { time: "13:50", dur: "25m", name: "桃源台站直上箱根空中纜車", note: "纜車一路攀升穿過硫磺火山口上方。" },
+          { time: "14:15", dur: "1hr", name: "大涌谷 (黑雞蛋 ＆ 地熱火山)", note: "品嚐延壽黑雞蛋、欣賞壯麗冒煙地熱噴口。" },
+          { time: "15:15", dur: "0m", name: "⚠️ 15:15 準時出發下山（核心死線！）", note: "空中纜車 ➔ 早雲山 (斜坡纜車) ➔ 強羅 (登山電車) ➔ 箱根湯本。" },
+          { time: "16:40", dur: "50m", name: "箱根湯本站前商店街", note: "採買現炸魚板、箱根溫泉饅頭與名產伴手禮。" },
+          { time: "17:40", dur: "0m", name: "月台候車進站", note: "小田急浪漫特快專屬月台。" },
+          { time: "17:46", dur: "1h40m", name: "搭乘 箱根18號浪漫特快", note: "4號車廂 8C/8D/9C/9D，舒適直達返回新宿。" },
+          { time: "19:26", dur: "0m", name: "抵達新宿站", note: "行程圓滿大成功！" }
+        ]
+      },
+      d6: {
+        title: "Day 6 (12/01 週二)｜新宿退房 ➔ 東京羽田 ➔ 台北松山",
+        spots: [
+          { time: "09:00", dur: "0m", name: "Apartment hotel Yumenoya 退房", note: "清點護照、手機充電器與行李戰利品。" },
+          { time: "10:02", dur: "2hr", name: "東京國際機場 (羽田機場第三航廈)", note: "行李托運、通關檢查、免稅店補買最後伴手禮 (東京芭娜娜、白色戀人)。" },
+          { time: "14:32", dur: "1hr", name: "返抵 台北松山機場第一航廈", note: "平安返抵國門，回到溫暖的家！" }
+        ]
+      }
+    };
+
+    const POKEMON_DATA = [
+      { id: "pk1", name: "櫻木町站前 (雙皮卡丘人孔蓋)", loc: "JR櫻木町站東口廣場地面", q: "Sakuragicho Station Yokohama" },
+      { id: "pk2", name: "橫濱櫻木郵便局 (波加曼立體郵筒)", loc: "Yokohama Sakuragi Post Office 門口", q: "Yokohama Sakuragi Post Office" },
+      { id: "pk3", name: "橫濱市役所 中庭 (皮卡丘與伊布郵筒)", loc: "橫濱市役所戶外步道櫻川橋旁", q: "Yokohama City Hall" },
+      { id: "pk4", name: "日本丸紀念公園 (皮卡丘+可達鴨+腕力)", loc: "帆船日本丸旁斜坡走道高台處", q: "Nippon Maru Memorial Park" },
+      { id: "pk5", name: "臨港公園 (皮卡丘海邊步道)", loc: "靠近普卡里碼頭 (ぷかりさん橋) 海邊步道", q: "Rinko Park Yokohama" },
+      { id: "pk6", name: "橫濱海洋塔 (大噴鸝鳥喙皮卡丘)", loc: "海洋塔後側空地廣場 (中華街4號出口方向)", q: "Yokohama Marine Tower" },
+      { id: "pk7", name: "橫濱紅磚倉庫 2號館 (皮卡丘+阿羅拉雷丘)", loc: "紅磚公園靠大棧橋方向邊緣走道", q: "Yokohama Red Brick Warehouse" }
+    ];
+
+    const FLASHCARDS = [
+      { tag: "🚖 預約計程車", zh: "請幫我預約 12:30 返回元箱根港的計程車。", ja: "12:30に元箱根港へ戻るタクシーを1台、予約していただけますか？" },
+      { tag: "🍜 合味道報到", zh: "請問 3 樓手作杯麵預約是在這裡報到嗎？", ja: "すみません、3階のマイカップヌードルファクトリーの予約受付はこちらですか？" },
+      { tag: "🐿️ 鎌倉名產詢問", zh: "請問招牌的『核桃糕 (くるみっ子)』今天還有現貨嗎？", ja: "すみません、『くるみっ子』はまだ在庫がありますか？" },
+      { tag: "♨️ 箱根日歸溫泉", zh: "我們想要純泡湯（不包含用餐），請問在哪裡買票？", ja: "日帰り入浴のみ（食事なし）を利用したいのですが、チケットはどこで購入できますか？" },
+      { tag: "🧳 飯店行李寄放", zh: "我們想要先寄放行李，可以嗎？", ja: "チェックイン前ですが、荷物を預かっていただけますか？" },
+      { tag: "👶 餐廳兒童需求", zh: "請問有提供兒童用的小碗、湯匙和溫水嗎？", ja: "子供用の取り皿とスプーン、そしてぬるま湯をいただけますか？" },
+      { tag: "💳 交通卡感應支付", zh: "請問可以用交通卡 (Suica / PASMO) 感應結帳嗎？", ja: "Suica（交通系ICカード）で支払えますか？" },
+      { tag: "🧾 退稅手續詢問", zh: "請問這裡可以辦理免稅手續嗎？", ja: "免税手続き（Tax Free）はできますか？" }
+    ];
+
+    // --- State Management ---
+    let activeDay = "all";
+    let checkedPokes = JSON.parse(localStorage.getItem("tokyo_poke_checks_v110") || "{}");
+    let geminiApiKey = localStorage.getItem("tokyo_gemini_key_v110") || "";
+
+    // --- Google Translate App Launcher ---
+    function openGoogleTranslateApp() {
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+      const isAndroid = /Android/.test(navigator.userAgent);
+      const webUrl = "https://translate.google.com/?sl=auto&tl=zh-TW";
+
+      if (isAndroid) {
+        const intentUrl = "intent://translate.google.com/?sl=auto&tl=zh-TW#Intent;scheme=https;package=com.google.android.apps.translate;S.browser_fallback_url=" + encodeURIComponent(webUrl) + ";end;";
+        window.location.href = intentUrl;
+      } else if (isIOS) {
+        const startTime = Date.now();
+        window.location.href = "googletranslate://";
+        setTimeout(() => {
+          if (Date.now() - startTime < 1600) {
+            window.location.href = webUrl;
+          }
+        }, 900);
+      } else {
+        window.open(webUrl, "_blank");
+      }
+    }
+
+    // --- View Navigation ---
+    const VIEWS = ["timeline", "deadlines", "tickets", "gemini", "pokemon", "flashcards"];
+    function switchMainView(viewId, btn) {
+      VIEWS.forEach(v => {
+        const el = document.getElementById("view" + v.charAt(0).toUpperCase() + v.slice(1));
+        if (el) el.style.display = v === viewId ? "block" : "none";
+      });
+      document.querySelectorAll(".seg-btn").forEach(b => b.classList.remove("active"));
+      if (btn) btn.classList.add("active");
+      
+      // Sync bottom nav
+      document.querySelectorAll(".bottom-tab").forEach(tab => {
+        tab.classList.toggle("active", tab.getAttribute("onclick").includes(viewId));
+      });
+      window.scrollTo({ top: 120, behavior: "smooth" });
+    }
+
+    function switchNavTab(viewId) {
+      VIEWS.forEach(v => {
+        const el = document.getElementById("view" + v.charAt(0).toUpperCase() + v.slice(1));
+        if (el) el.style.display = v === viewId ? "block" : "none";
+      });
+      document.querySelectorAll(".bottom-tab").forEach(b => b.classList.remove("active"));
+      event.currentTarget.classList.add("active");
+
+      // Sync seg buttons
+      document.querySelectorAll(".seg-btn").forEach(b => {
+        b.classList.toggle("active", b.getAttribute("onclick").includes(viewId));
+      });
+      window.scrollTo({ top: 120, behavior: "smooth" });
+    }
+
+    // --- Timeline Rendering ---
+    function renderTimeline() {
+      const container = document.getElementById("timelineContainer");
+      container.innerHTML = "";
+
+      let days = activeDay === "all" ? ["d1", "d2", "d3", "d4", "d5", "d6"] : [activeDay];
+
+      days.forEach(dKey => {
+        const dData = ITINERARY_DATA[dKey];
+        if (!dData) return;
+
+        if (activeDay === "all") {
+          const header = document.createElement("div");
+          header.style.cssText = "font-weight: 800; font-size: 0.95rem; color: var(--primary); margin: 20px 0 10px; display: flex; align-items: center; gap: 6px;";
+          header.innerHTML = `📅 ${dData.title}`;
+          container.appendChild(header);
+        }
+
+        dData.spots.forEach(s => {
+          const box = document.createElement("div");
+          box.className = "spot-box";
+          box.innerHTML = `
+            <div class="spot-top">
+              <span class="spot-time-pill">⏰ ${s.time}</span>
+              <span class="spot-stay">停留 ${s.dur}</span>
+            </div>
+            <div class="spot-name-text">${s.name}</div>
+            <div class="spot-note-box">${s.note}</div>
+            <a class="btn-maps" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(s.name + ' Tokyo')}" target="_blank">
+              📍 Google Maps 導航
+            </a>
+          `;
+          container.appendChild(box);
+        });
+      });
+    }
+
+    function filterDay(d, btn) {
+      activeDay = d;
+      document.querySelectorAll(".day-chip").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      renderTimeline();
+    }
+
+    // --- Pokemon Rendering ---
+    function renderPokemon() {
+      const c = document.getElementById("pokeContainer");
+      c.innerHTML = "";
+      let count = 0;
+      POKEMON_DATA.forEach(p => {
+        const isDone = !!checkedPokes[p.id];
+        if (isDone) count++;
+        const row = document.createElement("div");
+        row.className = "poke-row";
+        row.innerHTML = `
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <div class="poke-check-btn ${isDone ? 'checked' : ''}" onclick="togglePoke('${p.id}')">
+              ${isDone ? '✓' : ''}
+            </div>
+            <div>
+              <div style="font-size: 0.88rem; font-weight: 800; color: #fff;">${p.name}</div>
+              <div style="font-size: 0.75rem; color: var(--text-2);">📍 ${p.loc}</div>
+            </div>
+          </div>
+          <a class="btn-maps" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(p.q)}" target="_blank" style="flex-shrink:0;">
+            導航
+          </a>
+        `;
+        c.appendChild(row);
+      });
+      document.getElementById("pokeMainCount").innerText = count;
+      document.getElementById("tabPokeCount").innerText = count;
+    }
+
+    function togglePoke(id) {
+      checkedPokes[id] = !checkedPokes[id];
+      localStorage.setItem("tokyo_poke_checks_v110", JSON.stringify(checkedPokes));
+      renderPokemon();
+    }
+
+    // --- Flashcards Rendering ---
+    function renderFlashcards() {
+      const g = document.getElementById("flashGrid");
+      g.innerHTML = "";
+      FLASHCARDS.forEach(f => {
+        const card = document.createElement("div");
+        card.className = "flash-card-item";
+        card.onclick = () => openModal(f.tag, f.zh, f.ja);
+        card.innerHTML = `
+          <div class="flash-card-tag">${f.tag}</div>
+          <div class="flash-card-zh">${f.zh}</div>
+          <div class="flash-card-ja">${f.ja}</div>
+        `;
+        g.appendChild(card);
+      });
+    }
+
+    function openModal(tag, zh, ja) {
+      document.getElementById("mTag").innerText = tag;
+      document.getElementById("mZh").innerText = zh;
+      document.getElementById("mJa").innerText = ja;
+      document.getElementById("flashModal").classList.add("open");
+    }
+    function closeModal() {
+      document.getElementById("flashModal").classList.remove("open");
+    }
+
+    // --- Gemini API Key (Strictly local storage) ---
+    function updateKeyStatusUI() {
+      const el = document.getElementById("keyStatusText");
+      if (geminiApiKey) {
+        el.innerHTML = '<span style="color:#10b981; font-weight:800;">🟢 已連線 Gemini 3.8 Flash (本機存儲)</span>';
+      } else {
+        el.innerHTML = '<span style="color:#f59e0b; font-weight:800;">🟡 未設定 API Key（點右側輸入）</span>';
+      }
+    }
+
+    function promptApiKey() {
+      const current = geminiApiKey || "";
+      const input = prompt("請輸入您的 Google Gemini API Key\n(此 Key 僅加密儲存在您手機的本地瀏覽器中，絕不會上傳 GitHub 或任何伺服器)：", current);
+      if (input !== null) {
+        geminiApiKey = input.trim();
+        localStorage.setItem("tokyo_gemini_key_v110", geminiApiKey);
+        updateKeyStatusUI();
+        alert(geminiApiKey ? "✅ API Key 已安全存於本機！" : "已清除本機 API Key。");
+      }
+    }
+
+    function askChip(txt) {
+      document.getElementById("chatInputBox").value = txt;
+      sendAiQuery();
+    }
+
+    async function sendAiQuery() {
+      const input = document.getElementById("chatInputBox");
+      const text = input.value.trim();
+      if (!text) return;
+
+      const box = document.getElementById("chatMsgBox");
+
+      // User Bubble
+      const uBubble = document.createElement("div");
+      uBubble.className = "bubble user";
+      uBubble.innerText = text;
+      box.appendChild(uBubble);
+      input.value = "";
+      box.scrollTop = box.scrollHeight;
+
+      if (!geminiApiKey) {
+        const errBubble = document.createElement("div");
+        errBubble.className = "bubble ai";
+        errBubble.innerHTML = "⚠️ 尚未設定 Google Gemini API Key。請點擊上方『🔑 設定/更改 Key』貼入您的 API Key 即可啟動導遊大腦！<br><small style='color:#94a3b8;'>密鑰僅保存在本機手機瀏覽器，絕不上傳雲端。</small>";
+        box.appendChild(errBubble);
+        box.scrollTop = box.scrollHeight;
+        return;
+      }
+
+      // Thinking Bubble
+      const aiBubble = document.createElement("div");
+      aiBubble.className = "bubble ai";
+      aiBubble.innerText = "Gemini 3.8 Flash 思考中...";
+      box.appendChild(aiBubble);
+      box.scrollTop = box.scrollHeight;
+
+      try {
+        const sys = `你是這趟日本東京新宿・橫濱・箱根 6 日遊 (2026/11/26-12/01) 的專屬隨身導遊。
+同行夥伴：2 位大人與 2 位小孩。
+住宿飯店：Apartment hotel Yumenoya Shinjuku (東京都新宿區大久保1丁目9-24 平成大樓)。
+浪漫特快車次與座位：
+- Day 4: 江之島33號 (08:20 新宿發) 07號車廂 2A, 2B, 3A, 3B
+- Day 5 去程: 箱根41號 EXE10 (07:37 新宿發) 04號車廂 8C, 8D, 9C, 9D
+- Day 5 回程: 箱根18號 MSE6 (17:46 箱根湯本發) 04號車廂 8C, 8D, 9C, 9D
+重要死線：
+- Day 5: 15:15 大涌谷準時下山（核心死線，銜接 17:46 回程浪漫特快）。
+- Day 4: 江之島至長谷寺必須搭乘【江之電】（絕非單軌電車）。
+- Day 3: 合味道紀念館 10:45 報到、16:30 冰川丸最後登船、紅磚倉庫聖誕市集 17:00 點燈。
+請根據使用者的即時問題，用繁體中文給出極為精簡、具體、親子友善、可落地的回答。`;
+
+        const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${geminiApiKey}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            contents: [
+              { role: "user", parts: [{ text: sys + "\n\n使用者即時提問：" + text }] }
+            ]
+          })
+        });
+
+        const data = await resp.json();
+        if (data.candidates && data.candidates[0].content.parts[0].text) {
+          aiBubble.innerText = data.candidates[0].content.parts[0].text;
+        } else {
+          aiBubble.innerText = "回傳異常，請檢查 API Key 或額度：" + JSON.stringify(data);
+        }
+      } catch (err) {
+        aiBubble.innerText = "連線失敗：" + err.message;
+      }
+      box.scrollTop = box.scrollHeight;
+    }
+
+    // --- Init ---
+    renderTimeline();
+    renderPokemon();
+    renderFlashcards();
+    updateKeyStatusUI();
+  </script>
+</body>
+</html>
