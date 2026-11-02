@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>新宿・橫濱・箱根 6日遊隨身戰情室 v1.1.0</title>
+  <title>新宿・橫濱・箱根 6日遊隨身戰情室 v1.2.0</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="theme-color" content="#090d16">
@@ -13,13 +13,13 @@
       --bg: #090d16;
       --card-bg: #121929;
       --card-border: rgba(255, 255, 255, 0.08);
-      --card-hover: rgba(255, 255, 255, 0.12);
       --primary: #f43f5e;
       --primary-glow: rgba(244, 63, 94, 0.25);
       --accent: #38bdf8;
       --accent-purple: #c084fc;
       --warning: #f59e0b;
       --success: #10b981;
+      --funliday: #ff7a00;
       --text-1: #f8fafc;
       --text-2: #94a3b8;
       --text-3: #64748b;
@@ -208,6 +208,72 @@
       gap: 6px;
     }
 
+    /* Funliday Integration Card */
+    .funliday-card {
+      background: linear-gradient(135deg, rgba(255, 122, 0, 0.15) 0%, rgba(18, 25, 41, 0.8) 100%);
+      border: 1px solid rgba(255, 122, 0, 0.35);
+      border-radius: var(--radius-lg);
+      padding: 18px;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+    .funliday-logo {
+      font-size: 2.2rem;
+      margin-bottom: 6px;
+    }
+    .funliday-title {
+      font-size: 1.15rem;
+      font-weight: 900;
+      color: #fff;
+      margin-bottom: 6px;
+    }
+    .funliday-desc {
+      font-size: 0.82rem;
+      color: var(--text-2);
+      line-height: 1.5;
+      margin-bottom: 16px;
+      max-width: 450px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .funliday-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-width: 320px;
+      margin: 0 auto;
+    }
+    .btn-funliday-app {
+      background: linear-gradient(135deg, #ff7a00, #ff9500);
+      color: white;
+      text-decoration: none;
+      font-weight: 800;
+      font-size: 0.95rem;
+      padding: 12px 20px;
+      border-radius: var(--radius-md);
+      box-shadow: 0 4px 15px rgba(255, 122, 0, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+    }
+    .btn-funliday-app:active { transform: scale(0.98); }
+    .btn-funliday-web {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: var(--text-1);
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 0.82rem;
+      padding: 9px 16px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
     /* Alerts / Deadlines */
     .deadline-item {
       background: rgba(244, 63, 94, 0.08);
@@ -272,94 +338,7 @@
       border-radius: 6px;
     }
 
-    /* Timeline Day Filter */
-    .day-chip-bar {
-      display: flex;
-      gap: 6px;
-      overflow-x: auto;
-      padding-bottom: 10px;
-      margin-bottom: 12px;
-      scrollbar-width: none;
-    }
-    .day-chip-bar::-webkit-scrollbar { display: none; }
-    .day-chip {
-      flex: 0 0 auto;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--card-border);
-      color: var(--text-2);
-      font-size: 0.78rem;
-      font-weight: 700;
-      padding: 6px 12px;
-      border-radius: 999px;
-      cursor: pointer;
-    }
-    .day-chip.active {
-      background: var(--text-1);
-      color: #090d16;
-      border-color: var(--text-1);
-    }
-
-    /* Spot Items */
-    .spot-box {
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid var(--card-border);
-      border-radius: var(--radius-md);
-      padding: 12px;
-      margin-bottom: 10px;
-      transition: background 0.2s;
-    }
-    .spot-box:active {
-      background: rgba(255, 255, 255, 0.06);
-    }
-    .spot-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 6px;
-    }
-    .spot-time-pill {
-      background: rgba(56, 189, 248, 0.12);
-      color: var(--accent);
-      font-size: 0.75rem;
-      font-weight: 800;
-      padding: 3px 8px;
-      border-radius: 6px;
-    }
-    .spot-stay {
-      font-size: 0.72rem;
-      color: var(--text-3);
-    }
-    .spot-name-text {
-      font-size: 0.95rem;
-      font-weight: 800;
-      color: #fff;
-      margin-bottom: 6px;
-    }
-    .spot-note-box {
-      font-size: 0.78rem;
-      color: var(--text-2);
-      background: rgba(0, 0, 0, 0.25);
-      border-radius: var(--radius-sm);
-      padding: 8px 10px;
-      margin-bottom: 8px;
-      line-height: 1.45;
-    }
-    .btn-maps {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      background: #0284c7;
-      color: white;
-      text-decoration: none;
-      font-size: 0.75rem;
-      font-weight: 700;
-      padding: 6px 12px;
-      border-radius: 6px;
-      min-height: 36px;
-    }
-    .btn-maps:active { background: #0369a1; }
-
-    /* Pokemon List */
+    /* Pokemon List (User Praised) */
     .poke-row {
       display: flex;
       align-items: center;
@@ -389,6 +368,20 @@
       border-color: var(--success);
       color: white;
     }
+    .btn-maps {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: #0284c7;
+      color: white;
+      text-decoration: none;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 6px 12px;
+      border-radius: 6px;
+      min-height: 36px;
+    }
+    .btn-maps:active { background: #0369a1; }
 
     /* Flashcards */
     .flash-grid {
@@ -429,7 +422,7 @@
       line-height: 1.35;
     }
 
-    /* Gemini AI Card */
+    /* Gemini Multi-turn Chat Container */
     .gemini-container {
       background: linear-gradient(145deg, rgba(30, 27, 75, 0.6) 0%, rgba(15, 23, 42, 0.8) 100%);
       border: 1px solid rgba(168, 85, 247, 0.35);
@@ -446,6 +439,23 @@
       padding: 8px 12px;
       font-size: 0.78rem;
       margin-bottom: 12px;
+    }
+    .chat-controls-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      font-size: 0.75rem;
+      color: var(--text-2);
+    }
+    .btn-clear-chat {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #f87171;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      cursor: pointer;
     }
     .chip-scroll {
       display: flex;
@@ -473,8 +483,8 @@
       border: 1px solid var(--card-border);
       border-radius: var(--radius-md);
       padding: 12px;
-      min-height: 120px;
-      max-height: 280px;
+      min-height: 160px;
+      max-height: 340px;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
@@ -526,7 +536,7 @@
       min-height: 44px;
     }
 
-    /* Fixed Bottom Bar for Mobile */
+    /* Fixed Bottom Bar */
     .bottom-bar {
       position: fixed;
       bottom: 0;
@@ -608,7 +618,7 @@
   <header>
     <div class="header-inner">
       <div class="logo-badge">
-        🍁 新宿6日戰情室 <span class="badge-tag">v1.1.0</span>
+        🍁 新宿6日戰情室 <span class="badge-tag">v1.2.0</span>
       </div>
       <div class="header-actions">
         <a href="javascript:void(0)" onclick="openGoogleTranslateApp()" class="top-pill top-pill-primary" id="btnTranslate">
@@ -635,29 +645,113 @@
 
     <!-- Segmented Navigation Bar -->
     <div class="seg-bar" id="segBar">
-      <button class="seg-btn active" onclick="switchMainView('timeline', this)">📅 每日行程</button>
+      <button class="seg-btn active" onclick="switchMainView('funliday', this)">📱 Funliday行程</button>
+      <button class="seg-btn" onclick="switchMainView('gemini', this)">🤖 Gemini記憶大腦</button>
+      <button class="seg-btn" onclick="switchMainView('pokemon', this)">🎮 寶可夢打卡(<span id="tabPokeCount">0</span>/7)</button>
       <button class="seg-btn" onclick="switchMainView('deadlines', this)">⚡ 核心死線</button>
       <button class="seg-btn" onclick="switchMainView('tickets', this)">🎫 車票座位</button>
-      <button class="seg-btn" onclick="switchMainView('gemini', this)">🤖 Gemini大腦</button>
-      <button class="seg-btn" onclick="switchMainView('pokemon', this)">🎮 寶可夢(<span id="tabPokeCount">0</span>/7)</button>
       <button class="seg-btn" onclick="switchMainView('flashcards', this)">🗣️ 日文卡</button>
     </div>
 
-    <!-- 1. 每日行程 (Timeline) -->
-    <div id="viewTimeline">
-      <div class="day-chip-bar">
-        <button class="day-chip active" onclick="filterDay('all', this)">全部 6 天</button>
-        <button class="day-chip" onclick="filterDay('d1', this)">D1 抵達</button>
-        <button class="day-chip" onclick="filterDay('d2', this)">D2 市區紅葉</button>
-        <button class="day-chip" onclick="filterDay('d3', this)">D3 橫濱</button>
-        <button class="day-chip" onclick="filterDay('d4', this)">D4 鎌倉江之島</button>
-        <button class="day-chip" onclick="filterDay('d5', this)">D5 箱根環線</button>
-        <button class="day-chip" onclick="filterDay('d6', this)">D6 返台</button>
+    <!-- 1. Funliday 實時動態行程 (Direct App Linking) -->
+    <div id="viewFunliday">
+      <div class="funliday-card">
+        <div class="funliday-logo">✈️</div>
+        <div class="funliday-title">Funliday 最新動態行程</div>
+        <div class="funliday-desc">
+          行程已完全託管於 Funliday！您在手機 App 內做的任何景點調動、時間修改，點擊下方即可一秒直達最新排程，免除同步煩惱。
+        </div>
+        <div class="funliday-actions">
+          <a href="javascript:void(0)" onclick="openFunlidayApp()" class="btn-funliday-app">
+            🚀 開啟 Funliday App 查看行程
+          </a>
+          <a href="https://www.funliday.com/m_Njg1M2NmMzEzMzc1NDY4YzcxZDUwMWFl0/trips/6a3ba8367e546c054da4fab1/overview" target="_blank" class="btn-funliday-web">
+            🌐 瀏覽器開啟 Funliday 行程頁面
+          </a>
+        </div>
       </div>
-      <div id="timelineContainer"></div>
+
+      <!-- Quick Day Overview Summary Cards -->
+      <div class="content-card">
+        <div class="card-title-row">
+          <div class="card-title">📅 6天核心主題與關鍵動線</div>
+        </div>
+        <div style="font-size:0.8rem; color:var(--text-2); line-height:1.6; display:flex; flex-direction:column; gap:8px;">
+          <div style="background:rgba(255,255,255,0.03); padding:8px 10px; border-radius:8px;">
+            <strong style="color:#fff;">D1 (11/26 週四)</strong>：松山 ➔ 羽田 ➔ 大久保飯店 ➔ 新宿檸檬牛舌 (20:34)
+          </div>
+          <div style="background:rgba(255,255,255,0.03); padding:8px 10px; border-radius:8px;">
+            <strong style="color:#fff;">D2 (11/27 週五)</strong>：神宮外苑銀杏 ➔ 豪德寺 ➔ 吉祥寺白髭泡芙/童話村 ➔ 大田黑公園夜楓 ➔ 新宿哥吉拉/一番街
+          </div>
+          <div style="background:rgba(255,255,255,0.03); padding:8px 10px; border-radius:8px;">
+            <strong style="color:#fff;">D3 (11/28 週六)</strong>：橫濱港灣寶可夢尋寶 ➔ 合味道手作杯麵 (10:45) ➔ 冰川丸 ➔ 紅磚聖誕市集 (17:00) ➔ 纜車
+          </div>
+          <div style="background:rgba(255,255,255,0.03); padding:8px 10px; border-radius:8px;">
+            <strong style="color:#fff;">D4 (11/29 週日)</strong>：浪漫特快江之島33號 ➔ 岩屋/見晴亭 ➔ 江之電至長谷寺紅葉 ➔ 鎌倉小町通/八幡宮 ➔ 都廳夜景
+          </div>
+          <div style="background:rgba(255,255,255,0.03); padding:8px 10px; border-radius:8px;">
+            <strong style="color:#fff;">D5 (11/30 週一)</strong>：箱根41號特快 ➔ 元箱根港平和鳥居 ➔ 龍宮殿純泡湯 ➔ 海賊船 ➔ 大涌谷下山死線 (15:15) ➔ 湯本商店街
+          </div>
+          <div style="background:rgba(255,255,255,0.03); padding:8px 10px; border-radius:8px;">
+            <strong style="color:#fff;">D6 (12/01 週二)</strong>：大久保退房 ➔ 羽田機場 T3 免稅店採買 ➔ 松山機場返抵國門
+          </div>
+        </div>
+      </div>
     </div>
 
-    <!-- 2. 核心死線 (Deadlines) -->
+    <!-- 2. Gemini 3.8 Flash 具備完整上下文記憶之大腦 -->
+    <div id="viewGemini" style="display: none;">
+      <div class="gemini-container">
+        <div class="card-title-row">
+          <div class="card-title" style="color: #c084fc;">🤖 Gemini 3.8 Flash 多輪記憶導遊</div>
+        </div>
+
+        <div class="key-status-bar">
+          <span id="keyStatusText">🟡 未設定 API Key</span>
+          <button onclick="promptApiKey()" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #fff; font-size: 0.72rem; padding: 4px 10px; border-radius: 6px; cursor: pointer;">🔑 設定/更換 Key</button>
+        </div>
+
+        <div class="chat-controls-row">
+          <span>🧠 具備多輪連貫對話與完整 6 天行程記憶</span>
+          <button class="btn-clear-chat" onclick="clearChatHistory()">清空對話紀錄</button>
+        </div>
+
+        <!-- Quick Chips -->
+        <div class="chip-scroll">
+          <div class="chat-chip" onclick="askChip('拍菜單問推薦：請推薦適合2位大人與2位小孩吃的熱門招牌菜，避開辛辣，告訴我們如何點餐？')">📋 菜單推薦(避辣)</div>
+          <div class="chat-chip" onclick="askChip('小朋友走累了，這附近有什麼可以坐下來休息、喝熱飲或吃甜點的好地方？')">☕ 小朋友累了找休息</div>
+          <div class="chat-chip" onclick="askChip('我們現在在元箱根港，推薦哪間走路3分鐘內不用大排長龍的午餐？')">🍱 元箱根港午餐推薦</div>
+          <div class="chat-chip" onclick="askChip('我們在箱根，回程浪漫特快是幾點幾號車廂？請告訴我幾點必須開始往車站走？')">⏰ 箱根回程車次提醒</div>
+          <div class="chat-chip" onclick="askChip('我們現在迷路了，怎麼走回大久保的飯店 Apartment hotel Yumenoya？')">🗺️ 怎麼走回飯店</div>
+        </div>
+
+        <div class="chat-messages" id="chatMsgBox">
+          <div class="bubble ai">
+            您好！我是您的 <strong>Gemini 3.8 Flash</strong> 專屬隨身導遊。我已經完整記憶這 6 天所有班次、座位號、死線、人孔蓋與飯店資訊，並且<strong>支援多輪對話記憶延續</strong>！路上有任何狀況，隨時問我！
+          </div>
+        </div>
+
+        <div class="chat-input-row">
+          <input type="text" id="chatInputBox" placeholder="問問 Gemini：例如『延續剛才的話題...』" onkeypress="if(event.key==='Enter') sendAiQuery()">
+          <button onclick="sendAiQuery()">發送</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. 寶可夢人孔蓋＆郵筒打卡 (User Praised - Fully Preserved) -->
+    <div id="viewPokemon" style="display: none;">
+      <div class="content-card">
+        <div class="card-title-row">
+          <div class="card-title">🎮 橫濱寶可夢尋寶任務 (<span id="pokeMainCount">0</span>/7)</div>
+        </div>
+        <p style="font-size: 0.8rem; color: var(--text-2); margin-bottom: 12px;">
+          打卡勾選會自動記錄在您的手機，點擊右側按鈕可一鍵直接開啟 Google Maps 精確座標導航！
+        </p>
+        <div id="pokeContainer"></div>
+      </div>
+    </div>
+
+    <!-- 4. 核心死線告警 -->
     <div id="viewDeadlines" style="display: none;">
       <div class="content-card">
         <div class="card-title-row">
@@ -708,7 +802,7 @@
       </div>
     </div>
 
-    <!-- 3. 離線車票 (Tickets) -->
+    <!-- 5. 離線車票速查 -->
     <div id="viewTickets" style="display: none;">
       <div class="content-card">
         <div class="card-title-row">
@@ -744,20 +838,7 @@
       </div>
     </div>
 
-    <!-- 4. 寶可夢人孔蓋 (Pokemon) -->
-    <div id="viewPokemon" style="display: none;">
-      <div class="content-card">
-        <div class="card-title-row">
-          <div class="card-title">🎮 橫濱寶可夢尋寶任務 (<span id="pokeMainCount">0</span>/7)</div>
-        </div>
-        <p style="font-size: 0.8rem; color: var(--text-2); margin-bottom: 12px;">
-          打卡勾選會自動記錄在您的手機，點擊右側按鈕可一鍵直接開啟 Google Maps 精確座標導航！
-        </p>
-        <div id="pokeContainer"></div>
-      </div>
-    </div>
-
-    <!-- 5. 實戰日語卡 (Flashcards) -->
+    <!-- 6. 實戰日語手指卡 -->
     <div id="viewFlashcards" style="display: none;">
       <div class="content-card">
         <div class="card-title-row">
@@ -770,51 +851,21 @@
       </div>
     </div>
 
-    <!-- 6. Gemini 3.8 Flash (AI Brain) -->
-    <div id="viewGemini" style="display: none;">
-      <div class="gemini-container">
-        <div class="card-title-row">
-          <div class="card-title" style="color: #c084fc;">🤖 Gemini 3.8 Flash 隨身導遊</div>
-        </div>
-
-        <div class="key-status-bar">
-          <span id="keyStatusText">🟡 未設定 API Key</span>
-          <button onclick="promptApiKey()" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #fff; font-size: 0.72rem; padding: 4px 10px; border-radius: 6px; cursor: pointer;">🔑 設定/更改 Key</button>
-        </div>
-
-        <p style="font-size: 0.78rem; color: var(--text-2); margin-bottom: 10px;">
-          密鑰僅儲存於您各自手機的本地瀏覽器中，<strong>絕不上傳 GitHub 或任何伺服器</strong>，全家皆可安心使用。
-        </p>
-
-        <!-- Quick Chips -->
-        <div class="chip-scroll">
-          <div class="chat-chip" onclick="askChip('拍菜單問推薦：請推薦適合2位大人與2位小孩吃的熱門招牌菜，避開辛辣，告訴我們如何點餐？')">📋 菜單推薦(避辣)</div>
-          <div class="chat-chip" onclick="askChip('小朋友走累了，這附近有什麼可以坐下來休息、喝熱飲或吃甜點的好地方？')">☕ 小朋友累了找休息</div>
-          <div class="chat-chip" onclick="askChip('我們現在在元箱根港，推薦哪間走路3分鐘內不用大排長龍的午餐？')">🍱 元箱根港午餐推薦</div>
-          <div class="chat-chip" onclick="askChip('我們在箱根，回程浪漫特快是幾點幾號車廂？請告訴我幾點必須開始往車站走？')">⏰ 箱根回程車次提醒</div>
-          <div class="chat-chip" onclick="askChip('我們現在迷路了，怎麼走回大久保的飯店 Apartment hotel Yumenoya？')">🗺️ 怎麼走回飯店</div>
-        </div>
-
-        <div class="chat-messages" id="chatMsgBox">
-          <div class="bubble ai">
-            您好！我是您的 <strong>Gemini 3.8 Flash</strong> 專屬隨身導遊。我已經熟記這 6 天所有班次、座位號、死線與大久保飯店資訊。路上有任何突發狀況，隨時問我！
-          </div>
-        </div>
-
-        <div class="chat-input-row">
-          <input type="text" id="chatInputBox" placeholder="問問 Gemini：例如『回大久保飯店要搭哪條線？』" onkeypress="if(event.key==='Enter') sendAiQuery()">
-          <button onclick="sendAiQuery()">發送</button>
-        </div>
-      </div>
-    </div>
-
   </div>
 
   <!-- Bottom Floating Navigation -->
   <nav class="bottom-bar">
-    <button class="bottom-tab active" onclick="switchNavTab('timeline')">
-      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-      行程
+    <button class="bottom-tab active" onclick="switchNavTab('funliday')">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+      Funliday
+    </button>
+    <button class="bottom-tab" onclick="switchNavTab('gemini')">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+      AI大腦
+    </button>
+    <button class="bottom-tab" onclick="switchNavTab('pokemon')">
+      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      寶可夢
     </button>
     <button class="bottom-tab" onclick="switchNavTab('deadlines')">
       <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
@@ -823,14 +874,6 @@
     <button class="bottom-tab" onclick="switchNavTab('tickets')">
       <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"/></svg>
       車票
-    </button>
-    <button class="bottom-tab" onclick="switchNavTab('gemini')">
-      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-      AI導遊
-    </button>
-    <button class="bottom-tab" onclick="switchNavTab('pokemon')">
-      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-      寶可夢
     </button>
     <button class="bottom-tab" onclick="switchNavTab('flashcards')">
       <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
@@ -850,102 +893,6 @@
 
   <script>
     // --- Data Store ---
-    const ITINERARY_DATA = {
-      d1: {
-        title: "Day 1 (11/26 週四)｜台北松山 ➔ 東京羽田 ➔ 新宿飯店",
-        spots: [
-          { time: "11:30", dur: "2hr", name: "松山機場第一航廈", note: "辦理登機與行李托運，準備出發。" },
-          { time: "17:45", dur: "1hr", name: "東京國際機場 (羽田機場 T3)", note: "入境通關、提領行李，前往單軌電車/京急線或搭乘接駁車。" },
-          { time: "19:19", dur: "1hr", name: "Apartment hotel Yumenoya Shinjuku", note: "大久保平成大樓辦理入住、放置行李，步行前往歌舞伎町商圈。" },
-          { time: "20:34", dur: "1hr", name: "新宿焼肉 牛たんの檸檬 総本店", note: "招牌檸檬極厚牛舌套餐，已預約直接報到入座。" }
-        ]
-      },
-      d2: {
-        title: "Day 2 (11/27 週五)｜明治神宮外苑銀杏 ➔ 吉祥寺 ➔ 荻窪夜楓 ➔ 新宿夜景",
-        spots: [
-          { time: "08:00", dur: "0m", name: "飯店出發", note: "步行前往東新宿或大久保搭車。" },
-          { time: "08:33", dur: "10m", name: "明治神宮外苑銀杏並木", note: "300米黃金銀杏大道見頃巔峰！晨間人流少、拍照最純淨。" },
-          { time: "09:30", dur: "30m", name: "豪德寺", note: "招福貓神社，滿坑滿谷招財貓像與頭頂楓紅交織。" },
-          { time: "11:00", dur: "10m", name: "白髭のシュークリーム工房 吉祥寺店", note: "宮崎駿正版授權龍貓泡芙外帶。" },
-          { time: "11:30", dur: "1hr", name: "Surya Sajilo (吉祥寺)", note: "尼泊爾起司烤餅與咖哩名店，開門第一批入座免排長隊。" },
-          { time: "14:00", dur: "2hr", name: "吉祥寺プティット村", note: "童話貓咪村莊風格造景，極適合家庭拍照散步。" },
-          { time: "16:06", dur: "15m", name: "黑毛和牛炸肉餅 Satou", note: "吉祥寺北口商店街排隊名物，現炸和牛丸。" },
-          { time: "17:00", dur: "30m", name: "大田黑公園 (荻窪)", note: "17:00 準時紅葉夜間點燈！錦鯉水池中火紅楓葉倒影極其震撼。" },
-          { time: "17:56", dur: "1hr", name: "X Space 新宿 (3D巨大三花貓看板)", note: "新宿東口車站廣場仰望 3D 萌貓。" },
-          { time: "19:03", dur: "1hr", name: "センタービーフ (Center Beef) 新宿3丁目店", note: "牛排飯與咖哩，出餐快速、小孩友善。" },
-          { time: "20:11", dur: "1hr", name: "歌舞伎町一番街牌樓 ＆ 哥吉拉巨頭", note: "站在靖國通街口拍發光紅色牌樓，往內走拍 Hotel Gracery 巨大哥吉拉巨頭。" },
-          { time: "21:23", dur: "1hr", name: "返回飯店休息", note: "大久保超市補給點心、好好泡澡休息。" }
-        ]
-      },
-      d3: {
-        title: "Day 3 (11/28 週六)｜橫濱港灣皮卡丘巡禮 ➔ 合味道 ➔ 紅磚聖誕市集",
-        spots: [
-          { time: "08:00", dur: "0m", name: "飯店出發", note: "搭乘 JR 前往橫濱櫻木町站。" },
-          { time: "09:01", dur: "10m", name: "櫻木町站 (寶可夢任務①)", note: "東口廣場地面尋找『公母雙皮卡丘人孔蓋』！" },
-          { time: "09:14", dur: "5m", name: "橫濱櫻木郵便局 (寶可夢任務②)", note: "門口拍攝立體『波加曼郵筒』。" },
-          { time: "09:23", dur: "5m", name: "橫濱市役所 中庭 (寶可夢任務③)", note: "過櫻川橋至市役所戶外步道，拍立體『皮卡丘郵筒』與『伊布郵筒』。" },
-          { time: "09:36", dur: "10m", name: "日本丸紀念公園 (寶可夢任務④)", note: "斜坡高台處拍『皮卡丘＋可達鴨＋腕力人孔蓋』，背景有白色帆船。" },
-          { time: "10:02", dur: "10m", name: "臨港公園 (寶可夢任務⑤)", note: "靠近普卡里碼頭海邊步道拍『海景皮卡丘人孔蓋』。" },
-          { time: "10:30", dur: "3hr", name: "合味道紀念館 橫濱", note: "11:00 4樓吃麵第一波 ➔ 11:30/12:00 3樓手作杯麵 ➔ 2樓參觀展覽。" },
-          { time: "14:00", dur: "10m", name: "橫濱海洋塔 (寶可夢任務⑥)", note: "大噴鸝鳥喙裡的皮卡丘人孔蓋，背景可拍銀色海洋塔。" },
-          { time: "14:30", dur: "2hr", name: "冰川丸號 郵輪博物館", note: "登上歷史巨輪參觀奢華客艙與引擎室，最後入場 16:30。" },
-          { time: "17:00", dur: "2hr", name: "橫濱紅磚倉庫 2號館 (寶可夢任務⑦ ＆ 聖誕市集)", note: "公園旁拍皮卡丘＆阿羅拉雷丘人孔蓋；進入 10 米聖誕樹市集喝熱可可！" },
-          { time: "19:09", dur: "5m", name: "YOKOHAMA AIR CABIN 運河公園站", note: "搭乘空中纜車飛越港灣夜景直達櫻木町站。" },
-          { time: "19:24", dur: "1hr", name: "MOS Premium 櫻木町 Cross Gate 店", note: "櫻木町站前精品摩斯漢堡，舒適坐下來享用晚餐。" },
-          { time: "20:30", dur: "1hr", name: "返回新宿飯店", note: "搭乘電車直達新宿大久保。" }
-        ]
-      },
-      d4: {
-        title: "Day 4 (11/29 週日)｜江之島浪漫特快 ➔ 鎌倉古剎紅葉 ➔ 都廳夜景",
-        spots: [
-          { time: "07:45", dur: "0m", name: "飯店出發", note: "步行前往新宿站西口小田急月台。" },
-          { time: "07:58", dur: "0m", name: "小田急浪漫特快特急券售票處", note: "進站走人工改札口，出示特快券畫面。" },
-          { time: "08:20", dur: "1h8m", name: "搭乘 江之島33號 (08:20發車)", note: "7號車廂 2A/2B/3A/3B，車上吃早餐吹暖氣直達海邊。" },
-          { time: "09:50", dur: "30m", name: "江之島弁財天仲見世通", note: "穿過青銅鳥居，熱鬧江之島老街。" },
-          { time: "10:22", dur: "10m", name: "あさひ本店 頂上店", note: "整隻新鮮章魚現壓巨型香脆仙貝。" },
-          { time: "10:39", dur: "10m", name: "山二つ (Yama-Futatsu)", note: "V字型海蝕斷崖地質奇觀。" },
-          { time: "10:58", dur: "30m", name: "江之島岩屋", note: "拿燭台探索神秘海蝕洞窟。" },
-          { time: "11:30", dur: "1hr", name: "見晴亭 (午餐)", note: "絕美海景餐廳，品嚐江之島名物吻仔魚丼飯。" },
-          { time: "12:34", dur: "30m", name: "弁天丸渡輪 (回程乘船處)", note: "搭船直回大橋端；若風浪大停航則走西側山腰小徑折返。" },
-          { time: "13:23", dur: "10m", name: "江之電 江之島站 (⚠️非單軌！)", note: "走入綠色江之電車站搭車直達長谷站！" },
-          { time: "14:02", dur: "30m", name: "長谷寺 (紅葉見頃！)", note: "鎌倉紅葉巔峰首選，放生池紅楓倒影極美。" },
-          { time: "14:41", dur: "30m", name: "高德院 (鎌倉大佛)", note: "壯麗露天青銅釋迦牟尼佛像。" },
-          { time: "15:30", dur: "45m", name: "鎌倉小町通", note: "鎌倉必逛老街，吃點心、買伴手禮。" },
-          { time: "16:23", dur: "10m", name: "鎌倉紅谷 八幡宮前本店", note: "知名核桃糕名店。" },
-          { time: "16:36", dur: "45m", name: "鶴岡八幡宮", note: "朱紅本宮、舞殿與柳原神池夜間參拜。" },
-          { time: "19:00", dur: "30m", name: "東京都廳舍 (南展望室/光雕秀)", note: "45樓免費俯瞰百萬東京夜景，外牆有金氏世界紀錄光雕投影。" },
-          { time: "19:50", dur: "1hr", name: "返回大久保飯店", note: "回飯店整理戰利品、準備明日箱根大冒險。" }
-        ]
-      },
-      d5: {
-        title: "Day 5 (11/30 週一)｜箱根大環線 ➔ 龍宮殿純泡湯 ➔ 大涌谷下山死線",
-        spots: [
-          { time: "07:00", dur: "0m", name: "飯店出發 (大久保)", note: "步行至新宿站西口小田急月台，順便買早餐。" },
-          { time: "07:37", dur: "1h45m", name: "搭乘 箱根41號浪漫特快", note: "4號車廂 8C/8D/9C/9D，直達箱根湯本。" },
-          { time: "09:22", dur: "10m", name: "抵達箱根湯本站", note: "出站直奔 2 號站牌搭乘登山巴士 H 線 (車程約35分)。" },
-          { time: "10:15", dur: "30m", name: "元箱根港 ➔ 箱根神社 (平和鳥居)", note: "湖中紅色鳥居拍照，拍完原路走回元箱根港。" },
-          { time: "10:55", dur: "1h5m", name: "龍宮殿本館 (純泡湯 ♨️)", note: "搭計程車抵達。請櫃檯預約 12:00 返回計程車！享受富士山湖景露天溫泉。" },
-          { time: "12:10", dur: "1hr", name: "元箱根港自由午餐 (精選美食 🍱)", note: "大正海鮮丼、拉麵或蘆之湖畔披薩，吃飽悠閒走向碼頭。" },
-          { time: "13:25", dur: "25m", name: "搭乘蘆之湖海賊船", note: "橫跨湖面抵達桃源台港，拍照看富士山。" },
-          { time: "13:50", dur: "25m", name: "桃源台站直上箱根空中纜車", note: "纜車一路攀升穿過硫磺火山口上方。" },
-          { time: "14:15", dur: "1hr", name: "大涌谷 (黑雞蛋 ＆ 地熱火山)", note: "品嚐延壽黑雞蛋、欣賞壯麗冒煙地熱噴口。" },
-          { time: "15:15", dur: "0m", name: "⚠️ 15:15 準時出發下山（核心死線！）", note: "空中纜車 ➔ 早雲山 (斜坡纜車) ➔ 強羅 (登山電車) ➔ 箱根湯本。" },
-          { time: "16:40", dur: "50m", name: "箱根湯本站前商店街", note: "採買現炸魚板、箱根溫泉饅頭與名產伴手禮。" },
-          { time: "17:40", dur: "0m", name: "月台候車進站", note: "小田急浪漫特快專屬月台。" },
-          { time: "17:46", dur: "1h40m", name: "搭乘 箱根18號浪漫特快", note: "4號車廂 8C/8D/9C/9D，舒適直達返回新宿。" },
-          { time: "19:26", dur: "0m", name: "抵達新宿站", note: "行程圓滿大成功！" }
-        ]
-      },
-      d6: {
-        title: "Day 6 (12/01 週二)｜新宿退房 ➔ 東京羽田 ➔ 台北松山",
-        spots: [
-          { time: "09:00", dur: "0m", name: "Apartment hotel Yumenoya 退房", note: "清點護照、手機充電器與行李戰利品。" },
-          { time: "10:02", dur: "2hr", name: "東京國際機場 (羽田機場第三航廈)", note: "行李托運、通關檢查、免稅店補買最後伴手禮 (東京芭娜娜、白色戀人)。" },
-          { time: "14:32", dur: "1hr", name: "返抵 台北松山機場第一航廈", note: "平安返抵國門，回到溫暖的家！" }
-        ]
-      }
-    };
-
     const POKEMON_DATA = [
       { id: "pk1", name: "櫻木町站前 (雙皮卡丘人孔蓋)", loc: "JR櫻木町站東口廣場地面", q: "Sakuragicho Station Yokohama" },
       { id: "pk2", name: "橫濱櫻木郵便局 (波加曼立體郵筒)", loc: "Yokohama Sakuragi Post Office 門口", q: "Yokohama Sakuragi Post Office" },
@@ -968,9 +915,22 @@
     ];
 
     // --- State Management ---
-    let activeDay = "all";
-    let checkedPokes = JSON.parse(localStorage.getItem("tokyo_poke_checks_v110") || "{}");
-    let geminiApiKey = localStorage.getItem("tokyo_gemini_key_v110") || "";
+    let checkedPokes = JSON.parse(localStorage.getItem("tokyo_poke_checks_v120") || "{}");
+    let geminiApiKey = localStorage.getItem("tokyo_gemini_key_v120") || "";
+    let chatHistory = JSON.parse(localStorage.getItem("tokyo_gemini_history_v120") || "[]");
+
+    // --- Funliday App Launcher ---
+    function openFunlidayApp() {
+      const tripUrl = "https://www.funliday.com/m_Njg1M2NmMzEzMzc1NDY4YzcxZDUwMWFl0/trips/6a3ba8367e546c054da4fab1/overview";
+      const deepLink = "funliday://trips/6a3ba8367e546c054da4fab1";
+      const startTime = Date.now();
+      window.location.href = deepLink;
+      setTimeout(() => {
+        if (Date.now() - startTime < 1600) {
+          window.location.href = tripUrl;
+        }
+      }, 900);
+    }
 
     // --- Google Translate App Launcher ---
     function openGoogleTranslateApp() {
@@ -995,7 +955,7 @@
     }
 
     // --- View Navigation ---
-    const VIEWS = ["timeline", "deadlines", "tickets", "gemini", "pokemon", "flashcards"];
+    const VIEWS = ["funliday", "gemini", "pokemon", "deadlines", "tickets", "flashcards"];
     function switchMainView(viewId, btn) {
       VIEWS.forEach(v => {
         const el = document.getElementById("view" + v.charAt(0).toUpperCase() + v.slice(1));
@@ -1024,50 +984,6 @@
         b.classList.toggle("active", b.getAttribute("onclick").includes(viewId));
       });
       window.scrollTo({ top: 120, behavior: "smooth" });
-    }
-
-    // --- Timeline Rendering ---
-    function renderTimeline() {
-      const container = document.getElementById("timelineContainer");
-      container.innerHTML = "";
-
-      let days = activeDay === "all" ? ["d1", "d2", "d3", "d4", "d5", "d6"] : [activeDay];
-
-      days.forEach(dKey => {
-        const dData = ITINERARY_DATA[dKey];
-        if (!dData) return;
-
-        if (activeDay === "all") {
-          const header = document.createElement("div");
-          header.style.cssText = "font-weight: 800; font-size: 0.95rem; color: var(--primary); margin: 20px 0 10px; display: flex; align-items: center; gap: 6px;";
-          header.innerHTML = `📅 ${dData.title}`;
-          container.appendChild(header);
-        }
-
-        dData.spots.forEach(s => {
-          const box = document.createElement("div");
-          box.className = "spot-box";
-          box.innerHTML = `
-            <div class="spot-top">
-              <span class="spot-time-pill">⏰ ${s.time}</span>
-              <span class="spot-stay">停留 ${s.dur}</span>
-            </div>
-            <div class="spot-name-text">${s.name}</div>
-            <div class="spot-note-box">${s.note}</div>
-            <a class="btn-maps" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(s.name + ' Tokyo')}" target="_blank">
-              📍 Google Maps 導航
-            </a>
-          `;
-          container.appendChild(box);
-        });
-      });
-    }
-
-    function filterDay(d, btn) {
-      activeDay = d;
-      document.querySelectorAll(".day-chip").forEach(b => b.classList.remove("active"));
-      btn.classList.add("active");
-      renderTimeline();
     }
 
     // --- Pokemon Rendering ---
@@ -1102,7 +1018,7 @@
 
     function togglePoke(id) {
       checkedPokes[id] = !checkedPokes[id];
-      localStorage.setItem("tokyo_poke_checks_v110", JSON.stringify(checkedPokes));
+      localStorage.setItem("tokyo_poke_checks_v120", JSON.stringify(checkedPokes));
       renderPokemon();
     }
 
@@ -1133,11 +1049,43 @@
       document.getElementById("flashModal").classList.remove("open");
     }
 
-    // --- Gemini API Key (Strictly local storage) ---
+    // --- Gemini Multi-turn Chat Management ---
+    const SYSTEM_KNOWLEDGE = `你是這趟日本東京新宿・橫濱・箱根 6 日遊 (2026/11/26 - 12/01) 的專屬隨身全能導遊。
+你擁有這趟行程的完整記憶與所有關鍵細節，並支援多輪上下文連貫討論：
+
+【核心基本資料】
+- 成員：2 位大人 ＋ 2 位小孩（全家 4 人）。
+- 住宿飯店：Apartment hotel Yumenoya Shinjuku（新宿夢之屋公寓酒店，位於東京都新宿區大久保 1-9-24 平成大樓，近東新宿站步行 3-4 分鐘，周邊為新大久保韓國街）。
+
+【浪漫特快車次與座位】
+- Day 4 (11/29 週日)：江之島 33 號 (08:20 新宿出發 ➔ 09:28 片瀨江之島抵達)，座位：07 號車廂 2A, 2B, 3A, 3B。
+- Day 5 (11/30 週一) 去程：箱根 41 號 EXE10 (07:37 新宿出發 ➔ 09:22 箱根湯本抵達)，座位：04 號車廂 8C, 8D, 9C, 9D。
+- Day 5 (11/30 週一) 回程：箱根 18 號 MSE6 (17:46 箱根湯本出發 ➔ 19:26 新宿抵達)，座位：04 號車廂 8C, 8D, 9C, 9D。
+
+【不可違背的核心死線與交通避坑】
+1. Day 5 箱根大環線：15:15 大涌谷準時下山（不可延誤之核心死線！），按空中纜車 ➔ 早雲山 ➔ 強羅 ➔ 登山電車返回箱根湯本，確保 17:40 抵達月台搭乘 17:46 回程特快。
+2. Day 5 龍宮殿純泡湯：10:55 抵達櫃檯時，立即請櫃檯預約 12:00 返回元箱根港之計程車。
+3. Day 4 鎌倉交通：13:23 從江之島往長谷寺，務必搭乘【江之島電鐵（綠色江之電）】，絕對不能走進湘南單軌電車（往大船會繞大遠路）。
+4. Day 4 鎌倉紅谷：核桃糕 (くるみっ子) 週日極易售罄，下午 15:30 逛小町通看到有貨即買。
+5. Day 3 橫濱合味道：10:45 準時報到、11:00 4樓吃麵、11:30/12:00 3樓手作杯麵。
+6. Day 3 橫濱紅磚聖誕市集：16:00 點燈、17:00 抵達，持優先入場票走專用通道；16:30 為冰川丸最後登船限制。
+7. Day 1 新宿牛舌檸檬：20:34 已透過 TableCheck 線上預約。
+
+【橫濱 7 大寶可夢點位】
+1. 櫻木町站東口廣場（雙皮卡丘人孔蓋）
+2. 櫻木郵便局（波加曼立體郵筒）
+3. 橫濱市役所戶外中庭（皮卡丘與伊布郵筒）
+4. 日本丸紀念公園高台（皮卡丘+可達鴨+腕力）
+5. 臨港公園普卡里碼頭旁（海景皮卡丘）
+6. 橫濱海洋塔後側廣場（大噴鸝皮卡丘）
+7. 紅磚倉庫 2 號館旁紅磚公園（皮卡丘+阿羅拉雷丘）
+
+請根據使用者的即時問題與前幾輪對話上下文，用繁體中文給出極為具體、簡短、對親子友善、可直接落地的專業回答。`;
+
     function updateKeyStatusUI() {
       const el = document.getElementById("keyStatusText");
       if (geminiApiKey) {
-        el.innerHTML = '<span style="color:#10b981; font-weight:800;">🟢 已連線 Gemini 3.8 Flash (本機存儲)</span>';
+        el.innerHTML = '<span style="color:#10b981; font-weight:800;">🟢 已連線 Gemini 3.8 Flash (多輪記憶就緒)</span>';
       } else {
         el.innerHTML = '<span style="color:#f59e0b; font-weight:800;">🟡 未設定 API Key（點右側輸入）</span>';
       }
@@ -1145,12 +1093,39 @@
 
     function promptApiKey() {
       const current = geminiApiKey || "";
-      const input = prompt("請輸入您的 Google Gemini API Key\n(此 Key 僅加密儲存在您手機的本地瀏覽器中，絕不會上傳 GitHub 或任何伺服器)：", current);
+      const input = prompt("請輸入您的 Google Gemini API Key\n(此 Key 僅加密儲存在您手機的本地瀏覽器中，絕不上傳 GitHub 或任何伺服器)：", current);
       if (input !== null) {
         geminiApiKey = input.trim();
-        localStorage.setItem("tokyo_gemini_key_v110", geminiApiKey);
+        localStorage.setItem("tokyo_gemini_key_v120", geminiApiKey);
         updateKeyStatusUI();
         alert(geminiApiKey ? "✅ API Key 已安全存於本機！" : "已清除本機 API Key。");
+      }
+    }
+
+    function renderChatHistory() {
+      const box = document.getElementById("chatMsgBox");
+      box.innerHTML = "";
+
+      // Default welcome
+      const welcome = document.createElement("div");
+      welcome.className = "bubble ai";
+      welcome.innerHTML = "您好！我是您的 <strong>Gemini 3.8 Flash</strong> 專屬隨身導遊。我已經完整記憶這 6 天所有班次、座位號、死線、人孔蓋與飯店資訊，並且<strong>支援多輪對話記憶延續</strong>！路上有任何狀況，隨時問我！";
+      box.appendChild(welcome);
+
+      chatHistory.forEach(item => {
+        const b = document.createElement("div");
+        b.className = "bubble " + (item.role === "user" ? "user" : "ai");
+        b.innerText = item.parts[0].text;
+        box.appendChild(b);
+      });
+      box.scrollTop = box.scrollHeight;
+    }
+
+    function clearChatHistory() {
+      if (confirm("確定要清空先前的對話記憶紀錄嗎？")) {
+        chatHistory = [];
+        localStorage.removeItem("tokyo_gemini_history_v120");
+        renderChatHistory();
       }
     }
 
@@ -1166,71 +1141,70 @@
 
       const box = document.getElementById("chatMsgBox");
 
-      // User Bubble
-      const uBubble = document.createElement("div");
-      uBubble.className = "bubble user";
-      uBubble.innerText = text;
-      box.appendChild(uBubble);
+      // Append user msg to UI & History
+      const userBubble = document.createElement("div");
+      userBubble.className = "bubble user";
+      userBubble.innerText = text;
+      box.appendChild(userBubble);
       input.value = "";
       box.scrollTop = box.scrollHeight;
+
+      chatHistory.push({ role: "user", parts: [{ text: text }] });
 
       if (!geminiApiKey) {
         const errBubble = document.createElement("div");
         errBubble.className = "bubble ai";
-        errBubble.innerHTML = "⚠️ 尚未設定 Google Gemini API Key。請點擊上方『🔑 設定/更改 Key』貼入您的 API Key 即可啟動導遊大腦！<br><small style='color:#94a3b8;'>密鑰僅保存在本機手機瀏覽器，絕不上傳雲端。</small>";
+        errBubble.innerHTML = "⚠️ 尚未設定 Google Gemini API Key。請點擊上方『🔑 設定/更換 Key』貼入您的 API Key 即可啟動導遊大腦！<br><small style='color:#94a3b8;'>密鑰僅保存在本機手機瀏覽器，絕不上傳雲端。</small>";
         box.appendChild(errBubble);
         box.scrollTop = box.scrollHeight;
         return;
       }
 
-      // Thinking Bubble
-      const aiBubble = document.createElement("div");
-      aiBubble.className = "bubble ai";
-      aiBubble.innerText = "Gemini 3.8 Flash 思考中...";
-      box.appendChild(aiBubble);
+      // Add loading bubble
+      const loadBubble = document.createElement("div");
+      loadBubble.className = "bubble ai";
+      loadBubble.innerText = "Gemini 3.8 Flash 連貫思考中...";
+      box.appendChild(loadBubble);
       box.scrollTop = box.scrollHeight;
 
       try {
-        const sys = `你是這趟日本東京新宿・橫濱・箱根 6 日遊 (2026/11/26-12/01) 的專屬隨身導遊。
-同行夥伴：2 位大人與 2 位小孩。
-住宿飯店：Apartment hotel Yumenoya Shinjuku (東京都新宿區大久保1丁目9-24 平成大樓)。
-浪漫特快車次與座位：
-- Day 4: 江之島33號 (08:20 新宿發) 07號車廂 2A, 2B, 3A, 3B
-- Day 5 去程: 箱根41號 EXE10 (07:37 新宿發) 04號車廂 8C, 8D, 9C, 9D
-- Day 5 回程: 箱根18號 MSE6 (17:46 箱根湯本發) 04號車廂 8C, 8D, 9C, 9D
-重要死線：
-- Day 5: 15:15 大涌谷準時下山（核心死線，銜接 17:46 回程浪漫特快）。
-- Day 4: 江之島至長谷寺必須搭乘【江之電】（絕非單軌電車）。
-- Day 3: 合味道紀念館 10:45 報到、16:30 冰川丸最後登船、紅磚倉庫聖誕市集 17:00 點燈。
-請根據使用者的即時問題，用繁體中文給出極為精簡、具體、親子友善、可落地的回答。`;
+        // Build payload with system_instruction and multi-turn contents
+        // Keep last 16 turns to avoid exceeding context window while preserving rich dialogue
+        const payloadContents = chatHistory.slice(-16);
 
         const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${geminiApiKey}`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            contents: [
-              { role: "user", parts: [{ text: sys + "\n\n使用者即時提問：" + text }] }
-            ]
+            system_instruction: {
+              parts: [{ text: SYSTEM_KNOWLEDGE }]
+            },
+            contents: payloadContents
           })
         });
 
         const data = await resp.json();
-        if (data.candidates && data.candidates[0].content.parts[0].text) {
-          aiBubble.innerText = data.candidates[0].content.parts[0].text;
+        if (data.candidates && data.candidates[0].content && data.candidates[0].content.parts[0].text) {
+          const aiText = data.candidates[0].content.parts[0].text;
+          loadBubble.innerText = aiText;
+          chatHistory.push({ role: "model", parts: [{ text: aiText }] });
+          localStorage.setItem("tokyo_gemini_history_v120", JSON.stringify(chatHistory));
         } else {
-          aiBubble.innerText = "回傳異常，請檢查 API Key 或額度：" + JSON.stringify(data);
+          loadBubble.innerText = "回傳異常，請檢查 API Key 或額度：" + JSON.stringify(data);
+          chatHistory.pop(); // Remove failed user message from history
         }
       } catch (err) {
-        aiBubble.innerText = "連線失敗：" + err.message;
+        loadBubble.innerText = "連線失敗：" + err.message;
+        chatHistory.pop();
       }
       box.scrollTop = box.scrollHeight;
     }
 
     // --- Init ---
-    renderTimeline();
     renderPokemon();
     renderFlashcards();
     updateKeyStatusUI();
+    renderChatHistory();
   </script>
 </body>
 </html>
