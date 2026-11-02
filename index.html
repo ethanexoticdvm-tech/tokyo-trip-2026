@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>新宿・橫濱・箱根 6日遊隨身戰情室 v1.2.0</title>
+  <title>新宿・橫濱・箱根 6日遊隨身戰情室 v1.2.1</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="theme-color" content="#090d16">
@@ -618,10 +618,10 @@
   <header>
     <div class="header-inner">
       <div class="logo-badge">
-        🍁 新宿6日戰情室 <span class="badge-tag">v1.2.0</span>
+        🍁 新宿6日戰情室 <span class="badge-tag">v1.2.1</span>
       </div>
       <div class="header-actions">
-        <a href="javascript:void(0)" onclick="openGoogleTranslateApp()" class="top-pill top-pill-primary" id="btnTranslate">
+        <a href="https://translate.google.com/?sl=auto&tl=zh-TW" target="_blank" rel="noopener noreferrer" class="top-pill top-pill-primary" id="btnTranslate">
           🌐 翻譯App
         </a>
         <a href="https://www.google.com/maps/search/?api=1&query=Apartment+hotel+Yumenoya+Shinjuku" class="top-pill" target="_blank">
@@ -662,11 +662,11 @@
           行程已完全託管於 Funliday！您在手機 App 內做的任何景點調動、時間修改，點擊下方即可一秒直達最新排程，免除同步煩惱。
         </div>
         <div class="funliday-actions">
-          <a href="javascript:void(0)" onclick="openFunlidayApp()" class="btn-funliday-app">
-            🚀 開啟 Funliday App 查看行程
+          <a href="funliday://trips/6a3ba8367e546c054da4fab1" target="_blank" rel="noopener noreferrer" class="btn-funliday-app">
+            🚀 喚起 Funliday App (若已安裝)
           </a>
-          <a href="https://www.funliday.com/m_Njg1M2NmMzEzMzc1NDY4YzcxZDUwMWFl0/trips/6a3ba8367e546c054da4fab1/overview" target="_blank" class="btn-funliday-web">
-            🌐 瀏覽器開啟 Funliday 行程頁面
+          <a href="https://www.funliday.com/m_Njg1M2NmMzEzMzc1NDY4YzcxZDUwMWFl0/trips/6a3ba8367e546c054da4fab1/overview" target="_blank" rel="noopener noreferrer" class="btn-funliday-web">
+            🌐 瀏覽器開啟完整行程 (Safari / Chrome 零閃退)
           </a>
         </div>
       </div>
@@ -915,43 +915,19 @@
     ];
 
     // --- State Management ---
-    let checkedPokes = JSON.parse(localStorage.getItem("tokyo_poke_checks_v120") || "{}");
-    let geminiApiKey = localStorage.getItem("tokyo_gemini_key_v120") || "";
-    let chatHistory = JSON.parse(localStorage.getItem("tokyo_gemini_history_v120") || "[]");
+    let checkedPokes = JSON.parse(localStorage.getItem("tokyo_poke_checks_v121") || localStorage.getItem("tokyo_poke_checks_v120") || "{}");
+    let geminiApiKey = localStorage.getItem("tokyo_gemini_key_v121") || localStorage.getItem("tokyo_gemini_key_v120") || "";
+    let chatHistory = JSON.parse(localStorage.getItem("tokyo_gemini_history_v121") || localStorage.getItem("tokyo_gemini_history_v120") || "[]");
 
-    // --- Funliday App Launcher ---
-    function openFunlidayApp() {
-      const tripUrl = "https://www.funliday.com/m_Njg1M2NmMzEzMzc1NDY4YzcxZDUwMWFl0/trips/6a3ba8367e546c054da4fab1/overview";
-      const deepLink = "funliday://trips/6a3ba8367e546c054da4fab1";
-      const startTime = Date.now();
-      window.location.href = deepLink;
-      setTimeout(() => {
-        if (Date.now() - startTime < 1600) {
-          window.location.href = tripUrl;
-        }
-      }, 900);
-    }
-
-    // --- Google Translate App Launcher ---
-    function openGoogleTranslateApp() {
-      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-      const isAndroid = /Android/.test(navigator.userAgent);
-      const webUrl = "https://translate.google.com/?sl=auto&tl=zh-TW";
-
-      if (isAndroid) {
-        const intentUrl = "intent://translate.google.com/?sl=auto&tl=zh-TW#Intent;scheme=https;package=com.google.android.apps.translate;S.browser_fallback_url=" + encodeURIComponent(webUrl) + ";end;";
-        window.location.href = intentUrl;
-      } else if (isIOS) {
-        const startTime = Date.now();
-        window.location.href = "googletranslate://";
-        setTimeout(() => {
-          if (Date.now() - startTime < 1600) {
-            window.location.href = webUrl;
-          }
-        }, 900);
-      } else {
-        window.open(webUrl, "_blank");
-      }
+    // --- Safe External Open (Zero Standalone Crash) ---
+    function safeOpenExternal(url) {
+      const a = document.createElement("a");
+      a.href = url;
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
     }
 
     // --- View Navigation ---
@@ -1018,7 +994,7 @@
 
     function togglePoke(id) {
       checkedPokes[id] = !checkedPokes[id];
-      localStorage.setItem("tokyo_poke_checks_v120", JSON.stringify(checkedPokes));
+      localStorage.setItem("tokyo_poke_checks_v121", JSON.stringify(checkedPokes));
       renderPokemon();
     }
 
@@ -1096,7 +1072,7 @@
       const input = prompt("請輸入您的 Google Gemini API Key\n(此 Key 僅加密儲存在您手機的本地瀏覽器中，絕不上傳 GitHub 或任何伺服器)：", current);
       if (input !== null) {
         geminiApiKey = input.trim();
-        localStorage.setItem("tokyo_gemini_key_v120", geminiApiKey);
+        localStorage.setItem("tokyo_gemini_key_v121", geminiApiKey);
         updateKeyStatusUI();
         alert(geminiApiKey ? "✅ API Key 已安全存於本機！" : "已清除本機 API Key。");
       }
@@ -1124,7 +1100,7 @@
     function clearChatHistory() {
       if (confirm("確定要清空先前的對話記憶紀錄嗎？")) {
         chatHistory = [];
-        localStorage.removeItem("tokyo_gemini_history_v120");
+        localStorage.removeItem("tokyo_gemini_history_v121");
         renderChatHistory();
       }
     }
@@ -1188,7 +1164,7 @@
           const aiText = data.candidates[0].content.parts[0].text;
           loadBubble.innerText = aiText;
           chatHistory.push({ role: "model", parts: [{ text: aiText }] });
-          localStorage.setItem("tokyo_gemini_history_v120", JSON.stringify(chatHistory));
+          localStorage.setItem("tokyo_gemini_history_v121", JSON.stringify(chatHistory));
         } else {
           loadBubble.innerText = "回傳異常，請檢查 API Key 或額度：" + JSON.stringify(data);
           chatHistory.pop(); // Remove failed user message from history

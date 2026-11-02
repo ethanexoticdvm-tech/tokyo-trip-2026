@@ -2,12 +2,17 @@
 
 ## 1. 專案目標與定位
 - **專案名稱**：`tokyo-trip-assistant` (新宿・橫濱・箱根 6日遊隨身戰情室)
-- **當前版本**：`v1.2.0` (Funliday 原生直通 ＋ Gemini 3.8 Flash 多輪上下文記憶版)
+- **當前版本**：`v1.2.1` (iOS Standalone PWA 零閃退防護 ＋ 外部調度穩定版)
 - **核心目標**：為使用者及全家 2 大 2 小（2026/11/26～12/01）提供出國隨身攜帶、離線可用、整合 Gemini 3.8 Flash 多輪對話記憶與 Funliday 動態行程聯動的手機端一頁式旅行戰情指揮中心。
 
 ---
 
 ## 2. 已完成工作 (Done)
+- [x] **iOS Standalone PWA 零閃退與 URL 防覆寫修復 (v1.2.1)**：
+  - 徹底解決 iOS「加入主畫面」後點擊 Funliday 閃退、再次開啟被卡在網頁版的問題。
+  - 根除惡性 `window.location.href` 與 `setTimeout` 競態備援機制，全面升級為原生 `target="_blank" rel="noopener noreferrer"` 獨立外部調度通道。
+  - 戰情室主體 100% 常駐背景，網址永不被第三方頁面篡改，重回 App 永遠保持最新狀態。
+  - 繼承前版 `localStorage`（API Key、歷史對話、寶可夢打卡），升級無須重複輸入。
 - [x] **Gemini 3.8 Flash 多輪連貫對話記憶 (Multi-turn Memory)**：
   - 徹底解決手機端 AI 無上下文記憶、無法延續討論問題。
   - 對話歷史以結構化 JSON 陣列存入手機 `localStorage`，重新整理或關閉分頁對話紀錄不遺失。
@@ -24,7 +29,7 @@
 - [x] **雙軌發布與跨設備同步就緒**：
   - **GitHub Pages**：已正式部署至 `https://ethanexoticdvm-tech.github.io/tokyo-trip-2026/`。
   - **Google Drive Bare Repo**：已註冊並同步至 `G:\我的雲端硬碟\antigravity_repos\tokyo-trip-assistant.git`。
-  - **Google Drive 交付目錄**：`G:\我的雲端硬碟\AI-Programe\新宿6日遊隨身戰情室_v1.2.0\`。
+  - **Google Drive 交付目錄**：`G:\我的雲端硬碟\AI-Programe\新宿6日遊隨身戰情室_v1.2.1\`。
 
 ---
 
