@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>新宿・橫濱・箱根 6日遊隨身戰情室 v1.2.1</title>
+  <title>新宿・橫濱・箱根 6日遊隨身戰情室 v1.3.0</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="theme-color" content="#090d16">
@@ -151,38 +151,6 @@
       display: flex;
       gap: 12px;
       flex-wrap: wrap;
-    }
-
-    /* Segmented Navigation Tabs */
-    .seg-bar {
-      display: flex;
-      gap: 6px;
-      overflow-x: auto;
-      padding: 4px;
-      background: rgba(18, 25, 41, 0.9);
-      border: 1px solid var(--card-border);
-      border-radius: 999px;
-      margin-bottom: 18px;
-      scrollbar-width: none;
-    }
-    .seg-bar::-webkit-scrollbar { display: none; }
-    .seg-btn {
-      flex: 1 0 auto;
-      background: transparent;
-      border: none;
-      color: var(--text-2);
-      padding: 8px 16px;
-      border-radius: 999px;
-      font-size: 0.82rem;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-      white-space: nowrap;
-    }
-    .seg-btn.active {
-      background: var(--primary);
-      color: white;
-      box-shadow: 0 2px 10px var(--primary-glow);
     }
 
     /* Cards */
@@ -383,45 +351,6 @@
     }
     .btn-maps:active { background: #0369a1; }
 
-    /* Flashcards */
-    .flash-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 10px;
-    }
-    @media (min-width: 480px) {
-      .flash-grid { grid-template-columns: 1fr 1fr; }
-    }
-    .flash-card-item {
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid var(--card-border);
-      border-radius: var(--radius-md);
-      padding: 14px;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    .flash-card-item:active {
-      transform: scale(0.98);
-      border-color: var(--accent);
-    }
-    .flash-card-tag {
-      font-size: 0.7rem;
-      font-weight: 800;
-      color: var(--accent);
-      margin-bottom: 4px;
-    }
-    .flash-card-zh {
-      font-size: 0.8rem;
-      color: var(--text-2);
-      margin-bottom: 8px;
-    }
-    .flash-card-ja {
-      font-size: 1rem;
-      font-weight: 900;
-      color: #fef08a;
-      line-height: 1.35;
-    }
-
     /* Gemini Multi-turn Chat Container */
     .gemini-container {
       background: linear-gradient(145deg, rgba(30, 27, 75, 0.6) 0%, rgba(15, 23, 42, 0.8) 100%);
@@ -618,7 +547,7 @@
   <header>
     <div class="header-inner">
       <div class="logo-badge">
-        🍁 新宿6日戰情室 <span class="badge-tag">v1.2.1</span>
+        🍁 新宿6日戰情室 <span class="badge-tag">v1.3.0</span>
       </div>
       <div class="header-actions">
         <a href="https://translate.google.com/?sl=auto&tl=zh-TW" target="_blank" rel="noopener noreferrer" class="top-pill top-pill-primary" id="btnTranslate">
@@ -641,16 +570,6 @@
         <span>📅 2026/11/26 – 12/01</span>
         <span>👨‍👩‍👧‍👦 2 大 2 小隨身神隊友</span>
       </div>
-    </div>
-
-    <!-- Segmented Navigation Bar -->
-    <div class="seg-bar" id="segBar">
-      <button class="seg-btn active" onclick="switchMainView('funliday', this)">📱 Funliday行程</button>
-      <button class="seg-btn" onclick="switchMainView('gemini', this)">🤖 Gemini記憶大腦</button>
-      <button class="seg-btn" onclick="switchMainView('pokemon', this)">🎮 寶可夢打卡(<span id="tabPokeCount">0</span>/7)</button>
-      <button class="seg-btn" onclick="switchMainView('deadlines', this)">⚡ 核心死線</button>
-      <button class="seg-btn" onclick="switchMainView('tickets', this)">🎫 車票座位</button>
-      <button class="seg-btn" onclick="switchMainView('flashcards', this)">🗣️ 日文卡</button>
     </div>
 
     <!-- 1. Funliday 實時動態行程 (Direct App Linking) -->
@@ -838,19 +757,6 @@
       </div>
     </div>
 
-    <!-- 6. 實戰日語手指卡 -->
-    <div id="viewFlashcards" style="display: none;">
-      <div class="content-card">
-        <div class="card-title-row">
-          <div class="card-title">🗣️ 實戰日語手指溝通卡</div>
-        </div>
-        <p style="font-size: 0.8rem; color: var(--text-2); margin-bottom: 12px;">
-          點擊任一張小卡可放大全螢幕，直接秀給日本店員／司機／櫃台看：
-        </p>
-        <div class="flash-grid" id="flashGrid"></div>
-      </div>
-    </div>
-
   </div>
 
   <!-- Bottom Floating Navigation -->
@@ -865,7 +771,7 @@
     </button>
     <button class="bottom-tab" onclick="switchNavTab('pokemon')">
       <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-      寶可夢
+      寶可夢 (<span id="tabPokeCount">0</span>/7)
     </button>
     <button class="bottom-tab" onclick="switchNavTab('deadlines')">
       <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
@@ -875,21 +781,7 @@
       <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"/></svg>
       車票
     </button>
-    <button class="bottom-tab" onclick="switchNavTab('flashcards')">
-      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
-      手指卡
-    </button>
   </nav>
-
-  <!-- Flashcard Zoom Modal -->
-  <div class="modal-overlay" id="flashModal" onclick="closeModal()">
-    <div class="modal-card" onclick="event.stopPropagation()">
-      <div style="font-size: 0.85rem; color: var(--accent); font-weight: 800;" id="mTag">🚖 預約計程車</div>
-      <div class="big-ja" id="mJa">元箱根港までタクシーでお願いします。</div>
-      <div class="sub-zh" id="mZh">請幫我搭計程車到元箱根港。</div>
-      <button class="btn-close-modal" onclick="closeModal()">關閉</button>
-    </div>
-  </div>
 
   <script>
     // --- Data Store ---
@@ -903,21 +795,10 @@
       { id: "pk7", name: "橫濱紅磚倉庫 2號館 (皮卡丘+阿羅拉雷丘)", loc: "紅磚公園靠大棧橋方向邊緣走道", q: "Yokohama Red Brick Warehouse" }
     ];
 
-    const FLASHCARDS = [
-      { tag: "🚖 預約計程車", zh: "請幫我預約 12:30 返回元箱根港的計程車。", ja: "12:30に元箱根港へ戻るタクシーを1台、予約していただけますか？" },
-      { tag: "🍜 合味道報到", zh: "請問 3 樓手作杯麵預約是在這裡報到嗎？", ja: "すみません、3階のマイカップヌードルファクトリーの予約受付はこちらですか？" },
-      { tag: "🐿️ 鎌倉名產詢問", zh: "請問招牌的『核桃糕 (くるみっ子)』今天還有現貨嗎？", ja: "すみません、『くるみっ子』はまだ在庫がありますか？" },
-      { tag: "♨️ 箱根日歸溫泉", zh: "我們想要純泡湯（不包含用餐），請問在哪裡買票？", ja: "日帰り入浴のみ（食事なし）を利用したいのですが、チケットはどこで購入できますか？" },
-      { tag: "🧳 飯店行李寄放", zh: "我們想要先寄放行李，可以嗎？", ja: "チェックイン前ですが、荷物を預かっていただけますか？" },
-      { tag: "👶 餐廳兒童需求", zh: "請問有提供兒童用的小碗、湯匙和溫水嗎？", ja: "子供用の取り皿とスプーン、そしてぬるま湯をいただけますか？" },
-      { tag: "💳 交通卡感應支付", zh: "請問可以用交通卡 (Suica / PASMO) 感應結帳嗎？", ja: "Suica（交通系ICカード）で支払えますか？" },
-      { tag: "🧾 退稅手續詢問", zh: "請問這裡可以辦理免稅手續嗎？", ja: "免税手続き（Tax Free）はできますか？" }
-    ];
-
     // --- State Management ---
-    let checkedPokes = JSON.parse(localStorage.getItem("tokyo_poke_checks_v121") || localStorage.getItem("tokyo_poke_checks_v120") || "{}");
-    let geminiApiKey = localStorage.getItem("tokyo_gemini_key_v121") || localStorage.getItem("tokyo_gemini_key_v120") || "";
-    let chatHistory = JSON.parse(localStorage.getItem("tokyo_gemini_history_v121") || localStorage.getItem("tokyo_gemini_history_v120") || "[]");
+    let checkedPokes = JSON.parse(localStorage.getItem("tokyo_poke_checks_v130") || localStorage.getItem("tokyo_poke_checks_v130") || localStorage.getItem("tokyo_poke_checks_v120") || "{}");
+    let geminiApiKey = localStorage.getItem("tokyo_gemini_key_v130") || localStorage.getItem("tokyo_gemini_key_v130") || localStorage.getItem("tokyo_gemini_key_v120") || "";
+    let chatHistory = JSON.parse(localStorage.getItem("tokyo_gemini_history_v130") || localStorage.getItem("tokyo_gemini_history_v130") || localStorage.getItem("tokyo_gemini_history_v120") || "[]");
 
     // --- Safe External Open (Zero Standalone Crash) ---
     function safeOpenExternal(url) {
@@ -931,20 +812,9 @@
     }
 
     // --- View Navigation ---
-    const VIEWS = ["funliday", "gemini", "pokemon", "deadlines", "tickets", "flashcards"];
-    function switchMainView(viewId, btn) {
-      VIEWS.forEach(v => {
-        const el = document.getElementById("view" + v.charAt(0).toUpperCase() + v.slice(1));
-        if (el) el.style.display = v === viewId ? "block" : "none";
-      });
-      document.querySelectorAll(".seg-btn").forEach(b => b.classList.remove("active"));
-      if (btn) btn.classList.add("active");
-      
-      // Sync bottom nav
-      document.querySelectorAll(".bottom-tab").forEach(tab => {
-        tab.classList.toggle("active", tab.getAttribute("onclick").includes(viewId));
-      });
-      window.scrollTo({ top: 120, behavior: "smooth" });
+    const VIEWS = ["funliday", "gemini", "pokemon", "deadlines", "tickets"];
+    function switchMainView(viewId) {
+      switchNavTab(viewId);
     }
 
     function switchNavTab(viewId) {
@@ -952,14 +822,10 @@
         const el = document.getElementById("view" + v.charAt(0).toUpperCase() + v.slice(1));
         if (el) el.style.display = v === viewId ? "block" : "none";
       });
-      document.querySelectorAll(".bottom-tab").forEach(b => b.classList.remove("active"));
-      event.currentTarget.classList.add("active");
-
-      // Sync seg buttons
-      document.querySelectorAll(".seg-btn").forEach(b => {
+      document.querySelectorAll(".bottom-tab").forEach(b => {
         b.classList.toggle("active", b.getAttribute("onclick").includes(viewId));
       });
-      window.scrollTo({ top: 120, behavior: "smooth" });
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
     // --- Pokemon Rendering ---
@@ -989,40 +855,13 @@
         c.appendChild(row);
       });
       document.getElementById("pokeMainCount").innerText = count;
-      document.getElementById("tabPokeCount").innerText = count;
+      const tabPoke = document.getElementById("tabPokeCount"); if (tabPoke) tabPoke.innerText = count;
     }
 
     function togglePoke(id) {
       checkedPokes[id] = !checkedPokes[id];
-      localStorage.setItem("tokyo_poke_checks_v121", JSON.stringify(checkedPokes));
+      localStorage.setItem("tokyo_poke_checks_v130", JSON.stringify(checkedPokes));
       renderPokemon();
-    }
-
-    // --- Flashcards Rendering ---
-    function renderFlashcards() {
-      const g = document.getElementById("flashGrid");
-      g.innerHTML = "";
-      FLASHCARDS.forEach(f => {
-        const card = document.createElement("div");
-        card.className = "flash-card-item";
-        card.onclick = () => openModal(f.tag, f.zh, f.ja);
-        card.innerHTML = `
-          <div class="flash-card-tag">${f.tag}</div>
-          <div class="flash-card-zh">${f.zh}</div>
-          <div class="flash-card-ja">${f.ja}</div>
-        `;
-        g.appendChild(card);
-      });
-    }
-
-    function openModal(tag, zh, ja) {
-      document.getElementById("mTag").innerText = tag;
-      document.getElementById("mZh").innerText = zh;
-      document.getElementById("mJa").innerText = ja;
-      document.getElementById("flashModal").classList.add("open");
-    }
-    function closeModal() {
-      document.getElementById("flashModal").classList.remove("open");
     }
 
     // --- Gemini Multi-turn Chat Management ---
@@ -1072,7 +911,7 @@
       const input = prompt("請輸入您的 Google Gemini API Key\n(此 Key 僅加密儲存在您手機的本地瀏覽器中，絕不上傳 GitHub 或任何伺服器)：", current);
       if (input !== null) {
         geminiApiKey = input.trim();
-        localStorage.setItem("tokyo_gemini_key_v121", geminiApiKey);
+        localStorage.setItem("tokyo_gemini_key_v130", geminiApiKey);
         updateKeyStatusUI();
         alert(geminiApiKey ? "✅ API Key 已安全存於本機！" : "已清除本機 API Key。");
       }
@@ -1100,7 +939,7 @@
     function clearChatHistory() {
       if (confirm("確定要清空先前的對話記憶紀錄嗎？")) {
         chatHistory = [];
-        localStorage.removeItem("tokyo_gemini_history_v121");
+        localStorage.removeItem("tokyo_gemini_history_v130");
         renderChatHistory();
       }
     }
@@ -1164,7 +1003,7 @@
           const aiText = data.candidates[0].content.parts[0].text;
           loadBubble.innerText = aiText;
           chatHistory.push({ role: "model", parts: [{ text: aiText }] });
-          localStorage.setItem("tokyo_gemini_history_v121", JSON.stringify(chatHistory));
+          localStorage.setItem("tokyo_gemini_history_v130", JSON.stringify(chatHistory));
         } else {
           loadBubble.innerText = "回傳異常，請檢查 API Key 或額度：" + JSON.stringify(data);
           chatHistory.pop(); // Remove failed user message from history
@@ -1178,7 +1017,6 @@
 
     // --- Init ---
     renderPokemon();
-    renderFlashcards();
     updateKeyStatusUI();
     renderChatHistory();
   </script>

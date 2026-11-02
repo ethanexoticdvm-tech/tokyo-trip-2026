@@ -3,7 +3,7 @@
 > 專為 2026/11/26 ～ 12/01 全家人（2 大 2 小）量身打造的一頁式自適應隨身旅行戰情室 Web App。
 
 [![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-Live%20Online-success)](https://ethanexoticdvm-tech.github.io/tokyo-trip-2026/)
-[![Version](https://img.shields.io/badge/Version-v1.2.1-rose)](https://github.com/ethanexoticdvm-tech/tokyo-trip-2026)
+[![Version](https://img.shields.io/badge/Version-v1.3.0-rose)](https://github.com/ethanexoticdvm-tech/tokyo-trip-2026)
 [![Model](https://img.shields.io/badge/AI%20Brain-Gemini%203.8%20Flash-purple)](https://aistudio.google.com/)
 
 ---
@@ -50,15 +50,7 @@
 - 內建櫻木町、市役所、日本丸、臨港公園、海洋塔、紅磚倉庫等 7 處皮卡丘人孔蓋與立體郵筒。
 - 一鍵 Google Maps 座標導航 ＋ 打卡進度本機獨立儲存。
 
-### 5. 🗣️ 8 大實戰日語手指溝通卡
-- 點擊卡片跳出超大字體日語，直接出示給日本司機、店員或櫃檯看：
-  - 🚖 預約 12:30 返回元箱根港的計程車
-  - 🍜 合味道 3 樓手作杯麵報到
-  - 🐿️ 鎌倉紅谷「核桃糕 (くるみっ子)」現貨詢問
-  - ♨️ 箱根純泡湯日歸入浴購票
-  - 👶 兒童餐具與溫水需求
-
-### 6. 🌐 Google 翻譯 App 原生秒開
+### 5. 🌐 Google 翻譯 App 原生秒開
 - 頂部導航列支援 iOS URL Scheme (`googletranslate://`) 與 Android Intent，一鍵喚起手機 App。
 
 ---
@@ -66,5 +58,5 @@
 ## 🛠️ 開發與同步架構
 - **本機工作目錄**：`C:\Users\inche\Antigravity\tokyo-trip-assistant`
 - **雲端裸倉庫**：`G:\我的雲端硬碟\antigravity_repos\tokyo-trip-assistant.git`
-- **交付打包目錄**：`G:\我的雲端硬碟\AI-Programe\新宿6日遊隨身戰情室_v1.2.1\`
+- **交付打包目錄**：`G:\我的雲端硬碟\AI-Programe\新宿6日遊隨身戰情室_v1.3.0\`
 - **GitHub Pages**：`https://github.com/ethanexoticdvm-tech/tokyo-trip-2026`
