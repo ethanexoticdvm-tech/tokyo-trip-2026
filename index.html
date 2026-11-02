@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>新宿・橫濱・箱根 6日遊隨身戰情室 v1.3.0</title>
+  <title>新宿・橫濱・箱根 6日遊隨身戰情室 v1.3.1</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="theme-color" content="#090d16">
@@ -46,12 +46,12 @@
     header {
       position: sticky;
       top: 0;
-      background: rgba(9, 13, 22, 0.88);
+      background: rgba(9, 13, 22, 0.92);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
       z-index: 100;
       border-bottom: 1px solid var(--card-border);
-      padding: max(12px, env(safe-area-inset-top)) 16px 12px;
+      padding: max(10px, env(safe-area-inset-top)) 12px 10px;
     }
     .header-inner {
       max-width: 620px;
@@ -59,14 +59,17 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 6px;
     }
     .logo-badge {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
       font-weight: 800;
-      font-size: 1.05rem;
+      font-size: 0.96rem;
       letter-spacing: -0.3px;
+      white-space: nowrap;
+      flex-shrink: 0;
     }
     .badge-tag {
       background: linear-gradient(135deg, #f43f5e, #fb7185);
@@ -465,36 +468,73 @@
       min-height: 44px;
     }
 
-    /* Fixed Bottom Bar */
+    /* Fixed Bottom Bar - Symmetrical 5-tab Mobile Layout */
     .bottom-bar {
       position: fixed;
       bottom: 0;
       left: 0;
       right: 0;
-      background: rgba(9, 13, 22, 0.94);
+      background: rgba(9, 13, 22, 0.96);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
       border-top: 1px solid var(--card-border);
       display: flex;
       justify-content: space-around;
-      padding: 8px 4px calc(8px + env(safe-area-inset-bottom));
-      z-index: 90;
+      align-items: center;
+      padding: 6px 0 calc(6px + env(safe-area-inset-bottom));
+      z-index: 100;
+      width: 100%;
+      box-sizing: border-box;
     }
     .bottom-tab {
+      flex: 1 1 0;
+      min-width: 0;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 3px;
+      justify-content: center;
+      gap: 2px;
       background: transparent;
       border: none;
+      outline: none;
+      box-shadow: none;
       color: var(--text-3);
-      font-size: 0.68rem;
-      font-weight: 700;
-      padding: 4px 8px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 4px 0;
+      white-space: nowrap;
       cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
     }
-    .bottom-tab.active { color: var(--primary); }
-    .bottom-tab svg { width: 22px; height: 22px; stroke-width: 2.2; }
+    .bottom-tab:focus, .bottom-tab:active {
+      outline: none;
+      box-shadow: none;
+    }
+    .bottom-tab.active {
+      color: var(--primary);
+      font-weight: 800;
+    }
+    .bottom-tab svg {
+      width: 20px;
+      height: 20px;
+      stroke-width: 2.2;
+      flex-shrink: 0;
+    }
+    .poke-badge {
+      position: absolute;
+      top: -3px;
+      right: -8px;
+      background: var(--primary);
+      color: white;
+      font-size: 0.58rem;
+      font-weight: 800;
+      padding: 0 4px;
+      border-radius: 999px;
+      min-width: 14px;
+      line-height: 14px;
+      text-align: center;
+      border: 1px solid var(--bg);
+    }
 
     /* Flashcard Modal */
     .modal-overlay {
@@ -547,11 +587,11 @@
   <header>
     <div class="header-inner">
       <div class="logo-badge">
-        🍁 新宿6日戰情室 <span class="badge-tag">v1.3.0</span>
+        🍁 新宿6日 <span class="badge-tag">v1.3.1</span>
       </div>
       <div class="header-actions">
         <a href="https://translate.google.com/?sl=auto&tl=zh-TW" target="_blank" rel="noopener noreferrer" class="top-pill top-pill-primary" id="btnTranslate">
-          🌐 翻譯App
+          🌐 翻譯
         </a>
         <a href="https://www.google.com/maps/search/?api=1&query=Apartment+hotel+Yumenoya+Shinjuku" class="top-pill" target="_blank">
           🏨 回飯店
@@ -581,12 +621,13 @@
           行程已完全託管於 Funliday！您在手機 App 內做的任何景點調動、時間修改，點擊下方即可一秒直達最新排程，免除同步煩惱。
         </div>
         <div class="funliday-actions">
-          <a href="funliday://trips/6a3ba8367e546c054da4fab1" target="_blank" rel="noopener noreferrer" class="btn-funliday-app">
-            🚀 喚起 Funliday App (若已安裝)
+          <a href="javascript:void(0)" onclick="openFunlidaySmart(event)" class="btn-funliday-app">
+            🚀 開啟 Funliday App (iOS / Android 智慧喚起)
           </a>
           <a href="https://www.funliday.com/m_Njg1M2NmMzEzMzc1NDY4YzcxZDUwMWFl0/trips/6a3ba8367e546c054da4fab1/overview" target="_blank" rel="noopener noreferrer" class="btn-funliday-web">
-            🌐 瀏覽器開啟完整行程 (Safari / Chrome 零閃退)
+            🌐 瀏覽器開啟完整行程 (官方網頁版 100% 穩定)
           </a>
+          <div style="font-size:0.72rem; color:var(--text-3); margin-top:4px;">* Android 支援 Intent 秒開 App，iOS 支援安全外部調度防閃退</div>
         </div>
       </div>
 
@@ -770,8 +811,11 @@
       AI大腦
     </button>
     <button class="bottom-tab" onclick="switchNavTab('pokemon')">
-      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-      寶可夢 (<span id="tabPokeCount">0</span>/7)
+      <div style="position:relative; display:inline-flex;">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        <span class="poke-badge" id="tabPokeCount">0</span>
+      </div>
+      寶可夢
     </button>
     <button class="bottom-tab" onclick="switchNavTab('deadlines')">
       <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
@@ -796,19 +840,40 @@
     ];
 
     // --- State Management ---
-    let checkedPokes = JSON.parse(localStorage.getItem("tokyo_poke_checks_v130") || localStorage.getItem("tokyo_poke_checks_v130") || localStorage.getItem("tokyo_poke_checks_v120") || "{}");
-    let geminiApiKey = localStorage.getItem("tokyo_gemini_key_v130") || localStorage.getItem("tokyo_gemini_key_v130") || localStorage.getItem("tokyo_gemini_key_v120") || "";
-    let chatHistory = JSON.parse(localStorage.getItem("tokyo_gemini_history_v130") || localStorage.getItem("tokyo_gemini_history_v130") || localStorage.getItem("tokyo_gemini_history_v120") || "[]");
+    let checkedPokes = JSON.parse(localStorage.getItem("tokyo_poke_checks_v131") || localStorage.getItem("tokyo_poke_checks_v130") || localStorage.getItem("tokyo_poke_checks_v120") || "{}");
+    let geminiApiKey = localStorage.getItem("tokyo_gemini_key_v131") || localStorage.getItem("tokyo_gemini_key_v130") || localStorage.getItem("tokyo_gemini_key_v120") || "";
+    let chatHistory = JSON.parse(localStorage.getItem("tokyo_gemini_history_v131") || localStorage.getItem("tokyo_gemini_history_v130") || localStorage.getItem("tokyo_gemini_history_v120") || "[]");
 
-    // --- Safe External Open (Zero Standalone Crash) ---
+    // --- Cross-Platform Funliday Smart Launcher (Android Intent + iOS Safe Dispatch) ---
+    function openFunlidaySmart(e) {
+      if (e) e.preventDefault();
+      const isAndroid = /Android/i.test(navigator.userAgent);
+      const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+      const webUrl = "https://www.funliday.com/m_Njg1M2NmMzEzMzc1NDY4YzcxZDUwMWFl0/trips/6a3ba8367e546c054da4fab1/overview";
+      
+      if (isAndroid) {
+        // Android Intent Scheme targeting com.funliday.app package
+        // Opens Funliday App directly; falls back to Chrome browser webUrl if not installed
+        const intentUrl = "intent://www.funliday.com/m_Njg1M2NmMzEzMzc1NDY4YzcxZDUwMWFl0/trips/6a3ba8367e546c054da4fab1/overview#Intent;scheme=https;package=com.funliday.app;S.browser_fallback_url=" + encodeURIComponent(webUrl) + ";end;";
+        window.location.href = intentUrl;
+      } else if (isIOS) {
+        // iOS: Trigger custom URL scheme safely via target="_blank" anchor to prevent PWA standalone crash
+        const a = document.createElement("a");
+        a.href = "funliday://trips/6a3ba8367e546c054da4fab1";
+        a.target = "_blank";
+        a.rel = "noopener noreferrer";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      } else {
+        // Desktop / Other
+        window.open(webUrl, "_blank", "noopener,noreferrer");
+      }
+    }
+
+    // --- Safe External Open ---
     function safeOpenExternal(url) {
-      const a = document.createElement("a");
-      a.href = url;
-      a.target = "_blank";
-      a.rel = "noopener noreferrer";
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
+      window.open(url, "_blank", "noopener,noreferrer");
     }
 
     // --- View Navigation ---
@@ -860,7 +925,7 @@
 
     function togglePoke(id) {
       checkedPokes[id] = !checkedPokes[id];
-      localStorage.setItem("tokyo_poke_checks_v130", JSON.stringify(checkedPokes));
+      localStorage.setItem("tokyo_poke_checks_v131", JSON.stringify(checkedPokes));
       renderPokemon();
     }
 
@@ -911,7 +976,7 @@
       const input = prompt("請輸入您的 Google Gemini API Key\n(此 Key 僅加密儲存在您手機的本地瀏覽器中，絕不上傳 GitHub 或任何伺服器)：", current);
       if (input !== null) {
         geminiApiKey = input.trim();
-        localStorage.setItem("tokyo_gemini_key_v130", geminiApiKey);
+        localStorage.setItem("tokyo_gemini_key_v131", geminiApiKey);
         updateKeyStatusUI();
         alert(geminiApiKey ? "✅ API Key 已安全存於本機！" : "已清除本機 API Key。");
       }
@@ -939,7 +1004,7 @@
     function clearChatHistory() {
       if (confirm("確定要清空先前的對話記憶紀錄嗎？")) {
         chatHistory = [];
-        localStorage.removeItem("tokyo_gemini_history_v130");
+        localStorage.removeItem("tokyo_gemini_history_v131");
         renderChatHistory();
       }
     }
@@ -1003,7 +1068,7 @@
           const aiText = data.candidates[0].content.parts[0].text;
           loadBubble.innerText = aiText;
           chatHistory.push({ role: "model", parts: [{ text: aiText }] });
-          localStorage.setItem("tokyo_gemini_history_v130", JSON.stringify(chatHistory));
+          localStorage.setItem("tokyo_gemini_history_v131", JSON.stringify(chatHistory));
         } else {
           loadBubble.innerText = "回傳異常，請檢查 API Key 或額度：" + JSON.stringify(data);
           chatHistory.pop(); // Remove failed user message from history

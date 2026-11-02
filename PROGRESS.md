@@ -2,12 +2,16 @@
 
 ## 1. 專案目標與定位
 - **專案名稱**：`tokyo-trip-assistant` (新宿・橫濱・箱根 6日遊隨身戰情室)
-- **當前版本**：`v1.3.0` (極簡單一底欄 ＋ 移除日語手指卡專版)
+- **當前版本**：`v1.3.1` (Android Intent 原生適配 ＋ 底欄與頂欄窄屏防折行修復版)
 - **核心目標**：為使用者及全家 2 大 2 小（2026/11/26～12/01）提供出國隨身攜帶、極致俐落、整合 Gemini 3.8 Flash 多輪對話記憶與 Funliday 動態行程聯動的手機端一頁式旅行戰情指揮中心。
 
 ---
 
 ## 2. 已完成工作 (Done)
+- [x] **底欄防破圖與 Android Intent 適配 (v1.3.1)**：
+  - **底欄 5 大模組絕對防破圖**：寶可夢標籤文字精簡為純文字（`white-space: nowrap`），即時打卡計數升級為右上角獨立紅色氣泡 Badge；5 大按鈕等比 20% 平分，去除點擊白框。
+  - **頂部 Header 窄屏適配**：調整標題字級與內距，按鈕簡化為「🌐 翻譯」與「🏨 回飯店」，解決 360px 窄螢幕斷行掉字問題。
+  - **Android Funliday 原生喚起**：採用 Android Intent 協定 (`package=com.funliday.app`)，一鍵秒開 Android Funliday App，未安裝時自動平滑切換至 Chrome 網頁版，解決 `ERR_UNKNOWN_URL_SCHEME` 報錯。
 - [x] **界面極簡化與架構精粹 (v1.3.0)**：
   - **刪除上方冗餘導航列**：移除舊版上方橫向滑動分段列 (`.seg-bar`)，介面重心全面下移至單一底部導航。
   - **刪除日語手指溝通卡**：完全移除手指卡清單與放大彈窗，介面視覺負擔降低 30%。
@@ -26,7 +30,7 @@
 - [x] **雙軌發布與跨設備同步就緒**：
   - **GitHub Pages**：部署至 `https://ethanexoticdvm-tech.github.io/tokyo-trip-2026/`。
   - **Google Drive Bare Repo**：同步至 `G:\我的雲端硬碟\antigravity_repos\tokyo-trip-assistant.git`。
-  - **Google Drive 交付目錄**：`G:\我的雲端硬碟\AI-Programe\新宿6日遊隨身戰情室_v1.3.0\`。
+  - **Google Drive 交付目錄**：`G:\我的雲端硬碟\AI-Programe\新宿6日遊隨身戰情室_v1.3.1\`。
 
 ---
 
