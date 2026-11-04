@@ -2,12 +2,18 @@
 
 ## 1. 專案目標與定位
 - **專案名稱**：`tokyo-trip-assistant` (新宿・橫濱・箱根 6日遊隨身戰情室)
-- **當前版本**：`v1.5.1 PRO` (多輪代碼審查硬化 ＋ Headless Chrome E2E零異常驗證版)
+- **當前版本**：`v1.5.2 PRO` (楓葉設定視窗 ＋ 全域字體縮放 ＋ 雙向破圖極限自適應修復版)
 - **核心目標**：為使用者及全家 2 大 2 小（**小孩年齡 11 歲與 12 歲國小高年級/國中生**，2026/11/26～12/01）提供出國隨身攜帶、整合 Gemini 3.8 Flash 實時時空雙感知、5 大導遊實質決策模式與 Funliday 動態行程聯動的手機端旅行戰情指揮中心。
 
 ---
 
 ## 2. 已完成工作 (Done)
+- [x] **使用者需求回饋與全網頁自適應重構 (v1.5.2 PRO)**：
+  - 🍁 **楓葉點擊開啟系統偏好設定 (Settings Modal)**：點擊左上角楓葉按鈕即彈出深黑磨砂設定面板，整合 **Google Gemini API Key 管理**（明文/密文切換、儲存、清除、Google AI Studio 免費申請入口）與 **全域頁面字體縮放系統**（90%、100%、112%、125%、140% 五段微調，即時更新 `--font-scale` 與 `html` 基準根字級，適用強烈陽光與長輩閱讀，自動持久化保存）。
+  - ✂️ **刪除 AI 大腦舊版冗餘 API 卡片**：自 `#viewGemini` 分頁徹底移除舊版佔位按鈕，釋放 60px+ 手機垂直瀏覽空間；若未設定 Key 發送訊息時，自動彈出友善氣泡並一鍵喚起設定面板。
+  - 📐 **修復下方破圖 (Bottom Bar Safe Area Padding)**：為 `.bottom-bar` 注入 `max(16px, env(safe-area-inset-bottom, 16px))` 安全底距，`.bottom-tab` 改為自適應高度與彈性文字佈局，徹底解決 Android 手勢橫條與 iOS Home Indicator 遮蔽標籤文字之問題。
+  - 📱 **修復右側破圖與全網頁自適應加強 (Responsive Top Bar Overhaul)**：縮減頂欄橫向邊距，重構 `.brand-btn` 與 `.top-pill` 為響應式彈性結構，在 375px/360px 窄螢幕下自動隱藏次要版號標籤，確保「翻譯」與「回飯店」按鈕 100% 完整容納於螢幕寬度內，杜絕右側溢位被裁切。
+  - 🧪 **真實無頭 Chrome (CDP) 像素測量驗證**：於 375px (iPhone SE) 與 390px (iPhone 14/15) 視窗尺寸下以 Chrome DevTools Protocol 進行雙向像素測量，全站元素溢位歸零 (`scrollWidth <= windowWidth`)，達成 **0 Uncaught Exceptions** 與 **0 Console Errors**。
 - [x] **多輪代碼深層審查、邊界防禦與 Headless Chrome E2E 驗證 (v1.5.1 PRO)**：
   - 🔴 **動態 DOM 破壞致命修復 (Crucial DOM Bug Fixed)**：透過真實無頭瀏覽器模擬點擊發現，初始化更新 `pokePercentText.innerText` 時會覆蓋並破壞內嵌之 `<span id="pokeMainCount">`，導致後續使用者在寶可夢打卡清單打勾時拋出 `TypeError: Cannot set properties of null (setting 'innerText')` 阻斷腳本運行。已重構為獨立安全文字節點，杜絕 DOM 覆蓋破壞。
   - 🔴 **代碼語法與編譯全檢驗**：使用 Node.js `--check` 靜態語法解析與 CDP 動態即時評估，消除所有未閉合標籤與重複語法殘留，達成 0 語法錯誤。

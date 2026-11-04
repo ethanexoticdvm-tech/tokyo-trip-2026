@@ -10,7 +10,7 @@ if sys.platform == "win32":
         pass
 
 src_dir = r"C:\Users\inche\Antigravity\tokyo-trip-assistant"
-target_dir = r"G:\我的雲端硬碟\AI-Programe\新宿6日遊隨身戰情室_v1.5.1"
+target_dir = r"G:\我的雲端硬碟\AI-Programe\新宿6日遊隨身戰情室_v1.5.2"
 
 os.makedirs(target_dir, exist_ok=True)
 

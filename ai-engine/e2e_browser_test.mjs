@@ -110,8 +110,40 @@ async function runTest() {
   console.log("👉 Test 1: Verifying active initial view and DOM titles...");
   const title = await evaluate("document.title");
   console.log(`  • Document Title: "${title}"`);
+  if (!title.includes("v1.5.2 PRO")) throw new Error(`Expected title with v1.5.2 PRO, got ${title}`);
 
-  console.log("👉 Test 2: Testing all 5 navigation tabs switching...");
+  console.log("👉 Test 2: Verifying Settings Modal & Font Scaling System...");
+  // Confirm old key card was deleted
+  const oldKeyCardExists = await evaluate("!!document.getElementById('keyStatusCard')");
+  if (oldKeyCardExists) throw new Error("Old keyStatusCard should have been deleted!");
+  console.log("  • Confirmed old keyStatusCard is removed from DOM");
+
+  // Open settings modal
+  await evaluate("openSettingsModal()");
+  await sleep(200);
+  const modalVisible = await evaluate("document.getElementById('settingsModal').style.display !== 'none'");
+  if (!modalVisible) throw new Error("Settings modal failed to open!");
+  console.log("  • Settings modal successfully opened via maple leaf trigger");
+
+  // Test font scale switching
+  await evaluate("setFontScale(1.25)");
+  const currentScale = await evaluate("currentFontScale");
+  const htmlFontSize = await evaluate("document.documentElement.style.fontSize");
+  console.log(`  • Font scale set to 1.25, html font-size: ${htmlFontSize}`);
+  if (currentScale !== 1.25) throw new Error("Font scale was not set to 1.25!");
+
+  // Revert back to 1.0
+  await evaluate("setFontScale(1.0)");
+  await sleep(100);
+
+  // Close settings modal
+  await evaluate("closeSettingsModal()");
+  await sleep(200);
+  const modalClosed = await evaluate("document.getElementById('settingsModal').style.display === 'none'");
+  if (!modalClosed) throw new Error("Settings modal failed to close!");
+  console.log("  • Settings modal successfully closed");
+
+  console.log("👉 Test 3: Testing all 5 navigation tabs switching...");
   for (const tab of ["funliday", "gemini", "pokemon", "deadlines", "tickets", "funliday"]) {
     await evaluate(`switchNavTab('${tab}')`);
     await sleep(200);
