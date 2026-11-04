@@ -8,9 +8,9 @@ if sys.platform == "win32":
 
 bat_content = """@echo off
 chcp 65001 >nul
-title 新宿・橫濱・箱根 6日遊隨身戰情室 v1.5.0 PRO
+title 新宿・橫濱・箱根 6日遊隨身戰情室 v1.5.1 PRO
 echo ========================================================
-echo   新宿・橫濱・箱根 6日遊隨身戰情室 v1.5.0 PRO (UI/UX Pro Max)
+echo   新宿・橫濱・箱根 6日遊隨身戰情室 v1.5.1 PRO
 echo ========================================================
 echo 正在開啟瀏覽器本地預覽...
 start "" "%~dp0index.html"
@@ -24,4 +24,4 @@ pause
 with open("啟動_隨身戰情室.bat", "w", encoding="utf-8", newline="") as f:
     f.write(bat_content)
 
-print("✅ 啟動_隨身戰情室.bat 已更新為 v1.5.0 PRO！")
+print("✅ 啟動_隨身戰情室.bat 已更新為 v1.5.1 PRO！")

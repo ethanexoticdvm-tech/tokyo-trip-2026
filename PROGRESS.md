@@ -8,6 +8,10 @@
 ---
 
 ## 2. 已完成工作 (Done)
+- [x] **使用者反饋專案精修 (v1.5.1)**：
+  - ✂️ **移除 Hero 卡片**：扣除重複大橫幅，大幅釋放手機螢幕縱向空間，開頁即核心動線內容。
+  - 🗺️ **橫濱寶可夢尋寶互動地圖 (Leaflet + Esri Dark Canvas)**：嵌入深黑無浮水印戰情地圖，精確標繪 7 大據點座標與目前 GPS 定位點，點擊標籤直接啟動 Google Maps 導航。
+  - ⏰ **英文 Deadlines 與動態過期自動過濾**：底欄與卡片改採英文 Deadlines，依時間嚴格正序排列，並依即時日本時間自動隱藏已過期死線（保留折疊檢視）。
 - [x] **UI/UX Pro Max 戰情室全面升級 (v1.5.0)**：
   - 🎨 **OLED Tactical Midnight 戰情視覺規範**：導入 dark-mode-oled，深黑基底搭配 Aurora 柔光，達成戶外抗反光與 OLED 極致省電。
   - 📐 **全結構性向量 SVG 圖標系統**：全域剔除結構性 Emoji，全面改採 crisp 2px stroke SVG 向量圖標（Lucide 風格），跨 iOS/Android/PC 渲染一致。

@@ -2626,6 +2626,15 @@ HTML_CONTENT = f'''<!DOCTYPE html>
     initGeolocation();
     updateJSTUI();
     setInterval(updateJSTUI, 10000);
+
+    // Deep link support (?tab=gemini or #gemini)
+    try {{
+      const urlParams = new URLSearchParams(window.location.search);
+      const targetTab = urlParams.get('tab') || window.location.hash.replace('#', '');
+      if (targetTab && VIEWS.includes(targetTab)) {{
+        switchNavTab(targetTab);
+      }}
+    }} catch (e) {{}}
   </script>
 </body>
 </html>

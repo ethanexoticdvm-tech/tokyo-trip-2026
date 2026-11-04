@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>新宿・橫濱・箱根 6日遊隨身戰情室 v1.5.0</title>
+  <title>新宿・橫濱・箱根 6日遊隨身戰情室 v1.5.1 PRO</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="theme-color" content="#070a12">
@@ -13,6 +13,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Orbitron:wght@600;700;800;900&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+
+  <!-- Leaflet CSS for Yokohama Pokemon Map -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
 
   <style>
     /* ==========================================================================
@@ -83,15 +86,12 @@
       font-size: 15px;
     }
 
-    /* Accessibility focus indicators */
     button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
       outline: 2px solid var(--cyan);
       outline-offset: 2px;
     }
 
-    /* ==========================================================================
-       Top Sticky App Bar
-       ========================================================================== */
+    /* Top Sticky App Bar */
     header {
       position: sticky;
       top: 0;
@@ -185,9 +185,7 @@
       transform: translateY(-1px);
     }
 
-    .top-pill:active {
-      transform: scale(0.96);
-    }
+    .top-pill:active { transform: scale(0.96); }
 
     .top-pill-primary {
       background: linear-gradient(135deg, #0284c7, #0369a1);
@@ -196,93 +194,13 @@
       box-shadow: 0 2px 12px rgba(2, 132, 199, 0.4);
     }
 
-    .top-pill-primary:hover {
-      background: linear-gradient(135deg, #0369a1, #0284c7);
-    }
-
-    /* ==========================================================================
-       Container & Layout
-       ========================================================================== */
     .app-container {
       max-width: 640px;
       margin: 0 auto;
       padding: 16px;
     }
 
-    /* ==========================================================================
-       Hero Banner (Aurora Glow + Tactical Glass)
-       ========================================================================== */
-    .hero-card {
-      background: linear-gradient(145deg, #131b2e 0%, #0d1424 100%);
-      border: 1px solid rgba(56, 189, 248, 0.25);
-      border-radius: var(--radius-xl);
-      padding: 20px;
-      margin-bottom: 16px;
-      position: relative;
-      overflow: hidden;
-      box-shadow: 0 10px 30px -8px rgba(0, 0, 0, 0.6);
-    }
-
-    .hero-card::before {
-      content: '';
-      position: absolute;
-      top: -40px;
-      right: -40px;
-      width: 140px;
-      height: 140px;
-      background: radial-gradient(circle, rgba(244, 63, 94, 0.25) 0%, transparent 70%);
-      pointer-events: none;
-    }
-
-    .hero-sub {
-      font-size: 0.72rem;
-      font-family: var(--font-title);
-      color: var(--cyan);
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 6px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .hero-title {
-      font-size: 1.35rem;
-      font-weight: 900;
-      color: #fff;
-      margin-bottom: 8px;
-      letter-spacing: -0.3px;
-    }
-
-    .hero-meta {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .hero-tag {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      padding: 5px 10px;
-      font-size: 0.76rem;
-      color: var(--text-2);
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      font-weight: 600;
-    }
-
-    .hero-tag-highlight {
-      background: rgba(244, 63, 94, 0.12);
-      border-color: rgba(244, 63, 94, 0.3);
-      color: #fda4af;
-    }
-
-    /* ==========================================================================
-       Content Card Base
-       ========================================================================== */
+    /* Content Card Base */
     .content-card {
       background: var(--bg-card);
       border: 1px solid var(--border);
@@ -314,9 +232,7 @@
       flex-shrink: 0;
     }
 
-    /* ==========================================================================
-       Funliday Card & Day Stepper
-       ========================================================================== */
+    /* Funliday Card & Day Stepper */
     .funliday-card {
       background: linear-gradient(135deg, rgba(255, 122, 0, 0.15) 0%, rgba(15, 23, 40, 0.95) 100%);
       border: 1px solid rgba(255, 122, 0, 0.35);
@@ -491,13 +407,9 @@
       line-height: 1.6;
     }
 
-    .day-route-text strong {
-      color: #fff;
-    }
+    .day-route-text strong { color: #fff; }
 
-    /* ==========================================================================
-       Gemini 3.8 Flash AI Brain UI
-       ========================================================================== */
+    /* Gemini 3.8 Flash AI Brain UI */
     .gemini-container {
       background: linear-gradient(145deg, rgba(20, 24, 48, 0.8) 0%, rgba(13, 19, 36, 0.95) 100%);
       border: 1px solid var(--purple-glow);
@@ -542,7 +454,6 @@
       border-color: rgba(255, 255, 255, 0.35);
     }
 
-    /* Real-time Temporal & Spatial Awareness Banner */
     .awareness-banner {
       background: rgba(0, 0, 0, 0.45);
       border: 1px solid rgba(168, 85, 247, 0.3);
@@ -595,7 +506,6 @@
       gap: 4px;
     }
 
-    /* Pulsating Dot */
     .pulse-dot {
       width: 7px;
       height: 7px;
@@ -612,10 +522,8 @@
       100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
     }
 
-    /* 5-Mode Strategy Switcher (Tactile Segmented Bar) */
-    .mode-section {
-      margin-bottom: 12px;
-    }
+    /* 5-Mode Strategy Switcher */
+    .mode-section { margin-bottom: 12px; }
 
     .mode-pills-grid {
       display: grid;
@@ -687,10 +595,7 @@
       padding: 6px 8px;
     }
 
-    .topic-select-wrap {
-      flex: 1;
-      min-width: 0;
-    }
+    .topic-select-wrap { flex: 1; min-width: 0; }
 
     .topic-select-wrap select {
       width: 100%;
@@ -706,11 +611,7 @@
       cursor: pointer;
     }
 
-    .topic-btn-group {
-      display: flex;
-      gap: 4px;
-      flex-shrink: 0;
-    }
+    .topic-btn-group { display: flex; gap: 4px; flex-shrink: 0; }
 
     .btn-topic-action {
       background: rgba(255, 255, 255, 0.06);
@@ -738,11 +639,8 @@
       border-color: rgba(239, 68, 68, 0.3);
     }
 
-    .btn-topic-action.btn-danger:hover {
-      background: rgba(239, 68, 68, 0.15);
-    }
+    .btn-topic-action.btn-danger:hover { background: rgba(239, 68, 68, 0.15); }
 
-    /* Collapsible Override Box */
     .itinerary-override-box {
       background: rgba(255, 255, 255, 0.02);
       border: 1px dashed rgba(255, 255, 255, 0.15);
@@ -782,7 +680,6 @@
       margin-top: 8px;
     }
 
-    /* Quick Question Chips */
     .chip-scroll {
       display: flex;
       gap: 8px;
@@ -819,7 +716,6 @@
 
     .chat-chip:active { transform: scale(0.96); }
 
-    /* Chat Messages Box */
     .chat-messages {
       background: rgba(9, 13, 24, 0.85);
       border: 1px solid var(--border);
@@ -889,11 +785,7 @@
       background: rgba(255, 255, 255, 0.08);
     }
 
-    /* Chat Input Bar */
-    .chat-input-row {
-      display: flex;
-      gap: 8px;
-    }
+    .chat-input-row { display: flex; gap: 8px; }
 
     .chat-input-row input {
       flex: 1;
@@ -945,14 +837,14 @@
     }
 
     /* ==========================================================================
-       Pokemon Hunt View
+       Pokemon Hunt View + Interactive Leaflet Map
        ========================================================================== */
     .poke-progress-card {
       background: rgba(0, 0, 0, 0.35);
       border: 1px solid var(--border);
       border-radius: var(--radius-md);
       padding: 12px 16px;
-      margin-bottom: 14px;
+      margin-bottom: 12px;
     }
 
     .poke-progress-header {
@@ -980,6 +872,113 @@
       transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
+    /* Map container & controls */
+    .map-wrapper {
+      position: relative;
+      margin-bottom: 14px;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      border: 1px solid var(--border-accent);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    }
+
+    #pokeMap {
+      width: 100%;
+      height: 300px;
+      background: #090e1a;
+      z-index: 1;
+    }
+
+    .map-controls-overlay {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      z-index: 10;
+      display: flex;
+      gap: 6px;
+    }
+
+    .map-tool-btn {
+      background: rgba(15, 23, 42, 0.92);
+      border: 1px solid var(--border-accent);
+      color: #fff;
+      font-size: 0.74rem;
+      font-weight: 700;
+      padding: 0 10px;
+      height: 34px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+      transition: var(--transition);
+      backdrop-filter: blur(8px);
+    }
+
+    .map-tool-btn:hover {
+      background: rgba(2, 132, 199, 0.8);
+      border-color: var(--cyan);
+    }
+
+    .map-tool-btn:active { transform: scale(0.96); }
+
+    /* Custom Leaflet Marker Styling */
+    .custom-poke-pin {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #f43f5e, #fb7185);
+      color: #fff;
+      font-family: var(--font-mono);
+      font-weight: 900;
+      font-size: 0.8rem;
+      border: 2px solid #fff;
+      box-shadow: 0 2px 10px rgba(244, 63, 94, 0.6);
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .custom-poke-pin:hover { transform: scale(1.15); }
+    .custom-poke-pin.checked-pin {
+      background: linear-gradient(135deg, #10b981, #059669);
+      box-shadow: 0 2px 10px rgba(16, 185, 129, 0.6);
+    }
+
+    .custom-user-pin {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #0284c7;
+      border: 3px solid #fff;
+      box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.4);
+      animation: user-pulse 1.8s infinite;
+    }
+    @keyframes user-pulse {
+      0% { box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.7); }
+      70% { box-shadow: 0 0 0 10px rgba(2, 132, 199, 0); }
+      100% { box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.7); }
+    }
+
+    /* Leaflet popup dark skin */
+    .leaflet-popup-content-wrapper {
+      background: #141d30 !important;
+      color: #fff !important;
+      border: 1px solid var(--border-accent);
+      border-radius: 10px !important;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.6) !important;
+    }
+    .leaflet-popup-tip {
+      background: #141d30 !important;
+    }
+    .leaflet-popup-content {
+      margin: 12px 14px !important;
+      font-size: 0.84rem;
+      line-height: 1.4;
+    }
+
     .poke-row {
       display: flex;
       align-items: center;
@@ -991,6 +990,7 @@
       margin-bottom: 10px;
       gap: 12px;
       transition: var(--transition);
+      cursor: pointer;
     }
 
     .poke-row:hover {
@@ -1025,9 +1025,7 @@
       box-shadow: 0 2px 10px var(--emerald-glow);
     }
 
-    .poke-check-btn:active {
-      transform: scale(0.92);
-    }
+    .poke-check-btn:active { transform: scale(0.92); }
 
     .btn-maps {
       display: inline-flex;
@@ -1054,7 +1052,7 @@
     .btn-maps:active { transform: scale(0.96); }
 
     /* ==========================================================================
-       Deadlines & Critical Alerts
+       Deadlines & Critical Alerts (English + Date-Sorted Dynamic Filter)
        ========================================================================== */
     .deadline-item {
       background: rgba(239, 68, 68, 0.08);
@@ -1063,6 +1061,7 @@
       padding: 14px 16px;
       margin-bottom: 12px;
       transition: var(--transition);
+      position: relative;
     }
 
     .deadline-item.warning {
@@ -1075,6 +1074,12 @@
       border-color: var(--cyan);
     }
 
+    .deadline-item.expired {
+      opacity: 0.5;
+      background: rgba(255, 255, 255, 0.02);
+      border-color: #475569;
+    }
+
     .deadline-head {
       font-size: 0.92rem;
       font-weight: 800;
@@ -1082,7 +1087,26 @@
       margin-bottom: 6px;
       display: flex;
       align-items: center;
+      justify-content: space-between;
       gap: 8px;
+    }
+
+    .deadline-title-text {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .deadline-countdown-badge {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 800;
+      padding: 2px 7px;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.08);
+      color: #fda4af;
+      border: 1px solid rgba(244, 63, 94, 0.3);
+      white-space: nowrap;
     }
 
     .deadline-body {
@@ -1091,13 +1115,28 @@
       line-height: 1.5;
     }
 
-    .deadline-body strong {
+    .deadline-body strong { color: #fff; }
+
+    .btn-toggle-expired {
+      background: transparent;
+      border: 1px dashed rgba(255, 255, 255, 0.2);
+      color: var(--text-3);
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
+      width: 100%;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: var(--transition);
+    }
+    .btn-toggle-expired:hover {
       color: #fff;
+      border-color: rgba(255, 255, 255, 0.4);
+      background: rgba(255, 255, 255, 0.04);
     }
 
-    /* ==========================================================================
-       Skeuomorphic Japanese Train Tickets
-       ========================================================================== */
+    /* Skeuomorphic Japanese Train Tickets */
     .ticket-card {
       position: relative;
       background: linear-gradient(145deg, #131c2e 0%, #0d1424 100%);
@@ -1164,9 +1203,7 @@
       letter-spacing: 0.3px;
     }
 
-    /* ==========================================================================
-       Bottom Floating Navigation (5-Tab Symmetrical Layout)
-       ========================================================================== */
+    /* Bottom Floating Navigation (5-Tab Symmetrical Layout) */
     .bottom-bar {
       position: fixed;
       bottom: 0;
@@ -1212,13 +1249,9 @@
       transition: var(--transition);
     }
 
-    .bottom-tab:hover {
-      color: var(--text-1);
-    }
+    .bottom-tab:hover { color: var(--text-1); }
 
-    .bottom-tab.active {
-      color: var(--primary);
-    }
+    .bottom-tab.active { color: var(--primary); }
 
     .bottom-tab.active svg {
       transform: translateY(-2px);
@@ -1242,9 +1275,7 @@
       border: 1px solid var(--bg);
     }
 
-    /* ==========================================================================
-       Toast Notification System
-       ========================================================================== */
+    /* Toast Notification System */
     .toast-container {
       position: fixed;
       top: calc(16px + env(safe-area-inset-top));
@@ -1273,35 +1304,6 @@
       transform: translateX(-50%) translateY(0);
     }
 
-    /* ==========================================================================
-       Modal
-       ========================================================================== */
-    .modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.85);
-      backdrop-filter: blur(8px);
-      z-index: 300;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
-
-    .modal-overlay.open { display: flex; }
-
-    .modal-card {
-      background: #141d30;
-      border: 1px solid var(--border-accent);
-      border-radius: var(--radius-xl);
-      padding: 24px;
-      max-width: 90%;
-      width: 420px;
-      text-align: center;
-      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.7);
-    }
-
-    /* Media query for reduced motion */
     @media (prefers-reduced-motion: reduce) {
       *, ::before, ::after {
         animation-duration: 0.01ms !important;
@@ -1322,7 +1324,7 @@
       <div class="brand-wrap">
         <div class="brand-icon" aria-hidden="true">🍁</div>
         <div class="brand-title">
-          新宿6日 <span class="badge-ver">v1.5.0 PRO</span>
+          新宿6日 <span class="badge-ver">v1.5.1 PRO</span>
         </div>
       </div>
       <div class="header-actions">
@@ -1339,22 +1341,6 @@
   </header>
 
   <main class="app-container">
-
-    <!-- Hero Card -->
-    <section class="hero-card" aria-label="旅程概況資訊卡">
-      <div class="hero-sub">Family Tokyo Trip 2026</div>
-      <h1 class="hero-title">新宿・橫濱・箱根 6日戰情室</h1>
-      <div class="hero-meta">
-        <span class="hero-tag">
-          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-          2026/11/26 – 12/01
-        </span>
-        <span class="hero-tag hero-tag-highlight">
-          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-          2 大 2 小 (青少年 11 & 12 歲)
-        </span>
-      </div>
-    </section>
 
     <!-- 1. Funliday 實時動態行程 -->
     <div id="viewFunliday" role="region" aria-label="Funliday 行程檢視">
@@ -1463,7 +1449,7 @@
       </div>
     </div>
 
-    <!-- 2. Gemini 3.8 Flash 具備完整上下文記憶之大腦 -->
+    <!-- 2. Gemini 3.8 Flash AI 大腦 -->
     <div id="viewGemini" style="display: none;" role="region" aria-label="AI 導遊對話大腦">
       <div class="gemini-container">
         <div class="card-title-row">
@@ -1600,13 +1586,13 @@
       </div>
     </div>
 
-    <!-- 3. 寶可夢人孔蓋＆郵筒打卡 -->
+    <!-- 3. 寶可夢人孔蓋＆郵筒打卡 + 互動地圖 -->
     <div id="viewPokemon" style="display: none;" role="region" aria-label="橫濱寶可夢尋寶任務">
       <div class="content-card">
         <div class="card-title-row">
           <div class="card-title">
             <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-            橫濱寶可夢尋寶任務
+            橫濱寶可夢尋寶任務 (Yokohama Pokemon Map)
           </div>
         </div>
 
@@ -1621,83 +1607,47 @@
           </div>
         </div>
 
+        <!-- Leaflet Map Container with Live GPS Tracking -->
+        <div class="map-wrapper">
+          <div id="pokeMap"></div>
+          <div class="map-controls-overlay">
+            <button type="button" class="map-tool-btn" onclick="panToUserLocation()">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8z"/><circle cx="12" cy="12" r="3"/></svg>
+              目前定位
+            </button>
+            <button type="button" class="map-tool-btn" onclick="fitAllPokemonSpots()">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+              全 7 據點
+            </button>
+          </div>
+        </div>
+
         <p style="font-size: 0.82rem; color: var(--text-2); margin-bottom: 14px;">
-          打卡勾選會自動加密儲存於手機，點擊右側按鈕可一鍵直接開啟 Google Maps 精確座標導航！
+          點擊地圖標記或下方據點可即時導航；打卡勾選會自動加密儲存於手機！
         </p>
 
         <div id="pokeContainer"></div>
       </div>
     </div>
 
-    <!-- 4. 核心死線告警 -->
-    <div id="viewDeadlines" style="display: none;" role="region" aria-label="行程關鍵死線與交通陷阱">
+    <!-- 4. Critical Deadlines & Travel Alerts (English + Date-Sorted Dynamic Filter) -->
+    <div id="viewDeadlines" style="display: none;" role="region" aria-label="Deadlines">
       <div class="content-card">
         <div class="card-title-row">
           <div class="card-title" style="color:#fda4af;">
             <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-            行程關鍵死線與交通陷阱
+            Critical Deadlines & Travel Alerts
           </div>
         </div>
 
-        <div class="deadline-item">
-          <div class="deadline-head">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-            Day 5 箱根：15:15 大涌谷準時搭纜車下山（核心死線）
-          </div>
-          <div class="deadline-body">
-            絕不可延誤！必須按時搭乘：空中纜車 ➔ 早雲山 ➔ 強羅 ➔ 登山電車 返回箱根湯本，確保銜接 <strong>17:46 浪漫特快 (箱根18號 MSE6)</strong>！
-          </div>
+        <div id="deadlinesListContainer">
+          <!-- Populated by JS: Sorted chronologically; expired deadlines automatically hidden -->
         </div>
 
-        <div class="deadline-item warning">
-          <div class="deadline-head">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-            Day 4 鎌倉：13:23 認明【綠色江之電】（切勿搭單軌）
-          </div>
-          <div class="deadline-body">
-            從江之島往長谷寺，務必前往<strong>「江之島電鐵（綠色江之電）江之島站」</strong>直達長谷站！千萬不要走進「湘南單軌電車（往大船繞大遠路）」。
-          </div>
-        </div>
-
-        <div class="deadline-item warning">
-          <div class="deadline-head">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-            Day 4 鎌倉：紅谷「核桃糕 (くるみっ子)」售罄時限
-          </div>
-          <div class="deadline-body">
-            週日下午觀光客極多，招牌核桃糕常在中午前後售罄。下午 15:30 逛小町通時若看到特約店有現貨先買！
-          </div>
-        </div>
-
-        <div class="deadline-item info">
-          <div class="deadline-head">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-            Day 3 橫濱：紅磚倉庫聖誕市集 (17:00)
-          </div>
-          <div class="deadline-body">
-            16:00 已點燈。週六傍晚人潮達最高峰，建議持「優先入場票」走專用通道秒進場；若不進木屋區，外圍與商場可免費逛。
-          </div>
-        </div>
-
-        <div class="deadline-item info">
-          <div class="deadline-head">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/></svg>
-            Day 3 橫濱：合味道紀念館手作體驗 (10:45)
-          </div>
-          <div class="deadline-body">
-            已預約手作杯麵體驗，走完臨港公園後直接搭電梯至 4 樓吃麵第一波、準時至 3 樓報到自繪杯麵。
-          </div>
-        </div>
-
-        <div class="deadline-item">
-          <div class="deadline-head">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-            Day 1 新宿：牛たんの檸檬 (20:34)
-          </div>
-          <div class="deadline-body">
-            極厚切牛舌排隊名店，已在 TableCheck 完成預約，需提前 10 分鐘抵達門口，避免現場久候。
-          </div>
-        </div>
+        <!-- Toggle for expired deadlines -->
+        <button type="button" id="toggleExpiredBtn" class="btn-toggle-expired" onclick="toggleExpiredDeadlines()" style="display:none;">
+          📂 View Expired Deadlines (<span id="expiredCountText">0</span>)
+        </button>
       </div>
     </div>
 
@@ -1775,9 +1725,9 @@
       </div>
       <span>寶可夢</span>
     </button>
-    <button class="bottom-tab" onclick="switchNavTab('deadlines')" role="tab" aria-selected="false" aria-label="切換到 行程死線">
+    <button class="bottom-tab" onclick="switchNavTab('deadlines')" role="tab" aria-selected="false" aria-label="切換到 Deadlines">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-      <span>死線</span>
+      <span>Deadlines</span>
     </button>
     <button class="bottom-tab" onclick="switchNavTab('tickets')" role="tab" aria-selected="false" aria-label="切換到 離線車票">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="4" y="3" width="16" height="16" rx="2"/><path d="M4 11h16M12 3v8M8 15h.01M16 15h.01M6 19l-2 2M18 19l2 2"/></svg>
@@ -1785,16 +1735,95 @@
     </button>
   </nav>
 
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
   <script>
-    // --- Data Store ---
+    // --- Pokemon Data with Exact Coordinates ---
     const POKEMON_DATA = [
-      { id: "pk1", name: "櫻木町站前 (雙皮卡丘人孔蓋)", loc: "JR櫻木町站東口廣場地面", q: "Sakuragicho Station Yokohama" },
-      { id: "pk2", name: "橫濱櫻木郵便局 (波加曼立體郵筒)", loc: "Yokohama Sakuragi Post Office 門口", q: "Yokohama Sakuragi Post Office" },
-      { id: "pk3", name: "橫濱市役所 中庭 (皮卡丘與伊布郵筒)", loc: "橫濱市役所戶外步道櫻川橋旁", q: "Yokohama City Hall" },
-      { id: "pk4", name: "日本丸紀念公園 (皮卡丘+可達鴨+腕力)", loc: "帆船日本丸旁斜坡走道高台處", q: "Nippon Maru Memorial Park" },
-      { id: "pk5", name: "臨港公園 (皮卡丘海邊步道)", loc: "靠近普卡里碼頭 (ぷかりさん橋) 海邊步道", q: "Rinko Park Yokohama" },
-      { id: "pk6", name: "橫濱海洋塔 (大噴鸝鳥喙皮卡丘)", loc: "海洋塔後側空地廣場 (中華街4號出口方向)", q: "Yokohama Marine Tower" },
-      { id: "pk7", name: "橫濱紅磚倉庫 2號館 (皮卡丘+阿羅拉雷丘)", loc: "紅磚公園靠大棧橋方向邊緣走道", q: "Yokohama Red Brick Warehouse" }
+      { id: "pk1", num: 1, name: "櫻木町站前 (雙皮卡丘人孔蓋)", loc: "JR櫻木町站東口廣場地面", lat: 35.4507, lng: 139.6309, q: "Sakuragicho Station Yokohama" },
+      { id: "pk2", num: 2, name: "橫濱櫻木郵便局 (波加曼立體郵筒)", loc: "Yokohama Sakuragi Post Office 門口", lat: 35.4501, lng: 139.6318, q: "Yokohama Sakuragi Post Office" },
+      { id: "pk3", num: 3, name: "橫濱市役所 中庭 (皮卡丘與伊布郵筒)", loc: "橫濱市役所戶外步道櫻川橋旁", lat: 35.4485, lng: 139.6358, q: "Yokohama City Hall" },
+      { id: "pk4", num: 4, name: "日本丸紀念公園 (皮卡丘+可達鴨+腕力)", loc: "帆船日本丸旁斜坡走道高台處", lat: 35.4533, lng: 139.6340, q: "Nippon Maru Memorial Park" },
+      { id: "pk5", num: 5, name: "臨港公園 (皮卡丘海邊步道)", loc: "靠近普卡里碼頭 (ぷかりさん橋) 海邊步道", lat: 35.4616, lng: 139.6375, q: "Rinko Park Yokohama" },
+      { id: "pk6", num: 6, name: "橫濱海洋塔 (大噴鸝鳥喙皮卡丘)", loc: "海洋塔後側空地廣場 (中華街4號出口方向)", lat: 35.4440, lng: 139.6515, q: "Yokohama Marine Tower" },
+      { id: "pk7", num: 7, name: "橫濱紅磚倉庫 2號館 (皮卡丘+阿羅拉雷丘)", loc: "紅磚公園靠大棧橋方向邊緣走道", lat: 35.4526, lng: 139.6428, q: "Yokohama Red Brick Warehouse" }
+    ];
+
+    // --- Critical Deadlines Data (Chronologically Ordered) ---
+    const DEADLINES_DATA = [
+      {
+        id: "dl1",
+        date: "2026-11-26T20:34:00+09:00",
+        dayStr: "Day 1 (11/26 20:34)",
+        title: "新宿：牛たんの檸檬 (檸檬牛舌)",
+        desc: "極厚切牛舌排隊名店，已在 TableCheck 完成預約，需提前 10 分鐘抵達門口候位，避免現場久候。",
+        level: "critical",
+        badge: "20:34 DINNER"
+      },
+      {
+        id: "dl2",
+        date: "2026-11-28T10:45:00+09:00",
+        dayStr: "Day 3 (11/28 10:45)",
+        title: "橫濱：合味道紀念館 手作杯麵體驗報到",
+        desc: "已預約手作杯麵體驗，走完臨港公園後直接搭電梯至 4 樓吃麵第一波、準時至 3 樓報到自繪杯麵。",
+        level: "info",
+        badge: "10:45 WORKSHOP"
+      },
+      {
+        id: "dl3",
+        date: "2026-11-28T17:00:00+09:00",
+        dayStr: "Day 3 (11/28 17:00)",
+        title: "橫濱：紅磚倉庫聖誕市集點燈巡禮",
+        desc: "16:00 已點燈。週六傍晚人潮達最高峰，建議持「優先入場票」走專用通道秒進場；外圍與商場可免費逛。",
+        level: "info",
+        badge: "17:00 XMAS MARKET"
+      },
+      {
+        id: "dl4",
+        date: "2026-11-29T13:23:00+09:00",
+        dayStr: "Day 4 (11/29 13:23)",
+        title: "鎌倉：13:23 認明【綠色江之電】（切勿搭單軌）",
+        desc: "從江之島往長谷寺，務必前往<strong>「江之島電鐵（綠色江之電）江之島站」</strong>直達長谷站！千萬不要走進「湘南單軌電車（往大船繞大遠路）」。",
+        level: "warning",
+        badge: "13:23 TRAIN TRAP"
+      },
+      {
+        id: "dl5",
+        date: "2026-11-29T15:30:00+09:00",
+        dayStr: "Day 4 (11/29 15:30)",
+        title: "鎌倉：紅谷「核桃糕 (くるみっ子)」售罄時限",
+        desc: "週日下午觀光客極多，招牌核桃糕常在中午前後售罄。下午 15:30 逛小町通時若看到特約店有現貨先買！",
+        level: "warning",
+        badge: "15:30 SOUVENIR"
+      },
+      {
+        id: "dl6",
+        date: "2026-11-30T15:15:00+09:00",
+        dayStr: "Day 5 (11/30 15:15)",
+        title: "箱根：15:15 大涌谷準時搭纜車下山（核心死線）",
+        desc: "絕不可延誤！必須按時搭乘：空中纜車 ➔ 早雲山 ➔ 強羅 ➔ 登山電車 返回箱根湯本，確保銜接 <strong>17:46 浪漫特快 (箱根18號 MSE6)</strong>！",
+        level: "critical",
+        badge: "15:15 FINAL ROPEWAY"
+      },
+      {
+        id: "dl7",
+        date: "2026-11-30T17:46:00+09:00",
+        dayStr: "Day 5 (11/30 17:46)",
+        title: "箱根：17:46 浪漫特快箱根18號 (MSE6) 準時發車",
+        desc: "箱根湯本 17:46 發車返回新宿 (04車廂 8C,8D,9C,9D)，需於 17:30 前返抵月台完成候車。",
+        level: "critical",
+        badge: "17:46 TRAIN DEPART"
+      },
+      {
+        id: "dl8",
+        date: "2026-12-01T10:00:00+09:00",
+        dayStr: "Day 6 (12/01 10:00)",
+        title: "羽田機場：10:00 抵達 T3 報到、退稅與免稅採買",
+        desc: "搭乘長榮航空 BR191 (12:15) 返抵台北松山，務必於 10:00 前抵達第三航廈辦理託運。",
+        level: "info",
+        badge: "10:00 HND T3"
+      }
     ];
 
     // ==========================================
@@ -1803,7 +1832,7 @@
     let checkedPokes = JSON.parse(
       localStorage.getItem("tokyo_poke_checks_v140") ||
       localStorage.getItem("tokyo_poke_checks_v131") ||
-      "{"}
+      '{}'
     );
 
     let geminiApiKey =
@@ -1818,6 +1847,11 @@
     let currentCoords = null;
     let nearestAnchor = null;
 
+    let pokeMap = null;
+    let pokeMarkers = {};
+    let userMarker = null;
+    let showExpiredDeadlines = false;
+
     // Toast Notification helper
     function showToast(msg, duration = 2500) {
       const t = document.getElementById("toastBox");
@@ -1829,7 +1863,6 @@
       }, duration);
     }
 
-    // Haptic feedback helper
     function triggerHaptic() {
       if (typeof navigator !== "undefined" && navigator.vibrate) {
         navigator.vibrate(15);
@@ -1861,7 +1894,7 @@
     ];
 
     function calculateDistance(lat1, lon1, lat2, lon2) {
-      const R = 6371e3; // meters
+      const R = 6371e3;
       const p1 = lat1 * Math.PI / 180;
       const p2 = lat2 * Math.PI / 180;
       const dp = (lat2 - lat1) * Math.PI / 180;
@@ -1912,6 +1945,7 @@
           badge.className = "awareness-gps-tag";
         }
         updateNearestAnchor(currentCoords.lat, currentCoords.lng);
+        updateUserMapMarker();
       };
 
       const geoError = (err) => {
@@ -2001,6 +2035,7 @@
       }
 
       return {
+        jstDate,
         jstTimeStr,
         jstClockShort,
         stageBadge,
@@ -2014,6 +2049,7 @@
       const badgeEl = document.getElementById("tripStageBadge");
       if (clockEl) clockEl.innerText = info.jstClockShort;
       if (badgeEl) badgeEl.innerText = info.stageBadge;
+      renderDeadlines();
     }
 
     // --- Funliday Smart Launcher ---
@@ -2066,9 +2102,14 @@
         b.setAttribute("aria-selected", isTarget ? "true" : "false");
       });
       window.scrollTo({ top: 0, behavior: "smooth" });
+
+      if (viewId === "pokemon") {
+        setTimeout(initOrRefreshPokemonMap, 200);
+      } else if (viewId === "deadlines") {
+        renderDeadlines();
+      }
     }
 
-    // Day Stepper Filter for Funliday overview
     function filterDayOverview(day, btn) {
       triggerHaptic();
       document.querySelectorAll(".day-tab-btn").forEach(b => {
@@ -2089,7 +2130,122 @@
       });
     }
 
-    // --- Pokemon Rendering ---
+    // ==========================================
+    // Leaflet Interactive Pokemon Map System
+    // ==========================================
+    function initOrRefreshPokemonMap() {
+      const mapContainer = document.getElementById("pokeMap");
+      if (!mapContainer) return;
+
+      if (!pokeMap && typeof L !== "undefined") {
+        pokeMap = L.map("pokeMap", {
+          zoomControl: false,
+          attributionControl: false
+        }).setView([35.4520, 139.6380], 14);
+
+        // Esri World Dark Gray Base (Free, beautiful dark canvas, zero watermark)
+        L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}", {
+          maxZoom: 16
+        }).addTo(pokeMap);
+        // Esri Labels overlay
+        L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}", {
+          maxZoom: 16
+        }).addTo(pokeMap);
+
+        // Add 7 Pokemon Markers
+        POKEMON_DATA.forEach(p => {
+          const isDone = !!checkedPokes[p.id];
+          const iconHtml = `<div class="custom-poke-pin ${isDone ? 'checked-pin' : ''}" id="pin_${p.id}">${p.num}</div>`;
+          const customIcon = L.divIcon({
+            html: iconHtml,
+            className: "leaflet-div-icon-wrapper",
+            iconSize: [28, 28],
+            iconAnchor: [14, 14],
+            popupAnchor: [0, -16]
+          });
+
+          const marker = L.marker([p.lat, p.lng], { icon: customIcon }).addTo(pokeMap);
+
+          let distanceStr = "";
+          if (currentCoords) {
+            const dist = calculateDistance(currentCoords.lat, currentCoords.lng, p.lat, p.lng);
+            distanceStr = `<div style="font-size:0.75rem; color:#94a3b8; margin:4px 0;">📍 距離您目前位置：<strong>${dist < 1000 ? dist + 'm' : (dist/1000).toFixed(1) + 'km'}</strong></div>`;
+          }
+
+          const popupHtml = `
+            <div style="min-width:200px;">
+              <div style="font-weight:800; font-size:0.92rem; color:#fff; margin-bottom:2px;">#${p.num} ${p.name}</div>
+              <div style="font-size:0.78rem; color:#cbd5e1;">${p.loc}</div>
+              ${distanceStr}
+              <a href="https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lng}" target="_blank" rel="noopener noreferrer" class="btn-maps" style="width:100%; height:36px; margin-top:8px; font-size:0.78rem; display:flex; align-items:center; justify-content:center; gap:5px;">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+                Google 地圖導航
+              </a>
+            </div>
+          `;
+          marker.bindPopup(popupHtml);
+          pokeMarkers[p.id] = marker;
+        });
+
+        updateUserMapMarker();
+      }
+
+      if (pokeMap) {
+        pokeMap.invalidateSize();
+      }
+    }
+
+    function updateUserMapMarker() {
+      if (!pokeMap || !currentCoords || typeof L === "undefined") return;
+
+      const userLatLng = [currentCoords.lat, currentCoords.lng];
+
+      if (userMarker) {
+        userMarker.setLatLng(userLatLng);
+      } else {
+        const userIcon = L.divIcon({
+          html: `<div class="custom-user-pin" title="目前定位"></div>`,
+          className: "leaflet-div-user",
+          iconSize: [18, 18],
+          iconAnchor: [9, 9]
+        });
+        userMarker = L.marker(userLatLng, { icon: userIcon }).addTo(pokeMap);
+        userMarker.bindPopup("<b>📍 目前位置 (You Are Here)</b>");
+      }
+    }
+
+    function panToUserLocation() {
+      triggerHaptic();
+      if (!pokeMap) return;
+      if (currentCoords) {
+        pokeMap.flyTo([currentCoords.lat, currentCoords.lng], 16, { duration: 1 });
+        if (userMarker) userMarker.openPopup();
+        showToast("🎯 已移動至目前定位");
+      } else {
+        showToast("尚未取得 GPS 訊號");
+      }
+    }
+
+    function fitAllPokemonSpots() {
+      triggerHaptic();
+      if (!pokeMap || typeof L === "undefined") return;
+      const bounds = L.latLngBounds(POKEMON_DATA.map(p => [p.lat, p.lng]));
+      pokeMap.fitBounds(bounds, { padding: [30, 30] });
+      showToast("🗺️ 顯示全 7 大據點總覽");
+    }
+
+    function panToPoke(id) {
+      triggerHaptic();
+      const p = POKEMON_DATA.find(x => x.id === id);
+      if (!p || !pokeMap) return;
+      pokeMap.flyTo([p.lat, p.lng], 16, { duration: 0.8 });
+      if (pokeMarkers[id]) {
+        pokeMarkers[id].openPopup();
+      }
+      document.getElementById("pokeMap").scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+
+    // --- Pokemon Checklist Rendering ---
     function renderPokemon() {
       const c = document.getElementById("pokeContainer");
       if (!c) return;
@@ -2101,16 +2257,16 @@
         const row = document.createElement("div");
         row.className = "poke-row " + (isDone ? "checked-row" : "");
         row.innerHTML = `
-          <div style="display: flex; align-items: center; gap: 12px; min-width: 0;">
-            <button type="button" class="poke-check-btn ${isDone ? 'checked' : ''}" onclick="togglePoke('${p.id}')" aria-label="切換完成打卡 ${p.name}">
+          <div style="display: flex; align-items: center; gap: 12px; min-width: 0;" onclick="panToPoke('${p.id}')">
+            <button type="button" class="poke-check-btn ${isDone ? 'checked' : ''}" onclick="event.stopPropagation(); togglePoke('${p.id}')" aria-label="切換完成打卡 ${p.name}">
               <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="3" style="display:${isDone ? 'block' : 'none'}"><polyline points="20 6 9 17 4 12"/></svg>
             </button>
             <div style="min-width: 0;">
-              <div style="font-size: 0.9rem; font-weight: 800; color: #fff; ${isDone ? 'text-decoration: line-through; opacity: 0.8;' : ''}">${p.name}</div>
+              <div style="font-size: 0.9rem; font-weight: 800; color: #fff; ${isDone ? 'text-decoration: line-through; opacity: 0.8;' : ''}">#${p.num} ${p.name}</div>
               <div style="font-size: 0.76rem; color: var(--text-2);">📍 ${p.loc}</div>
             </div>
           </div>
-          <a class="btn-maps" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(p.q)}" target="_blank" rel="noopener noreferrer" aria-label="導航至 ${p.name}">
+          <a class="btn-maps" href="https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lng}" target="_blank" rel="noopener noreferrer" aria-label="導航至 ${p.name}">
             <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
             <span>導航</span>
           </a>
@@ -2126,6 +2282,14 @@
       if (fill) fill.style.width = pct + "%";
       const tabPoke = document.getElementById("tabPokeCount");
       if (tabPoke) tabPoke.innerText = count;
+
+      // Update map marker pins
+      POKEMON_DATA.forEach(p => {
+        const pinEl = document.getElementById(`pin_${p.id}`);
+        if (pinEl) {
+          pinEl.classList.toggle("checked-pin", !!checkedPokes[p.id]);
+        }
+      });
     }
 
     function togglePoke(id) {
@@ -2134,6 +2298,97 @@
       localStorage.setItem("tokyo_poke_checks_v140", JSON.stringify(checkedPokes));
       renderPokemon();
       showToast(checkedPokes[id] ? "🎉 打卡完成！" : "已取消打卡");
+    }
+
+    // ==========================================
+    // Deadlines Rendering: Chronological & Dynamic Filtering
+    // ==========================================
+    function renderDeadlines() {
+      const container = document.getElementById("deadlinesListContainer");
+      if (!container) return;
+      container.innerHTML = "";
+
+      const jstInfo = getJSTInfo();
+      const nowJST = jstInfo.jstDate.getTime();
+
+      // Sort chronologically ascending
+      const sorted = [...DEADLINES_DATA].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+      let activeCount = 0;
+      let expiredCount = 0;
+
+      sorted.forEach(item => {
+        const targetTime = new Date(item.date).getTime();
+        const diffMs = targetTime - nowJST;
+        const isExpired = diffMs < 0;
+
+        if (isExpired) expiredCount++;
+        else activeCount++;
+
+        // If expired and not showing expired, skip rendering
+        if (isExpired && !showExpiredDeadlines) return;
+
+        let countdownBadge = "";
+        if (isExpired) {
+          countdownBadge = `<span class="deadline-countdown-badge" style="color:#94a3b8; border-color:rgba(255,255,255,0.15);">EXPIRED</span>`;
+        } else {
+          const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+          const diffDays = Math.floor(diffHours / 24);
+          const remHours = diffHours % 24;
+          const remMins = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+
+          if (diffDays > 0) {
+            countdownBadge = `<span class="deadline-countdown-badge">⏳ IN ${diffDays}d ${remHours}h</span>`;
+          } else if (diffHours > 0) {
+            countdownBadge = `<span class="deadline-countdown-badge" style="color:#fef08a; border-color:#fef08a;">⏳ IN ${diffHours}h ${remMins}m</span>`;
+          } else {
+            countdownBadge = `<span class="deadline-countdown-badge" style="color:#ef4444; border-color:#ef4444; animation:pulse-ring 1s infinite;">🚨 IN ${remMins} MINS</span>`;
+          }
+        }
+
+        const card = document.createElement("div");
+        card.className = `deadline-item ${item.level} ${isExpired ? 'expired' : ''}`;
+        card.innerHTML = `
+          <div class="deadline-head">
+            <div class="deadline-title-text">
+              <span style="font-family:var(--font-mono); font-size:0.75rem; color:var(--cyan);">${item.dayStr}</span>
+              <strong>${item.title}</strong>
+            </div>
+            ${countdownBadge}
+          </div>
+          <div class="deadline-body">${item.desc}</div>
+        `;
+        container.appendChild(card);
+      });
+
+      if (activeCount === 0 && !showExpiredDeadlines) {
+        container.innerHTML = `
+          <div style="text-align:center; padding:30px 10px; color:var(--text-3);">
+            <div style="font-size:2rem; margin-bottom:8px;">🎉</div>
+            <div style="font-weight:700; color:#fff;">All upcoming trip deadlines are clear!</div>
+            <div style="font-size:0.8rem; margin-top:4px;">No immediate time traps ahead. Enjoy your time!</div>
+          </div>
+        `;
+      }
+
+      // Toggle Expired Button
+      const toggleBtn = document.getElementById("toggleExpiredBtn");
+      const expiredCountText = document.getElementById("expiredCountText");
+      if (toggleBtn) {
+        if (expiredCount > 0) {
+          toggleBtn.style.display = "block";
+          if (expiredCountText) expiredCountText.innerText = expiredCount;
+          toggleBtn.innerText = showExpiredDeadlines ? `📁 Hide Expired Deadlines (${expiredCount})` : `📂 View Expired Deadlines (${expiredCount})`;
+        } else {
+          toggleBtn.style.display = "none";
+        }
+      }
+    }
+
+    function toggleExpiredDeadlines() {
+      triggerHaptic();
+      showExpiredDeadlines = !showExpiredDeadlines;
+      renderDeadlines();
     }
 
     // ==========================================
@@ -2294,9 +2549,7 @@
     function initTopics() {
       const saved = localStorage.getItem("tokyo_topics_v140");
       if (saved) {
-        try {
-          topics = JSON.parse(saved);
-        } catch (e) { topics = []; }
+        try { topics = JSON.parse(saved); } catch (e) { topics = []; }
       }
 
       if (!topics || topics.length === 0) {
@@ -2352,7 +2605,6 @@
       });
     }
 
-    // 5-Mode Strategy Switcher
     function selectMode(mode) {
       triggerHaptic();
       currentMode = mode;
@@ -2499,7 +2751,6 @@
       }
     }
 
-    // Copy Bubble Text Helper
     function copyBubbleText(text, btn) {
       triggerHaptic();
       if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -2532,7 +2783,6 @@
 
       const curTopic = getCurrentTopic();
 
-      // Welcome bubble
       const welcome = document.createElement("div");
       welcome.className = "bubble ai";
       welcome.innerHTML = `您好！我是您的 <strong>Gemini 3.8 Flash</strong> 專屬隨身全能導遊。已啟用<strong>實時日本時間與 GPS 雙感知</strong>！當前話題：『${curTopic.name}』。路上有任何狀況（找廁所、動漫潮玩熱點、美食補給、電梯無障礙捷徑、順路排程、突發更動），隨時問我！`;
@@ -2585,7 +2835,6 @@
       const curTopic = getCurrentTopic();
       const box = document.getElementById("chatMsgBox");
 
-      // Append user bubble
       const userBubble = document.createElement("div");
       userBubble.className = "bubble user";
       userBubble.innerText = text;
@@ -2593,7 +2842,6 @@
       input.value = "";
       box.scrollTop = box.scrollHeight;
 
-      // Save to topic history
       curTopic.history.push({ role: "user", parts: [{ text: text }] });
       saveTopics();
 
@@ -2611,7 +2859,6 @@
         return;
       }
 
-      // Configure thinking level & mode description
       let thinkingLevel = "MEDIUM";
       let loadText = "Gemini 3.8 Flash (實時時空感知運算中)...";
       let modeInstruction = "";
@@ -2638,7 +2885,6 @@
         modeInstruction = "【指定導遊模式】：簡潔 (Concise) - 標準敏捷行動派。2~4點條列核心行動，節奏明快，兼顧青少年喜好與效率。";
       }
 
-      // Add loading bubble
       const loadBubble = document.createElement("div");
       loadBubble.className = "bubble ai";
       loadBubble.innerText = loadText;
@@ -2705,7 +2951,6 @@
           const aiText = textParts.join("").trim() || (data.candidates[0].content.parts[0].text || "（無文字回應）");
           loadBubble.innerText = aiText;
 
-          // Add copy button
           const act = document.createElement("div");
           act.className = "bubble-actions";
           act.innerHTML = `
@@ -2745,6 +2990,21 @@
     initGeolocation();
     updateJSTUI();
     setInterval(updateJSTUI, 10000);
+
+    // Auto-init Pokemon map if on pokemon view
+    const pokeViewEl = document.getElementById("viewPokemon");
+    if (pokeViewEl && pokeViewEl.style.display !== "none") {
+      setTimeout(initOrRefreshPokemonMap, 200);
+    }
+
+    // Deep link support (?tab=gemini or #gemini)
+    try {
+      const urlParams = new URLSearchParams(window.location.search);
+      const targetTab = urlParams.get('tab') || window.location.hash.replace('#', '');
+      if (targetTab && VIEWS.includes(targetTab)) {
+        switchNavTab(targetTab);
+      }
+    } catch (e) {}
   </script>
 </body>
 </html>
