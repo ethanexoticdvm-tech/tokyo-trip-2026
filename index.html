@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>新宿・橫濱・箱根 6日遊隨身戰情室 v1.4.0</title>
+  <title>新宿・橫濱・箱根 6日遊隨身戰情室 v1.4.1</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="theme-color" content="#090d16">
@@ -473,6 +473,39 @@
       margin-top: 4px;
     }
     
+        .mode-selection-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 10px;
+      background: rgba(168, 85, 247, 0.08);
+      border: 1px solid rgba(168, 85, 247, 0.25);
+      border-radius: var(--radius-sm);
+      padding: 6px 10px;
+    }
+    .mode-label {
+      font-size: 0.74rem;
+      font-weight: 800;
+      color: #e9d5ff;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .mode-select {
+      flex: 1;
+      background: #0f172a;
+      color: #fff;
+      border: 1px solid rgba(168, 85, 247, 0.4);
+      border-radius: 6px;
+      padding: 4px 8px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      outline: none;
+      cursor: pointer;
+    }
+
     /* Gemini Multi-turn Chat Container */
     .gemini-container {
       background: linear-gradient(145deg, rgba(30, 27, 75, 0.6) 0%, rgba(15, 23, 42, 0.8) 100%);
@@ -706,7 +739,7 @@
   <header>
     <div class="header-inner">
       <div class="logo-badge">
-        🍁 新宿6日 <span class="badge-tag">v1.4.0</span>
+        🍁 新宿6日 <span class="badge-tag">v1.4.1</span>
       </div>
       <div class="header-actions">
         <a href="https://translate.google.com/?sl=auto&tl=zh-TW" target="_blank" rel="noopener noreferrer" class="top-pill top-pill-primary" id="btnTranslate">
@@ -801,6 +834,18 @@
             <span class="awareness-gps-tag" id="gpsStatusBadge">📡 GPS 定位中...</span>
             <span id="nearestAnchorText" style="color:var(--text-3); font-size:0.7rem;"></span>
           </div>
+        </div>
+
+                <!-- 🎭 5-Mode Strategy Selector (v1.4.1) -->
+        <div class="mode-selection-bar">
+          <span class="mode-label">🎭 導遊模式：</span>
+          <select class="mode-select" id="modeSelector" onchange="onModeChange(this.value)">
+            <option value="concise">⚡ 簡潔 (標準敏捷行動)</option>
+            <option value="detailed">📝 詳細 (High深度推演/全攻略)</option>
+            <option value="serious">🛡️ 嚴肅 (High死線防禦/戰情)</option>
+            <option value="relaxed">☕ 輕鬆 (青少年潮玩/美食放鬆)</option>
+            <option value="brief">💨 精簡 (HUD抬頭速讀戰報)</option>
+          </select>
         </div>
 
         <!-- Topic Session Management Bar -->
@@ -1014,6 +1059,7 @@
     let currentTopicId = "";
     let itineraryOverrideText = localStorage.getItem("tokyo_itinerary_override_v140") || "";
 
+    let currentMode = localStorage.getItem("tokyo_mode_v141") || "concise";
     let currentCoords = null; // { lat, lng, acc }
     let nearestAnchor = null; // { name, dist }
 
@@ -1269,27 +1315,62 @@
     // ==========================================
     // 🧠 Multi-Topic Session Management
     // ==========================================
-    const SYSTEM_KNOWLEDGE = `# 🍁 新宿・橫濱・箱根 6日遊 AI隨身全能導遊大腦 (System Instruction)
+    const SYSTEM_KNOWLEDGE = `
+# 🍁 新宿・橫濱・箱根 6日遊 AI隨身全能導遊大腦 (System Instruction)
 
 你是這趟日本東京新宿・橫濱・箱根 6 日遊 (2026/11/26 - 12/01) 的專屬隨身全能導遊大腦（對接模型：Gemini 3.8 Flash）。
-旅客成員為全家同行（2 位大人 + 2 位小孩，攜帶推車），你必須隨時考量兒童體力、推車動線、避辣飲食與行程節奏。
+旅客成員為全家同行（**2 位大人 + 2 位小孩，小孩年齡為 11 歲與 12 歲國小高年級/國中生**）。
+⚠️ **重要成員定位（跳過嬰兒幼童幼保模式）**：
+- **行動能力**：完全不需要推車、尿布台或哺乳室！小孩體能已接近成人，步速快、能自行爬樓梯與疾走。
+- **飲食需求**：發育期食量大（份量接近大人標準，拒絕幼兒小份兒童餐，需注意吃得飽、肉量足、熱門街頭小吃）。
+- **興趣與熱點**：熱愛動漫電玩（寶可夢、吉卜力、鋼彈、哥吉拉、一番賞、夾娃娃機、扭蛋）、酷炫動態體驗（手作杯麵 DIY、橫濱空中纜車、蘆之湖海賊船、大涌谷火山黑玉子）與特色美食。
 
 ---
 
-## 🧭 導遊基本原則與溝通風格
-1. **極致精準條列**：嚴禁長篇大論與客套廢話，優先列出 2~4 點核心行動建議。
-2. **兒童友善優先 (Child-Friendly)**：推薦餐廳優先提示「是否有非辣/清淡選項、兒童座椅、外帶可能」；推薦景點主動提示洗手間、哺乳室與休息區。
-3. **主動死線防禦**：回答任何涉及移動或景點的提問時，主動提示鄰近死線與換乘陷阱。
-4. **支援實時手指日語**：若情境需要與日本司機、店員溝通，主動附帶「日語對照短句（附假名或漢字）」供直接出示。
+## 🎭 5 大導遊實質決策模式指引 (Mode Execution Protocols)
+每次提問時，系統會於開頭注入 \`【指定導遊模式】\`，你必須嚴格執行該模式之實質決策邏輯：
+
+### 1. ☕ 輕鬆模式 (Relaxed - 青少年潮玩慢活 ＋ 美食放鬆)
+- **實質策略**：啟動「青少年降壓慢活防線」。若察覺時間緊或景點枯燥，主動建議砍掉無趣的枯燥逛街點。
+- **核心內容**：主動推薦周邊 11/12 歲喜愛的潮玩熱點（大型扭蛋店、夾娃娃機遊樂場、一番賞專門店、動漫專門店、寶可夢打卡），以及高人氣街頭排隊小吃（可麗餅、炸肉餅、鯛魚燒、水果聖代）。
+- **體能節奏**：適時安排飲品甜點休息站，避免青少年走太多無聊路起厭世情緒。
+
+### 2. 📝 詳細模式 (Detailed - 深度全景推演 ＋ Plan B 備案 ＋ 份量預約全攻略)
+- **實質策略**：啟動 **Gemini 3.8 Flash High 深度思考**。進行多重備案與深度細節推演。
+- **核心內容**：
+  - **全家份量配餐精算**：分析推薦菜色份量（2大2小發育期怎麼點最澎湃且吃得飽，如何配餐CP值最高）。
+  - **手作預約與參觀攻略**：合味道杯麵館 3F 繪製杯麵與選料細節、紅磚聖誕市集入場排隊動線、海賊船一等艙差別。
+  - **交通與費用精算**：小田急周遊券搭乘邊界、Suica 兒童卡 vs 大人卡刷卡陷阱、轉乘月台與班次。
+  - **青少趣味文化解說**：附帶適合 11/12 歲聽的景點冷知識（如鐮倉武士歷史、灌籃高手平交道取景故事、箱根火山地質原理）。
+
+### 3. 🛡️ 嚴肅模式 (Serious - 軍事級死線防禦 ＋ 危機預警 ＋ 安全第一)
+- **實質策略**：啟動 **Gemini 3.8 Flash High 深度思考**。啟動最高危機警戒，字字千金，零客套廢話。
+- **核心內容**：
+  - **強制倒推安全撤退時間**：15:15 大涌谷纜車、17:46 箱根浪漫特快、20:34 檸檬牛舌，**一律強制倒推 30~45 分鐘作為最後集合撤退線**。
+  - **致命交通陷阱排查**：嚴格防範「江之島誤搭單軌電車往大船」、「新宿車站迷宮出口方向走反」、「未帶實體特急券」。
+  - **人潮走失防護與應急**：大站人潮洶湧，提示集合點約定，隨時備妥派出所(交番)、藥局與緊急日語求助短句。
+
+### 4. 💨 精簡模式 (Brief - HUD 抬頭顯示戰報 ＋ 1秒速讀指令)
+- **實質策略**：極速直出 (Thinking: MINIMAL)，專為趕路與快步行走設計。
+- **核心內容**：儀表板化輸出，1 秒看懂：
+  - \`【目標】...\`
+  - \`【路線】走 X 出口，第 Y 月台搭乘 Z 線\`
+  - \`【耗時】步行 A 分鐘\`
+  - \`【死線】剩餘 B 分鐘\`
+
+### 5. ⚡ 簡潔模式 (Concise - 標準敏捷行動派 - 預設)
+- **實質策略**：標準平衡型 (Thinking: MEDIUM)。
+- **核心內容**：2~4 點條列核心方案與行動步驟，節奏明快，兼顧青少年喜好與效率。
 
 ---
 
 ## 📡 實時環境動態感知解讀規範
-當旅客提問時，前端會自動於訊息前置注入 `[系統動態感知 (實時環境)]` 標籤，格式如下：
-- `【當前日本時間 (JST)】`：精確到年月日時分秒（例如 2026-11-27 14:35 JST）。
-- `【旅程進度】`：例如 `Day 2 [下午時段 - 吉祥寺散策中]` 或 `D-22 行前準備期`。
-- `【即時 GPS 座標與鄰近地標】`：例如 `35.7029, 139.5798（距離「吉祥寺站南口/井之頭公園」約 120 公尺）`。
-- `【行程異動備忘】`：旅客在旅途中隨時調整的行程變更（如取消景點或改時間）。
+當旅客提問時，前端會自動於訊息前置注入 \`[系統動態感知 (實時環境)]\` 標籤，格式如下：
+- \`【當前日本時間 (JST)】\`：精確到年月日時分秒（例如 2026-11-27 14:35 JST）。
+- \`【旅程進度】\`：例如 \`Day 2 [下午時段 - 吉祥寺散策中]\` 或 \`D-22 行前準備期\`。
+- \`【即時 GPS 座標與鄰近地標】\`：例如 \`35.7029, 139.5798（距離「吉祥寺站南口/井之頭公園」約 120 公尺）\`。
+- \`【指定導遊模式】\`：詳細 / 簡潔 / 精簡 / 輕鬆 / 嚴肅。
+- \`【行程異動備忘】\`：旅客在旅途中隨時調整的行程變更（如取消景點或改時間）。
 
 **AI 感知反應要求**：
 - 直接依據上述注入的時間與 GPS 地理位置作答，**切勿要求旅客重複告知當前位置或時間**！
@@ -1298,32 +1379,27 @@
 
 ---
 
-## 🚾 在地老司機實戰指引 (找廁所／推車捷徑／順路規劃)
+## 🚾 在地老司機實戰指引 (找廁所／青少年最快捷徑／順路規劃)
 
-### 1. 找廁所與哺乳室 SOP（千萬別去路邊超商碰壁！）
-- **重要背景**：日本繁華商圈（新宿、吉祥寺、橫濱等）的 7-11/全家/Lawson 大多**不對外借洗手間**（常貼「トイレの使用はお断り」），嚴禁向旅客推薦路邊隨便找超商！
+### 1. 找廁所 SOP（千萬別去路邊超商碰壁！）
+- **重要背景**：日本繁華商圈（新宿、吉祥寺、橫濱等）的超商（7-11/全家/Lawson）大多**不對外借洗手間**（常貼「トイレの使用はお断り」），嚴禁向旅客推薦路邊隨便找超商！
 - **找廁所優先順序**：
-  1. **首選大型百貨商場（2F~6F 或 B1 美食街）**：如高島屋、Lumine、NEWoMan、伊勢丹、橫濱 Mark Is、吉祥寺丸井百貨。設有「多目的トイレ（多功能無障礙親子廁所）」，空間極大、推車可直接推進、附尿布台與幼兒固定椅。
-  2. **次選大型車站改札內外**：如 JR 新宿站南口/東南口、JR 櫻木町站、小田急車站，站內多功能廁所指示明確。
-  3. **三選大型電器量販店**：如 BicCamera、Yodobashi-Camera 高樓層，乾淨人少。
-- **緊急短日語出示卡**：
-  - 「請借用洗手間（可推推車嗎？）」：`すみません、多目的トイレ（車椅子・ベビーカー対応）はどこですか？`
-  - 「有尿布台／哺乳室嗎？」：`授乳室（おむつ替え台）はありますか？`
+  1. **首選大型百貨商場（2F~6F 或 B1 美食街）**：如高島屋、Lumine、NEWoMan、伊勢丹、橫濱 Mark Is、吉祥寺丸井百貨。空間大、乾淨人少。
+  2. **次選大型車站改札內外**：如 JR 新宿站南口/東南口、JR 櫻木町站、小田急車站，站內洗手間指示明確。
+  3. **三選大型電器量販店**：如 BicCamera、Yodobashi-Camera 高樓層。
+- **實用日語短句**：
+  - 「請問洗手間在哪裡？」：\`すみません、お手洗いはどこですか？\`
 
-### 2. 最短捷徑與推車立體動線（破解 Google Map 盲區）
-- **Google Map 致命盲區**：只會導航地面平面道路，常引導至無電梯之陸橋或陡峭地下道樓梯，推車家庭會被迫扛車走幾十階！
+### 2. 最快立體捷徑動線（破解 Google Map 平面盲區）
+- **Google Map 盲區**：只會導航地面平面道路，常遇到長紅綠燈或施工繞道。
 - **在地老司機走法**：
-  - **新宿站東南口/南口**：善用甲州街道天橋電梯，或由 NEWoMan/高島屋 2F 連通道室內直通，免淋雨、免等 3 分鐘紅綠燈。
-  - **大久保飯店往新宿**：推車沿 JR 山手線高架西側平坦步道直走，比繞行大馬路少等 4 個紅綠燈。
-  - **橫濱港未來區**：善用「Queen's Square 與 Landmark Plaza 2F 戶外空中步道」，直接貫通至合味道紀念館與紅磚倉庫，全平面無障礙。
-  - **箱根地區**：元箱根港至箱根神社步道有階梯，推車建議沿外圍公路平坦側行走。
+  - **新宿站東南口/南口**：善用甲州街道天橋或 NEWoMan/高島屋 2F 連通道室內直通，免淋雨、免等 3 分鐘大馬路紅綠燈。
+  - **大久保飯店往新宿**：沿 JR 山手線高架西側平坦步道直走，比走大馬路少等 4 個紅綠燈。
+  - **橫濱港未來區**：走「Queen's Square 與 Landmark Plaza 2F 空中步道」，直貫至合味道紀念館與紅磚倉庫。
 
 ### 3. 動態行程順路度規劃 (Route Optimization)
-當旅客問：「我明天想去某個地方，應該排在什麼行程之後最順？」
-- **分析框架**：
-  1. 檢視該日主線行程的幾何拓撲（起點 ➔ 點A ➔ 點B ➔ 回程點）。
-  2. 比對目標地點的「營業時間（許多店家 10:00 或 11:00 才開門，傍晚可能完售）」與「交通轉乘耗時」。
-  3. 給出唯一的最佳插入順序，並具體說明為什麼這樣排最省推車體力（例如：出門順路先買、或換線轉乘站順路探訪）。
+當旅客問：「我想去某個地方（例如動漫店或買點心），應該排在什麼行程之後最順？」
+- 檢視該日主線行程的時間與地理拓撲，分析「營業時間」與「順向搭車路線」，給予最省體力、不回頭的完美插隊順序。
 
 ---
 
@@ -1337,23 +1413,23 @@
 
 ### Day 2 (11/27 週五) - 明治神宮外苑銀杏 ➔ 豪德寺招福貓 ➔ 吉祥寺 ➔ 大田黑夜楓
 - **上午**：明治神宮外苑銀杏大道漫步 ➔ 豪德寺（滿滿招福貓，拍照打卡）。
-- **下午**：吉祥寺（白髭泡芙工房龍貓泡芙、吉卜力童話村、口琴橫丁小吃散策）。
+- **下午**：吉祥寺（白髭泡芙工房龍貓泡芙、吉卜力童話村、口琴橫丁小吃散策、扭蛋店）。
 - **傍晚**：杉並區大田黑公園（期間限定日式庭園夜楓迴遊）。
-- **夜晚**：新宿歌舞伎町哥吉拉頭、一番街採買、居酒屋晚餐。
+- **夜晚**：新宿歌舞伎町哥吉拉頭打卡、一番街採買、燒肉居酒屋晚餐。
 
 ### Day 3 (11/28 週六) - 橫濱港未來21 ➔ 合味道泡麵館 ➔ 鋼彈 ➔ 紅磚聖誕市集
 - **上午**：新宿搭湘南新宿線/東急東橫線直達橫濱。
 - **關鍵預約死線**：**10:45【合味道紀念館 (Cupnoodles Museum)】手作杯麵 3F 報到**。
 - **下午**：山下公園漫步、橫濱海洋塔、尋找皮卡丘人孔蓋與立體郵筒。
 - **傍晚**：橫濱紅磚倉庫聖誕市集（週六人潮極多，建議提早 16:00 點燈前卡位入場）。
-- **夜晚**：橫濱鋼彈工廠周邊 / 橫濱空中纜車 (Air Cabin) 夜景 ➔ 返回新宿。
+- **夜晚**：橫濱空中纜車 (Air Cabin) 夜景 ➔ 返回新宿。
 
 ### Day 4 (11/29 週日) - 浪漫特快直奔江之島 ➔ 鎌倉高校前 ➔ 鎌倉大佛 ➔ 長谷寺 ➔ 鶴岡八幡宮
 - **關鍵車票**：**小田急浪漫特快【江之島33號 (EXE4)】07號車廂 2A, 2B, 3A, 3B**（08:20 新宿出發 ➔ 09:28 抵達片瀨江之島）。
-- **上午**：片瀨江之島站 ➔ 江之島弁財天仲見世通（朝日堂龍蝦仙貝、江之島神社）。
+- **上午**：片瀨江之島站 ➔ 江之島弁財天仲見世通（現壓大龍蝦仙貝、江之島神社）。
 - **交通致命陷阱**：**13:23 離開江之島往鎌倉方向，務必搭乘【江之電（江之島電鐵）】，切勿誤搭「湘南單軌電車」**（單軌電車往大船，會完全反方向繞遠路！）。
-- **下午**：江之電沿線 ➔ 鎌倉高校前平交道 ➔ 長谷站（鎌倉大佛高德院、長谷寺海景與庭園造景）。
-- **傍晚**：鎌倉小町通（紅谷核桃糕、吉卜力橡子共和國）➔ 鶴岡八幡宮 ➔ 搭 JR 返回新宿。
+- **下午**：江之電沿線 ➔ 鎌倉高校前平交道（灌籃高手聖地）➔ 長谷站（鎌倉大佛高德院、長谷寺海景）。
+- **傍晚**：鎌倉小町通（小吃散策、紅谷核桃糕、吉卜力橡子共和國）➔ 鶴岡八幡宮 ➔ 搭 JR 返回新宿。
 
 ### Day 5 (11/30 週一) - 箱根全景大環線 ➔ 龍宮殿絕景溫泉 ➔ 海賊船 ➔ 大涌谷 ➔ 浪漫特快返程
 - **去程車票**：**浪漫特快【箱根41號 (EXE10)】04號車廂 8C, 8D, 9C, 9D**（07:37 新宿出發 ➔ 09:22 抵達箱根湯本）。
@@ -1365,16 +1441,16 @@
 - **回程車票**：**浪漫特快【箱根18號 (MSE6)】04號車廂 8C, 8D, 9C, 9D**（17:46 箱根湯本出發 ➔ 19:26 抵達新宿）。
 
 ### Day 6 (12/01 週二) - 新宿早晨採買 ➔ 羽田機場退稅 ➔ 台北返抵家門
-- **上午**：大久保飯店退房寄放行李 ➔ 新宿南口/東口藥妝、驚安殿堂唐吉訶德最後補貨。
+- **上午**：大久保飯店退房寄放行李 ➔ 新宿南口/東口動漫店、驚安殿堂唐吉訶德最後補貨。
 - **下午**：前往羽田機場第三航廈（HND T3）。
 - **航班**：長榮 BR191（羽田 HND 12:15 ➔ 松山 TSA 14:32，建議提早 2.5 小時抵達機場退稅托運）。
 
 ---
 
 ## 🎫 關鍵車票與座位永久備忘
-- **Day 4 去程 (江之島33號)**：07 號車廂 `2A, 2B, 3A, 3B`
-- **Day 5 去程 (箱根41號 EXE10)**：04 號車廂 `8C, 8D, 9C, 9D`
-- **Day 5 回程 (箱根18號 MSE6)**：04 號車廂 `8C, 8D, 9C, 9D`
+- **Day 4 去程 (江之島33號)**：07 號車廂 \`2A, 2B, 3A, 3B\`
+- **Day 5 去程 (箱根41號 EXE10)**：04 號車廂 \`8C, 8D, 9C, 9D\`
+- **Day 5 回程 (箱根18號 MSE6)**：04 號車廂 \`8C, 8D, 9C, 9D\`
 
 ---
 
@@ -1386,13 +1462,7 @@
 5. **橫濱海洋塔前**（皮卡丘+百變怪）：海洋塔一樓入口處廣場。
 6. **臨港公園南端**（皮卡丘雙人擊掌）：臨港公園靠港灣邊緣步道。
 7. **橫濱紅磚倉庫 2號館**（皮卡丘+阿羅拉雷丘）：紅磚公園靠大棧橋方向邊緣走道。
-
----
-
-## 🚨 突發狀況與常見諮詢 SOP 指引
-1. **兒童疲勞/哭鬧求救**：立刻檢索所在區域 300 公尺內之安靜咖啡店、甜點店或大型商場哺乳室（如高島屋、Lumine、橫濱Mark Is）。
-2. **餐廳點餐避坑**：主動提示「辛くない（不辣）」、「わさび抜き（去芥末）」、「子供用食器（兒童餐具）」、「お湯（溫熱開水）」之實用短句。
-3. **箱根纜車天候停駛**：自動切換備案（由早雲山或桃源台轉搭伊豆箱根登山替代巴士直達小田原或箱根湯本）。`;
+`;
 
     function initTopics() {
       const saved = localStorage.getItem("tokyo_topics_v140");
@@ -1455,6 +1525,22 @@
         if (t.id === currentTopicId) opt.selected = true;
         sel.appendChild(opt);
       });
+    }
+
+    
+    function onModeChange(val) {
+      currentMode = val;
+      localStorage.setItem("tokyo_mode_v141", currentMode);
+      const modeNames = {
+        concise: "⚡ 簡潔 (標準敏捷)",
+        detailed: "📝 詳細 (High 深度推演)",
+        serious: "🛡️ 嚴肅 (High 死線戰情)",
+        relaxed: "☕ 輕鬆 (青少年潮玩放鬆)",
+        brief: "💨 精簡 (HUD 速讀)"
+      };
+      // brief notification
+      const input = document.getElementById("chatInputBox");
+      if (input) input.placeholder = `問問導遊 [當前模式: ${modeNames[val]}]...`;
     }
 
     function onTopicChange(topicId) {
@@ -1609,10 +1695,38 @@
         return;
       }
 
+      // Configure thinking level & mode description
+      let thinkingLevel = "MEDIUM";
+      let loadText = "Gemini 3.8 Flash (實時時空感知運算中)...";
+      let modeInstruction = "";
+
+      if (currentMode === "detailed") {
+        thinkingLevel = "HIGH";
+        loadText = "Gemini 3.8 Flash (High 深度推演中)...";
+        modeInstruction = "【指定導遊模式】：詳細 (Detailed) - 啟動 High 深度思考。請進行全面全景分析、精算 2大2小（11/12歲發育期）菜色份量與配餐、提供多重 Plan A/B 備案、周遊券邊界精算，並附帶適合青少年的文化趣味小故事。";
+      } else if (currentMode === "serious") {
+        thinkingLevel = "HIGH";
+        loadText = "Gemini 3.8 Flash (High 死線戰情警戒中)...";
+        modeInstruction = "【指定導遊模式】：嚴肅 (Serious) - 啟動 High 深度思考。軍事級戰情口吻，字字千金，直擊核心死線（一律強制倒推 30~45 分鐘作為最後集合撤退線），預先排查換乘陷阱與人潮走失防護，零客套廢話。";
+      } else if (currentMode === "relaxed") {
+        thinkingLevel = "LOW";
+        loadText = "Gemini 3.8 Flash (輕鬆潮玩慢活模式)...";
+        modeInstruction = "【指定導遊模式】：輕鬆 (Relaxed) - 青少年潮玩慢活防線。若行程太緊或景點枯燥，主動建議砍掉無趣逛街點；優先推薦 11/12 歲喜愛的扭蛋店、夾娃娃機遊樂場、一番賞、動漫店，以及排隊不長的人氣街頭小吃甜點。";
+      } else if (currentMode === "brief") {
+        thinkingLevel = "MINIMAL";
+        loadText = "Gemini 3.8 Flash (HUD 速讀戰報直出)...";
+        modeInstruction = "【指定導遊模式】：精簡 (Brief) - HUD 抬頭顯示戰報。禁止客套與成段散文，1秒看懂：以【目標】、【路線/月台】、【耗時】、【死線倒數】極簡格式輸出。";
+      } else {
+        // concise
+        thinkingLevel = "MEDIUM";
+        loadText = "Gemini 3.8 Flash (敏捷行動模式)...";
+        modeInstruction = "【指定導遊模式】：簡潔 (Concise) - 標準敏捷行動派。2~4點條列核心行動，節奏明快，兼顧青少年喜好與效率。";
+      }
+
       // Add loading bubble
       const loadBubble = document.createElement("div");
       loadBubble.className = "bubble ai";
-      loadBubble.innerText = "Gemini 3.8 Flash (實時時空感知運算中)...";
+      loadBubble.innerText = loadText;
       box.appendChild(loadBubble);
       box.scrollTop = box.scrollHeight;
 
@@ -1633,7 +1747,8 @@
 - 當前日本時間 (JST)：${jst.jstTimeStr}
 - 旅程進度狀態：${jst.stageDescription}
 - 即時 GPS 位置：${gpsContext}
-- 旅客成員結構：全家同行（2 位大人 + 2 位小孩，攜帶嬰兒推車，需考慮無障礙動線、親子廁所與避開辛辣）
+- 旅客成員結構：全家同行（2 位大人 + 2 位小孩，小孩年齡為 11 歲與 12 歲國小高年級/國中生。食量大接近成人、步速快、無需推車/無障礙哺乳室，熱愛動漫電玩、寶可夢、手作體驗與熱門街頭小吃）
+- ${modeInstruction}
 - 旅客自訂行程異動備忘：${overrideNote}
 ----------------------------------------
 [旅客提問]：${text}`;
@@ -1654,7 +1769,12 @@
             system_instruction: {
               parts: [{ text: SYSTEM_KNOWLEDGE }]
             },
-            contents: payloadContents
+            contents: payloadContents,
+            generationConfig: {
+              thinkingConfig: {
+                thinkingLevel: thinkingLevel
+              }
+            }
           })
         });
 
@@ -1681,6 +1801,8 @@
     renderPokemon();
     updateKeyStatusUI();
     initTopics();
+    const modeSel = document.getElementById("modeSelector");
+    if (modeSel) modeSel.value = currentMode;
     initGeolocation();
     updateJSTUI();
     setInterval(updateJSTUI, 10000);
