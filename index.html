@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>新宿・橫濱・箱根 6日遊隨身戰情室 v1.3.1</title>
+  <title>新宿・橫濱・箱根 6日遊隨身戰情室 v1.4.0</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="theme-color" content="#090d16">
@@ -354,6 +354,125 @@
     }
     .btn-maps:active { background: #0369a1; }
 
+    /* v1.4.0 Real-time Awareness & Topic Management */
+    .awareness-banner {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(168, 85, 247, 0.3);
+      border-radius: var(--radius-sm);
+      padding: 8px 12px;
+      margin-bottom: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      font-size: 0.76rem;
+    }
+    .awareness-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--text-2);
+      flex-wrap: wrap;
+    }
+    .awareness-tag {
+      background: rgba(244, 63, 94, 0.2);
+      color: #fda4af;
+      border: 1px solid rgba(244, 63, 94, 0.4);
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-weight: 700;
+      font-size: 0.7rem;
+    }
+    .awareness-gps-tag {
+      background: rgba(16, 185, 129, 0.2);
+      color: #6ee7b7;
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-weight: 700;
+      font-size: 0.7rem;
+    }
+    .topic-management-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      margin-bottom: 10px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-sm);
+      padding: 6px 8px;
+    }
+    .topic-select-wrap {
+      flex: 1;
+      min-width: 0;
+    }
+    .topic-select-wrap select {
+      width: 100%;
+      background: #0f172a;
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 6px;
+      padding: 5px 8px;
+      font-size: 0.76rem;
+      outline: none;
+      cursor: pointer;
+    }
+    .topic-btn-group {
+      display: flex;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+    .btn-topic-action {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: var(--text-1);
+      padding: 4px 7px;
+      border-radius: 6px;
+      font-size: 0.72rem;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .btn-topic-action:active { transform: scale(0.96); }
+    .btn-topic-action.btn-danger {
+      color: #f87171;
+      border-color: rgba(239, 68, 68, 0.3);
+    }
+    .itinerary-override-box {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px dashed rgba(255, 255, 255, 0.15);
+      border-radius: var(--radius-sm);
+      margin-bottom: 12px;
+      font-size: 0.76rem;
+    }
+    .itinerary-override-box summary {
+      padding: 7px 10px;
+      cursor: pointer;
+      color: var(--text-2);
+      font-weight: 600;
+      user-select: none;
+    }
+    .itinerary-override-content {
+      padding: 8px 10px 10px;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .itinerary-override-content textarea {
+      width: 100%;
+      background: #090d16;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      color: #fff;
+      padding: 6px 8px;
+      font-size: 0.75rem;
+      resize: vertical;
+      outline: none;
+      box-sizing: border-box;
+    }
+    .override-hint {
+      color: var(--text-3);
+      font-size: 0.68rem;
+      margin-top: 4px;
+    }
+    
     /* Gemini Multi-turn Chat Container */
     .gemini-container {
       background: linear-gradient(145deg, rgba(30, 27, 75, 0.6) 0%, rgba(15, 23, 42, 0.8) 100%);
@@ -587,7 +706,7 @@
   <header>
     <div class="header-inner">
       <div class="logo-badge">
-        🍁 新宿6日 <span class="badge-tag">v1.3.1</span>
+        🍁 新宿6日 <span class="badge-tag">v1.4.0</span>
       </div>
       <div class="header-actions">
         <a href="https://translate.google.com/?sl=auto&tl=zh-TW" target="_blank" rel="noopener noreferrer" class="top-pill top-pill-primary" id="btnTranslate">
@@ -670,13 +789,48 @@
           <span id="keyStatusText">🟡 未設定 API Key</span>
           <button onclick="promptApiKey()" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #fff; font-size: 0.72rem; padding: 4px 10px; border-radius: 6px; cursor: pointer;">🔑 設定/更換 Key</button>
         </div>
-
-        <div class="chat-controls-row">
-          <span>🧠 具備多輪連貫對話與完整 6 天行程記憶</span>
-          <button class="btn-clear-chat" onclick="clearChatHistory()">清空對話紀錄</button>
+        <!-- Real-time Temporal & Spatial Awareness Banner -->
+        <div class="awareness-banner">
+          <div class="awareness-item">
+            <span>🕒 日本時間：</span>
+            <strong id="jstClockText" style="color:#fff;">--:--</strong>
+            <span class="awareness-tag" id="tripStageBadge">📅 計算中</span>
+          </div>
+          <div class="awareness-item">
+            <span>📍 即時位置：</span>
+            <span class="awareness-gps-tag" id="gpsStatusBadge">📡 GPS 定位中...</span>
+            <span id="nearestAnchorText" style="color:var(--text-3); font-size:0.7rem;"></span>
+          </div>
         </div>
 
-        <!-- Quick Chips -->
+        <!-- Topic Session Management Bar -->
+        <div class="topic-management-bar">
+          <div class="topic-select-wrap">
+            <select id="topicSelector" onchange="onTopicChange(this.value)">
+              <!-- Populated by JS -->
+            </select>
+          </div>
+          <div class="topic-btn-group">
+            <button class="btn-topic-action" onclick="createNewTopic()" title="開啟新話題">➕ 新話題</button>
+            <button class="btn-topic-action" onclick="renameCurrentTopic()" title="改名">✏️</button>
+            <button class="btn-topic-action btn-danger" onclick="deleteCurrentTopic()" title="刪除">🗑️</button>
+            <button class="btn-topic-action" onclick="exportTopicsBackup()" title="導出對話備份">📥 備份</button>
+          </div>
+        </div>
+
+        <!-- Dynamic Funliday Itinerary Override Box -->
+        <details class="itinerary-override-box">
+          <summary>📝 Funliday 行程臨時異動備忘（點此輸入，AI即時感知）</summary>
+          <div class="itinerary-override-content">
+            <textarea id="itineraryOverrideInput" placeholder="例如：明天取消豪德寺，改下午去新宿御苑，晚上去居酒屋..." rows="2" onchange="saveItineraryOverride()"></textarea>
+            <div class="override-hint">* 自動儲存於手機本機，發送訊息時會自動帶入即時上下文，AI 將優先按新行程推算順路與死線。</div>
+          </div>
+        </details>
+
+        <div class="chat-controls-row">
+          <span>🧠 連貫對話記憶（本話題獨立保存）</span>
+          <button class="btn-clear-chat" onclick="clearCurrentTopicChat()">清空本話題紀錄</button>
+        </div>
         <div class="chip-scroll">
           <div class="chat-chip" onclick="askChip('拍菜單問推薦：請推薦適合2位大人與2位小孩吃的熱門招牌菜，避開辛辣，告訴我們如何點餐？')">📋 菜單推薦(避辣)</div>
           <div class="chat-chip" onclick="askChip('小朋友走累了，這附近有什麼可以坐下來休息、喝熱飲或吃甜點的好地方？')">☕ 小朋友累了找休息</div>
@@ -839,12 +993,200 @@
       { id: "pk7", name: "橫濱紅磚倉庫 2號館 (皮卡丘+阿羅拉雷丘)", loc: "紅磚公園靠大棧橋方向邊緣走道", q: "Yokohama Red Brick Warehouse" }
     ];
 
-    // --- State Management ---
-    let checkedPokes = JSON.parse(localStorage.getItem("tokyo_poke_checks_v131") || localStorage.getItem("tokyo_poke_checks_v130") || localStorage.getItem("tokyo_poke_checks_v120") || "{}");
-    let geminiApiKey = localStorage.getItem("tokyo_gemini_key_v131") || localStorage.getItem("tokyo_gemini_key_v130") || localStorage.getItem("tokyo_gemini_key_v120") || "";
-    let chatHistory = JSON.parse(localStorage.getItem("tokyo_gemini_history_v131") || localStorage.getItem("tokyo_gemini_history_v130") || localStorage.getItem("tokyo_gemini_history_v120") || "[]");
+    // ==========================================
+    // 🍁 v1.4.0 State & Real-Time Awareness System
+    // ==========================================
+    let checkedPokes = JSON.parse(
+      localStorage.getItem("tokyo_poke_checks_v140") ||
+      localStorage.getItem("tokyo_poke_checks_v131") ||
+      localStorage.getItem("tokyo_poke_checks_v130") ||
+      "{}"
+    );
 
-    // --- Cross-Platform Funliday Smart Launcher (Android Intent + iOS Safe Dispatch) ---
+    let geminiApiKey =
+      localStorage.getItem("tokyo_gemini_key_v140") ||
+      localStorage.getItem("tokyo_gemini_key_v131") ||
+      localStorage.getItem("tokyo_gemini_key_v130") ||
+      localStorage.getItem("tokyo_gemini_key_v120") ||
+      "";
+
+    let topics = [];
+    let currentTopicId = "";
+    let itineraryOverrideText = localStorage.getItem("tokyo_itinerary_override_v140") || "";
+
+    let currentCoords = null; // { lat, lng, acc }
+    let nearestAnchor = null; // { name, dist }
+
+    // 18 Core Trip Geographic Anchors
+    const GEO_ANCHORS = [
+      { name: "JR 新宿站 (東南口/南口)", lat: 35.6897, lng: 139.7006 },
+      { name: "Apartment Hotel Yumenoya (大久保飯店)", lat: 35.7008, lng: 139.7002 },
+      { name: "牛たんの檸檬 (牛舌檸檬)", lat: 35.6946, lng: 139.6975 },
+      { name: "明治神宮外苑銀杏並木", lat: 35.6738, lng: 139.7188 },
+      { name: "豪德寺 (招福貓)", lat: 35.6534, lng: 139.6477 },
+      { name: "吉祥寺站 / 井之頭公園", lat: 35.7029, lng: 139.5798 },
+      { name: "大田黑公園 (夜楓)", lat: 35.7011, lng: 139.6133 },
+      { name: "JR 櫻木町站 (橫濱)", lat: 35.4510, lng: 139.6309 },
+      { name: "橫濱合味道紀念館 (泡麵館)", lat: 35.4554, lng: 139.6391 },
+      { name: "橫濱紅磚倉庫", lat: 35.4526, lng: 139.6428 },
+      { name: "山下公園 / 冰川丸", lat: 35.4458, lng: 139.6508 },
+      { name: "片瀨江之島站", lat: 35.3087, lng: 139.4874 },
+      { name: "江之島弁財天仲見世通", lat: 35.2995, lng: 139.4812 },
+      { name: "長谷站 (鎌倉大佛 / 長谷寺)", lat: 35.3115, lng: 139.5358 },
+      { name: "鎌倉站 / 小町通", lat: 35.3190, lng: 139.5505 },
+      { name: "箱根湯本站", lat: 35.2333, lng: 139.1039 },
+      { name: "龍宮殿 (絕景溫泉)", lat: 35.2155, lng: 139.0118 },
+      { name: "元箱根港 / 箱根神社平和鳥居", lat: 35.2014, lng: 139.0279 },
+      { name: "大涌谷 (黑玉子/空中纜車)", lat: 35.2443, lng: 139.0198 },
+      { name: "羽田機場第三航廈 (HND T3)", lat: 35.5494, lng: 139.7798 }
+    ];
+
+    function calculateDistance(lat1, lon1, lat2, lon2) {
+      const R = 6371e3; // meters
+      const p1 = lat1 * Math.PI / 180;
+      const p2 = lat2 * Math.PI / 180;
+      const dp = (lat2 - lat1) * Math.PI / 180;
+      const dl = (lon2 - lon1) * Math.PI / 180;
+      const a = Math.sin(dp/2) * Math.sin(dp/2) +
+                Math.cos(p1) * Math.cos(p2) *
+                Math.sin(dl/2) * Math.sin(dl/2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+      return Math.round(R * c);
+    }
+
+    function updateNearestAnchor(lat, lng) {
+      let closest = null;
+      let minDis = Infinity;
+      GEO_ANCHORS.forEach(a => {
+        const d = calculateDistance(lat, lng, a.lat, a.lng);
+        if (d < minDis) {
+          minDis = d;
+          closest = { name: a.name, dist: d };
+        }
+      });
+      nearestAnchor = closest;
+      const txtEl = document.getElementById("nearestAnchorText");
+      if (txtEl && closest) {
+        if (closest.dist < 1500) {
+          txtEl.innerText = `（近「${closest.name}」約 ${closest.dist}m）`;
+        } else {
+          txtEl.innerText = `（最近錨點: ${closest.name} ${(closest.dist/1000).toFixed(1)}km）`;
+        }
+      }
+    }
+
+    function initGeolocation() {
+      const badge = document.getElementById("gpsStatusBadge");
+      if (!navigator.geolocation) {
+        if (badge) badge.innerText = "瀏覽器不支援 GPS";
+        return;
+      }
+      if (badge) badge.innerText = "📡 搜尋 GPS 中...";
+
+      const geoSuccess = (pos) => {
+        currentCoords = {
+          lat: pos.coords.latitude,
+          lng: pos.coords.longitude,
+          acc: Math.round(pos.coords.accuracy)
+        };
+        if (badge) {
+          badge.innerText = `🟢 GPS 已鎖定 (±${currentCoords.acc}m)`;
+          badge.className = "awareness-gps-tag";
+        }
+        updateNearestAnchor(currentCoords.lat, currentCoords.lng);
+      };
+
+      const geoError = (err) => {
+        if (badge) {
+          badge.innerText = "⚪ GPS 依排程推估中";
+          badge.className = "awareness-tag";
+        }
+      };
+
+      navigator.geolocation.watchPosition(geoSuccess, geoError, {
+        enableHighAccuracy: true,
+        timeout: 12000,
+        maximumAge: 10000
+      });
+    }
+
+    function getJSTInfo() {
+      const now = new Date();
+      const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+      const jstDate = new Date(utc + (3600000 * 9));
+
+      const y = jstDate.getFullYear();
+      const m = String(jstDate.getMonth() + 1).padStart(2, '0');
+      const d = String(jstDate.getDate()).padStart(2, '0');
+      const hh = String(jstDate.getHours()).padStart(2, '0');
+      const mm = String(jstDate.getMinutes()).padStart(2, '0');
+      const ss = String(jstDate.getSeconds()).padStart(2, '0');
+      const daysOfWeek = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+      const dow = daysOfWeek[jstDate.getDay()];
+
+      const jstTimeStr = `${y}-${m}-${d} ${hh}:${mm}:${ss} (${dow}) JST`;
+      const jstClockShort = `${hh}:${mm}`;
+
+      const tripStart = new Date("2026-11-26T00:00:00+09:00");
+      const tripEnd = new Date("2026-12-01T23:59:59+09:00");
+
+      let stageBadge = "";
+      let stageDescription = "";
+
+      if (jstDate < tripStart) {
+        const diffDays = Math.ceil((tripStart - jstDate) / (1000 * 60 * 60 * 24));
+        stageBadge = `📅 D-${diffDays} 行前籌備`;
+        stageDescription = `距離 11/26 啟程出發還有 ${diffDays} 天（行前準備與預約確認期）`;
+      } else if (jstDate > tripEnd) {
+        stageBadge = `🎉 旅程圓滿回顧`;
+        stageDescription = `6日東京新宿・橫濱・箱根之旅已圓滿結束`;
+      } else {
+        const hr = jstDate.getHours();
+        let timePeriod = "白天時段";
+        if (hr < 11) timePeriod = "上午時段";
+        else if (hr < 14) timePeriod = "午間時段";
+        else if (hr < 17) timePeriod = "下午時段";
+        else if (hr < 21) timePeriod = "傍晚/晚餐時段";
+        else timePeriod = "夜晚/休息時段";
+
+        if (d === "26") {
+          stageBadge = `🚀 D1 [啟程➔羽田➔牛舌]`;
+          stageDescription = `Day 1 (${timePeriod})：松山飛抵羽田 ➔ 前往大久保飯店安頓 ➔ 今晚核心死線：20:34【牛たんの檸檬 (牛舌檸檬)】預約候位`;
+        } else if (d === "27") {
+          stageBadge = `🍂 D2 [銀杏➔吉祥寺➔夜楓]`;
+          stageDescription = `Day 2 (${timePeriod})：神宮外苑銀杏 ➔ 豪德寺 ➔ 吉祥寺散策 ➔ 傍晚大田黑公園夜楓 ➔ 新宿晚餐`;
+        } else if (d === "28") {
+          stageBadge = `🍜 D3 [橫濱泡麵➔市集]`;
+          stageDescription = `Day 3 (${timePeriod})：橫濱港未來21 ➔ 關鍵死線：10:45【合味道杯麵館】3F報到 ➔ 寶可夢尋寶 ➔ 傍晚紅磚倉庫聖誕市集`;
+        } else if (d === "29") {
+          stageBadge = `🌊 D4 [江之島➔長谷寺➔鎌倉]`;
+          stageDescription = `Day 4 (${timePeriod})：浪漫特快江之島33號 (08:20) ➔ 仲見世通 ➔ 13:23 江之電往長谷寺 ➔ 鎌倉小町通/八幡宮`;
+        } else if (d === "30") {
+          stageBadge = `♨️ D5 [箱根大環線➔龍宮殿]`;
+          stageDescription = `Day 5 (${timePeriod})：浪漫特快箱根41號 (07:37) ➔ 龍宮殿絕景風呂 ➔ 12:00 返元箱根港 ➔ 海賊船 ➔ 🚨致命死線：15:15 大涌谷纜車必須準時下山！`;
+        } else if (d === "01") {
+          stageBadge = `✈️ D6 [最後採買➔羽田返台]`;
+          stageDescription = `Day 6 (${timePeriod})：新宿大久保退房 ➔ 藥妝補貨 ➔ 前往羽田 T3 採買退稅 ➔ 搭乘 BR191 (12:15) 返抵台北松山`;
+        }
+      }
+
+      return {
+        jstTimeStr,
+        jstClockShort,
+        stageBadge,
+        stageDescription
+      };
+    }
+
+    function updateJSTUI() {
+      const info = getJSTInfo();
+      const clockEl = document.getElementById("jstClockText");
+      const badgeEl = document.getElementById("tripStageBadge");
+      if (clockEl) clockEl.innerText = info.jstClockShort;
+      if (badgeEl) badgeEl.innerText = info.stageBadge;
+    }
+
+    // --- Cross-Platform Funliday Smart Launcher ---
     function openFunlidaySmart(e) {
       if (e) e.preventDefault();
       const isAndroid = /Android/i.test(navigator.userAgent);
@@ -852,12 +1194,9 @@
       const webUrl = "https://www.funliday.com/m_Njg1M2NmMzEzMzc1NDY4YzcxZDUwMWFl0/trips/6a3ba8367e546c054da4fab1/overview";
       
       if (isAndroid) {
-        // Android Intent Scheme targeting com.funliday.app package
-        // Opens Funliday App directly; falls back to Chrome browser webUrl if not installed
         const intentUrl = "intent://www.funliday.com/m_Njg1M2NmMzEzMzc1NDY4YzcxZDUwMWFl0/trips/6a3ba8367e546c054da4fab1/overview#Intent;scheme=https;package=com.funliday.app;S.browser_fallback_url=" + encodeURIComponent(webUrl) + ";end;";
         window.location.href = intentUrl;
       } else if (isIOS) {
-        // iOS: Trigger custom URL scheme safely via target="_blank" anchor to prevent PWA standalone crash
         const a = document.createElement("a");
         a.href = "funliday://trips/6a3ba8367e546c054da4fab1";
         a.target = "_blank";
@@ -866,12 +1205,10 @@
         a.click();
         document.body.removeChild(a);
       } else {
-        // Desktop / Other
         window.open(webUrl, "_blank", "noopener,noreferrer");
       }
     }
 
-    // --- Safe External Open ---
     function safeOpenExternal(url) {
       window.open(url, "_blank", "noopener,noreferrer");
     }
@@ -925,16 +1262,17 @@
 
     function togglePoke(id) {
       checkedPokes[id] = !checkedPokes[id];
-      localStorage.setItem("tokyo_poke_checks_v131", JSON.stringify(checkedPokes));
+      localStorage.setItem("tokyo_poke_checks_v140", JSON.stringify(checkedPokes));
       renderPokemon();
     }
 
-    // --- Gemini Multi-turn Chat Management ---
-    const SYSTEM_KNOWLEDGE = `
-# 🍁 新宿・橫濱・箱根 6日遊 AI隨身全能導遊大腦 (System Instruction)
+    // ==========================================
+    // 🧠 Multi-Topic Session Management
+    // ==========================================
+    const SYSTEM_KNOWLEDGE = `# 🍁 新宿・橫濱・箱根 6日遊 AI隨身全能導遊大腦 (System Instruction)
 
 你是這趟日本東京新宿・橫濱・箱根 6 日遊 (2026/11/26 - 12/01) 的專屬隨身全能導遊大腦（對接模型：Gemini 3.8 Flash）。
-旅客成員為全家同行（2 位大人 + 2 位小孩），你必須隨時考量兒童體力、推車動線、避辣飲食與行程節奏。
+旅客成員為全家同行（2 位大人 + 2 位小孩，攜帶推車），你必須隨時考量兒童體力、推車動線、避辣飲食與行程節奏。
 
 ---
 
@@ -943,6 +1281,49 @@
 2. **兒童友善優先 (Child-Friendly)**：推薦餐廳優先提示「是否有非辣/清淡選項、兒童座椅、外帶可能」；推薦景點主動提示洗手間、哺乳室與休息區。
 3. **主動死線防禦**：回答任何涉及移動或景點的提問時，主動提示鄰近死線與換乘陷阱。
 4. **支援實時手指日語**：若情境需要與日本司機、店員溝通，主動附帶「日語對照短句（附假名或漢字）」供直接出示。
+
+---
+
+## 📡 實時環境動態感知解讀規範
+當旅客提問時，前端會自動於訊息前置注入 `[系統動態感知 (實時環境)]` 標籤，格式如下：
+- `【當前日本時間 (JST)】`：精確到年月日時分秒（例如 2026-11-27 14:35 JST）。
+- `【旅程進度】`：例如 `Day 2 [下午時段 - 吉祥寺散策中]` 或 `D-22 行前準備期`。
+- `【即時 GPS 座標與鄰近地標】`：例如 `35.7029, 139.5798（距離「吉祥寺站南口/井之頭公園」約 120 公尺）`。
+- `【行程異動備忘】`：旅客在旅途中隨時調整的行程變更（如取消景點或改時間）。
+
+**AI 感知反應要求**：
+- 直接依據上述注入的時間與 GPS 地理位置作答，**切勿要求旅客重複告知當前位置或時間**！
+- 若在旅行進行中，主動判定距離下一個關鍵預約或交通班次還有多久。
+- 若旅客提供了臨時行程變更，後續所有順路與時間推算一律以「新變更」為準。
+
+---
+
+## 🚾 在地老司機實戰指引 (找廁所／推車捷徑／順路規劃)
+
+### 1. 找廁所與哺乳室 SOP（千萬別去路邊超商碰壁！）
+- **重要背景**：日本繁華商圈（新宿、吉祥寺、橫濱等）的 7-11/全家/Lawson 大多**不對外借洗手間**（常貼「トイレの使用はお断り」），嚴禁向旅客推薦路邊隨便找超商！
+- **找廁所優先順序**：
+  1. **首選大型百貨商場（2F~6F 或 B1 美食街）**：如高島屋、Lumine、NEWoMan、伊勢丹、橫濱 Mark Is、吉祥寺丸井百貨。設有「多目的トイレ（多功能無障礙親子廁所）」，空間極大、推車可直接推進、附尿布台與幼兒固定椅。
+  2. **次選大型車站改札內外**：如 JR 新宿站南口/東南口、JR 櫻木町站、小田急車站，站內多功能廁所指示明確。
+  3. **三選大型電器量販店**：如 BicCamera、Yodobashi-Camera 高樓層，乾淨人少。
+- **緊急短日語出示卡**：
+  - 「請借用洗手間（可推推車嗎？）」：`すみません、多目的トイレ（車椅子・ベビーカー対応）はどこですか？`
+  - 「有尿布台／哺乳室嗎？」：`授乳室（おむつ替え台）はありますか？`
+
+### 2. 最短捷徑與推車立體動線（破解 Google Map 盲區）
+- **Google Map 致命盲區**：只會導航地面平面道路，常引導至無電梯之陸橋或陡峭地下道樓梯，推車家庭會被迫扛車走幾十階！
+- **在地老司機走法**：
+  - **新宿站東南口/南口**：善用甲州街道天橋電梯，或由 NEWoMan/高島屋 2F 連通道室內直通，免淋雨、免等 3 分鐘紅綠燈。
+  - **大久保飯店往新宿**：推車沿 JR 山手線高架西側平坦步道直走，比繞行大馬路少等 4 個紅綠燈。
+  - **橫濱港未來區**：善用「Queen's Square 與 Landmark Plaza 2F 戶外空中步道」，直接貫通至合味道紀念館與紅磚倉庫，全平面無障礙。
+  - **箱根地區**：元箱根港至箱根神社步道有階梯，推車建議沿外圍公路平坦側行走。
+
+### 3. 動態行程順路度規劃 (Route Optimization)
+當旅客問：「我明天想去某個地方，應該排在什麼行程之後最順？」
+- **分析框架**：
+  1. 檢視該日主線行程的幾何拓撲（起點 ➔ 點A ➔ 點B ➔ 回程點）。
+  2. 比對目標地點的「營業時間（許多店家 10:00 或 11:00 才開門，傍晚可能完售）」與「交通轉乘耗時」。
+  3. 給出唯一的最佳插入順序，並具體說明為什麼這樣排最省推車體力（例如：出門順路先買、或換線轉乘站順路探訪）。
 
 ---
 
@@ -991,9 +1372,9 @@
 ---
 
 ## 🎫 關鍵車票與座位永久備忘
-- **Day 4 去程 (江之島33號)**：07 號車廂 \`2A, 2B, 3A, 3B\`
-- **Day 5 去程 (箱根41號 EXE10)**：04 號車廂 \`8C, 8D, 9C, 9D\`
-- **Day 5 回程 (箱根18號 MSE6)**：04 號車廂 \`8C, 8D, 9C, 9D\`
+- **Day 4 去程 (江之島33號)**：07 號車廂 `2A, 2B, 3A, 3B`
+- **Day 5 去程 (箱根41號 EXE10)**：04 號車廂 `8C, 8D, 9C, 9D`
+- **Day 5 回程 (箱根18號 MSE6)**：04 號車廂 `8C, 8D, 9C, 9D`
 
 ---
 
@@ -1011,8 +1392,145 @@
 ## 🚨 突發狀況與常見諮詢 SOP 指引
 1. **兒童疲勞/哭鬧求救**：立刻檢索所在區域 300 公尺內之安靜咖啡店、甜點店或大型商場哺乳室（如高島屋、Lumine、橫濱Mark Is）。
 2. **餐廳點餐避坑**：主動提示「辛くない（不辣）」、「わさび抜き（去芥末）」、「子供用食器（兒童餐具）」、「お湯（溫熱開水）」之實用短句。
-3. **箱根纜車天候停駛**：自動切換備案（由早雲山或桃源台轉搭伊豆箱根登山替代巴士直達小田原或箱根湯本）。
-`;
+3. **箱根纜車天候停駛**：自動切換備案（由早雲山或桃源台轉搭伊豆箱根登山替代巴士直達小田原或箱根湯本）。`;
+
+    function initTopics() {
+      const saved = localStorage.getItem("tokyo_topics_v140");
+      if (saved) {
+        try {
+          topics = JSON.parse(saved);
+        } catch (e) { topics = []; }
+      }
+
+      if (!topics || topics.length === 0) {
+        const oldHistory = JSON.parse(
+          localStorage.getItem("tokyo_gemini_history_v131") ||
+          localStorage.getItem("tokyo_gemini_history_v130") ||
+          localStorage.getItem("tokyo_gemini_history_v120") ||
+          "[]"
+        );
+        topics = [
+          {
+            id: "topic_" + Date.now(),
+            name: "💬 話題 1: 新宿・行程隨身諮詢",
+            history: oldHistory
+          }
+        ];
+        saveTopics();
+      }
+
+      const activeId = localStorage.getItem("tokyo_current_topic_v140");
+      if (activeId && topics.some(t => t.id === activeId)) {
+        currentTopicId = activeId;
+      } else {
+        currentTopicId = topics[0].id;
+      }
+
+      const overrideInput = document.getElementById("itineraryOverrideInput");
+      if (overrideInput) {
+        overrideInput.value = itineraryOverrideText;
+      }
+
+      renderTopicSelector();
+      renderChatHistory();
+    }
+
+    function saveTopics() {
+      localStorage.setItem("tokyo_topics_v140", JSON.stringify(topics));
+      localStorage.setItem("tokyo_current_topic_v140", currentTopicId);
+    }
+
+    function getCurrentTopic() {
+      return topics.find(t => t.id === currentTopicId) || topics[0];
+    }
+
+    function renderTopicSelector() {
+      const sel = document.getElementById("topicSelector");
+      if (!sel) return;
+      sel.innerHTML = "";
+      topics.forEach(t => {
+        const opt = document.createElement("option");
+        opt.value = t.id;
+        opt.text = t.name;
+        if (t.id === currentTopicId) opt.selected = true;
+        sel.appendChild(opt);
+      });
+    }
+
+    function onTopicChange(topicId) {
+      currentTopicId = topicId;
+      saveTopics();
+      renderChatHistory();
+    }
+
+    function createNewTopic() {
+      const name = prompt("請輸入新話題名稱（例如：箱根交通、吉祥寺藥妝、突發找廁所）：", `💬 話題 ${topics.length + 1}: 自訂諮詢`);
+      if (name && name.trim()) {
+        const newTopic = {
+          id: "topic_" + Date.now(),
+          name: name.trim(),
+          history: []
+        };
+        topics.push(newTopic);
+        currentTopicId = newTopic.id;
+        saveTopics();
+        renderTopicSelector();
+        renderChatHistory();
+      }
+    }
+
+    function renameCurrentTopic() {
+      const cur = getCurrentTopic();
+      const newName = prompt("重新命名當前話題：", cur.name);
+      if (newName && newName.trim()) {
+        cur.name = newName.trim();
+        saveTopics();
+        renderTopicSelector();
+      }
+    }
+
+    function deleteCurrentTopic() {
+      if (topics.length <= 1) {
+        alert("至少必須保留 1 個話題！您可以選擇清空本話題紀錄。");
+        return;
+      }
+      const cur = getCurrentTopic();
+      if (confirm(`確定要刪除話題『${cur.name}』及其所有對話記憶嗎？`)) {
+        topics = topics.filter(t => t.id !== currentTopicId);
+        currentTopicId = topics[0].id;
+        saveTopics();
+        renderTopicSelector();
+        renderChatHistory();
+      }
+    }
+
+    function exportTopicsBackup() {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(topics, null, 2));
+      const downloadAnchor = document.createElement("a");
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", `tokyo_trip_chat_backup_${new Date().toISOString().slice(0,10)}.json`);
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+      alert("✅ 已將所有話題對話紀錄導出為 JSON 備份檔！可隨時複製歸檔至 Google Drive。");
+    }
+
+    function saveItineraryOverride() {
+      const input = document.getElementById("itineraryOverrideInput");
+      if (input) {
+        itineraryOverrideText = input.value.trim();
+        localStorage.setItem("tokyo_itinerary_override_v140", itineraryOverrideText);
+      }
+    }
+
+    function clearCurrentTopicChat() {
+      const cur = getCurrentTopic();
+      if (confirm(`確定要清空話題『${cur.name}』的所有對話記憶嗎？`)) {
+        cur.history = [];
+        saveTopics();
+        renderChatHistory();
+      }
+    }
 
     function updateKeyStatusUI() {
       const el = document.getElementById("keyStatusText");
@@ -1025,10 +1543,11 @@
 
     function promptApiKey() {
       const current = geminiApiKey || "";
-      const input = prompt("請輸入您的 Google Gemini API Key\n(此 Key 僅加密儲存在您手機的本地瀏覽器中，絕不上傳 GitHub 或任何伺服器)：", current);
+      const input = prompt("請輸入您的 Google Gemini API Key
+(此 Key 僅加密儲存在您手機的本地瀏覽器中，絕不上傳 GitHub 或任何伺服器)：", current);
       if (input !== null) {
         geminiApiKey = input.trim();
-        localStorage.setItem("tokyo_gemini_key_v131", geminiApiKey);
+        localStorage.setItem("tokyo_gemini_key_v140", geminiApiKey);
         updateKeyStatusUI();
         alert(geminiApiKey ? "✅ API Key 已安全存於本機！" : "已清除本機 API Key。");
       }
@@ -1036,29 +1555,24 @@
 
     function renderChatHistory() {
       const box = document.getElementById("chatMsgBox");
+      if (!box) return;
       box.innerHTML = "";
+
+      const curTopic = getCurrentTopic();
 
       // Default welcome
       const welcome = document.createElement("div");
       welcome.className = "bubble ai";
-      welcome.innerHTML = "您好！我是您的 <strong>Gemini 3.8 Flash</strong> 專屬隨身導遊。我已經完整記憶這 6 天所有班次、座位號、死線、人孔蓋與飯店資訊，並且<strong>支援多輪對話記憶延續</strong>！路上有任何狀況，隨時問我！";
+      welcome.innerHTML = `您好！我是您的 <strong>Gemini 3.8 Flash</strong> 專屬隨身全能導遊。已啟用<strong>實時日本時間與 GPS 雙感知</strong>！當前話題：『${curTopic.name}』。路上有任何狀況（找廁所、推車捷徑、順路排程、突發更動），隨時問我！`;
       box.appendChild(welcome);
 
-      chatHistory.forEach(item => {
+      curTopic.history.forEach(item => {
         const b = document.createElement("div");
         b.className = "bubble " + (item.role === "user" ? "user" : "ai");
         b.innerText = item.parts[0].text;
         box.appendChild(b);
       });
       box.scrollTop = box.scrollHeight;
-    }
-
-    function clearChatHistory() {
-      if (confirm("確定要清空先前的對話記憶紀錄嗎？")) {
-        chatHistory = [];
-        localStorage.removeItem("tokyo_gemini_history_v131");
-        renderChatHistory();
-      }
     }
 
     function askChip(txt) {
@@ -1071,9 +1585,10 @@
       const text = input.value.trim();
       if (!text) return;
 
+      const curTopic = getCurrentTopic();
       const box = document.getElementById("chatMsgBox");
 
-      // Append user msg to UI & History
+      // Append clean user message to UI
       const userBubble = document.createElement("div");
       userBubble.className = "bubble user";
       userBubble.innerText = text;
@@ -1081,7 +1596,9 @@
       input.value = "";
       box.scrollTop = box.scrollHeight;
 
-      chatHistory.push({ role: "user", parts: [{ text: text }] });
+      // Save clean text to user history
+      curTopic.history.push({ role: "user", parts: [{ text: text }] });
+      saveTopics();
 
       if (!geminiApiKey) {
         const errBubble = document.createElement("div");
@@ -1095,14 +1612,40 @@
       // Add loading bubble
       const loadBubble = document.createElement("div");
       loadBubble.className = "bubble ai";
-      loadBubble.innerText = "Gemini 3.8 Flash 連貫思考中...";
+      loadBubble.innerText = "Gemini 3.8 Flash (實時時空感知運算中)...";
       box.appendChild(loadBubble);
       box.scrollTop = box.scrollHeight;
 
       try {
-        // Build payload with system_instruction and multi-turn contents
-        // Keep last 16 turns to avoid exceeding context window while preserving rich dialogue
-        const payloadContents = chatHistory.slice(-16);
+        // Construct Hidden Dynamic Context
+        const jst = getJSTInfo();
+        let gpsContext = "尚未取得 GPS 訊號（依行程排程推估）";
+        if (currentCoords) {
+          gpsContext = `經緯度: ${currentCoords.lat.toFixed(4)}, ${currentCoords.lng.toFixed(4)} (精確度 ±${currentCoords.acc}m)`;
+          if (nearestAnchor) {
+            gpsContext += ` | 最近核心地標: 「${nearestAnchor.name}」（約 ${nearestAnchor.dist} 公尺）`;
+          }
+        }
+
+        const overrideNote = itineraryOverrideText ? itineraryOverrideText : "無（依原訂 6 天主線排程）";
+
+        const enrichedUserPrompt = `[系統實時動態感知 (無感注入)]
+- 當前日本時間 (JST)：${jst.jstTimeStr}
+- 旅程進度狀態：${jst.stageDescription}
+- 即時 GPS 位置：${gpsContext}
+- 旅客成員結構：全家同行（2 位大人 + 2 位小孩，攜帶嬰兒推車，需考慮無障礙動線、親子廁所與避開辛辣）
+- 旅客自訂行程異動備忘：${overrideNote}
+----------------------------------------
+[旅客提問]：${text}`;
+
+        // Build contents for API call (replace last turn's text with enrichedUserPrompt)
+        const historySlice = curTopic.history.slice(-14);
+        const payloadContents = historySlice.map((item, idx) => {
+          if (idx === historySlice.length - 1 && item.role === "user") {
+            return { role: "user", parts: [{ text: enrichedUserPrompt }] };
+          }
+          return item;
+        });
 
         const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${geminiApiKey}`, {
           method: "POST",
@@ -1119,15 +1662,17 @@
         if (data.candidates && data.candidates[0].content && data.candidates[0].content.parts[0].text) {
           const aiText = data.candidates[0].content.parts[0].text;
           loadBubble.innerText = aiText;
-          chatHistory.push({ role: "model", parts: [{ text: aiText }] });
-          localStorage.setItem("tokyo_gemini_history_v131", JSON.stringify(chatHistory));
+          curTopic.history.push({ role: "model", parts: [{ text: aiText }] });
+          saveTopics();
         } else {
           loadBubble.innerText = "回傳異常，請檢查 API Key 或額度：" + JSON.stringify(data);
-          chatHistory.pop(); // Remove failed user message from history
+          curTopic.history.pop();
+          saveTopics();
         }
       } catch (err) {
         loadBubble.innerText = "連線失敗：" + err.message;
-        chatHistory.pop();
+        curTopic.history.pop();
+        saveTopics();
       }
       box.scrollTop = box.scrollHeight;
     }
@@ -1135,7 +1680,10 @@
     // --- Init ---
     renderPokemon();
     updateKeyStatusUI();
-    renderChatHistory();
+    initTopics();
+    initGeolocation();
+    updateJSTUI();
+    setInterval(updateJSTUI, 10000);
   </script>
 </body>
 </html>

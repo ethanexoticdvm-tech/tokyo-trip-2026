@@ -3,7 +3,7 @@
 > 專為 2026/11/26 ～ 12/01 全家人（2 大 2 小）量身打造的一頁式自適應隨身旅行戰情室 Web App。
 
 [![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-Live%20Online-success)](https://ethanexoticdvm-tech.github.io/tokyo-trip-2026/)
-[![Version](https://img.shields.io/badge/Version-v1.3.1-rose)](https://github.com/ethanexoticdvm-tech/tokyo-trip-2026)
+[![Version](https://img.shields.io/badge/Version-v1.4.0-rose)](https://github.com/ethanexoticdvm-tech/tokyo-trip-2026)
 [![Model](https://img.shields.io/badge/AI%20Brain-Gemini%203.8%20Flash-purple)](https://aistudio.google.com/)
 
 ---
