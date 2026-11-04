@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>新宿・橫濱・箱根 6日遊隨身戰情室 v1.4.2</title>
+  <title>新宿・橫濱・箱根 6日遊隨身戰情室 v1.4.3</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="theme-color" content="#090d16">
@@ -739,7 +739,7 @@
   <header>
     <div class="header-inner">
       <div class="logo-badge">
-        🍁 新宿6日 <span class="badge-tag">v1.4.2</span>
+        🍁 新宿6日 <span class="badge-tag">v1.4.3</span>
       </div>
       <div class="header-actions">
         <a href="https://translate.google.com/?sl=auto&tl=zh-TW" target="_blank" rel="noopener noreferrer" class="top-pill top-pill-primary" id="btnTranslate">
@@ -892,7 +892,7 @@
 
         <div class="chat-input-row">
           <input type="text" id="chatInputBox" placeholder="問問 Gemini：例如『延續剛才的話題...』" onkeypress="if(event.key==='Enter') sendAiQuery()">
-          <button onclick="sendAiQuery()">發送</button>
+          <button id="chatSendBtn" onclick="sendAiQuery()">發送</button>
         </div>
       </div>
     </div>
@@ -1158,20 +1158,32 @@
 
     function getJSTInfo() {
       const now = new Date();
-      const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
-      const jstDate = new Date(utc + (3600000 * 9));
+      const formatter = new Intl.DateTimeFormat("ja-JP", {
+        timeZone: "Asia/Tokyo",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false
+      });
+      const parts = formatter.formatToParts(now);
+      const map = {};
+      parts.forEach(p => map[p.type] = p.value);
+      const y = map.year;
+      const m = map.month;
+      const d = map.day;
+      const hh = map.hour;
+      const mm = map.minute;
+      const ss = map.second;
 
-      const y = jstDate.getFullYear();
-      const m = String(jstDate.getMonth() + 1).padStart(2, '0');
-      const d = String(jstDate.getDate()).padStart(2, '0');
-      const hh = String(jstDate.getHours()).padStart(2, '0');
-      const mm = String(jstDate.getMinutes()).padStart(2, '0');
-      const ss = String(jstDate.getSeconds()).padStart(2, '0');
-      const daysOfWeek = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
-      const dow = daysOfWeek[jstDate.getDay()];
+      const dowFormatter = new Intl.DateTimeFormat("zh-TW", { timeZone: "Asia/Tokyo", weekday: "short" });
+      const dow = dowFormatter.format(now);
 
       const jstTimeStr = `${y}-${m}-${d} ${hh}:${mm}:${ss} (${dow}) JST`;
       const jstClockShort = `${hh}:${mm}`;
+      const jstDate = new Date(`${y}-${m}-${d}T${hh}:${mm}:${ss}+09:00`);
 
       const tripStart = new Date("2026-11-26T00:00:00+09:00");
       const tripEnd = new Date("2026-12-01T23:59:59+09:00");
@@ -1243,6 +1255,17 @@
         const intentUrl = "intent://www.funliday.com/m_Njg1M2NmMzEzMzc1NDY4YzcxZDUwMWFl0/trips/6a3ba8367e546c054da4fab1/overview#Intent;scheme=https;package=com.funliday.app;S.browser_fallback_url=" + encodeURIComponent(webUrl) + ";end;";
         window.location.href = intentUrl;
       } else if (isIOS) {
+        let appOpened = false;
+        const fallbackTimer = setTimeout(() => {
+          if (!appOpened) {
+            window.location.href = webUrl;
+          }
+        }, 1500);
+        window.addEventListener('pagehide', () => {
+          appOpened = true;
+          clearTimeout(fallbackTimer);
+        }, { once: true });
+
         const a = document.createElement("a");
         a.href = "funliday://trips/6a3ba8367e546c054da4fab1";
         a.target = "_blank";
@@ -1629,8 +1652,7 @@
 
     function promptApiKey() {
       const current = geminiApiKey || "";
-      const input = prompt("請輸入您的 Google Gemini API Key
-(此 Key 僅加密儲存在您手機的本地瀏覽器中，絕不上傳 GitHub 或任何伺服器)：", current);
+      const input = prompt("請輸入您的 Google Gemini API Key\n(此 Key 僅加密儲存在您手機的本地瀏覽器中，絕不上傳 GitHub 或任何伺服器)：", current);
       if (input !== null) {
         geminiApiKey = input.trim();
         localStorage.setItem("tokyo_gemini_key_v140", geminiApiKey);
@@ -1649,7 +1671,7 @@
       // Default welcome
       const welcome = document.createElement("div");
       welcome.className = "bubble ai";
-      welcome.innerHTML = `您好！我是您的 <strong>Gemini 3.8 Flash</strong> 專屬隨身全能導遊。已啟用<strong>實時日本時間與 GPS 雙感知</strong>！當前話題：『${curTopic.name}』。路上有任何狀況（找廁所、推車捷徑、順路排程、突發更動），隨時問我！`;
+      welcome.innerHTML = `您好！我是您的 <strong>Gemini 3.8 Flash</strong> 專屬隨身全能導遊。已啟用<strong>實時日本時間與 GPS 雙感知</strong>！當前話題：『${curTopic.name}』。路上有任何狀況（找廁所、動漫潮玩熱點、美食補給、電梯無障礙快速捷徑、順路排程、突發更動），隨時問我！`;
       box.appendChild(welcome);
 
       curTopic.history.forEach(item => {
@@ -1666,10 +1688,17 @@
       sendAiQuery();
     }
 
+    let isAiQueryInProgress = false;
+
     async function sendAiQuery() {
+      if (isAiQueryInProgress) return;
       const input = document.getElementById("chatInputBox");
+      const sendBtn = document.getElementById("chatSendBtn");
       const text = input.value.trim();
       if (!text) return;
+
+      isAiQueryInProgress = true;
+      if (sendBtn) sendBtn.disabled = true;
 
       const curTopic = getCurrentTopic();
       const box = document.getElementById("chatMsgBox");
@@ -1692,6 +1721,8 @@
         errBubble.innerHTML = "⚠️ 尚未設定 Google Gemini API Key。請點擊上方『🔑 設定/更換 Key』貼入您的 API Key 即可啟動導遊大腦！<br><small style='color:#94a3b8;'>密鑰僅保存在本機手機瀏覽器，絕不上傳雲端。</small>";
         box.appendChild(errBubble);
         box.scrollTop = box.scrollHeight;
+        isAiQueryInProgress = false;
+        if (sendBtn) sendBtn.disabled = false;
         return;
       }
 
@@ -1754,7 +1785,13 @@
 [旅客提問]：${text}`;
 
         // Build contents for API call (replace last turn's text with enrichedUserPrompt)
-        const historySlice = curTopic.history.slice(-14);
+        let historySlice = curTopic.history.slice(-14);
+        while (historySlice.length > 0 && historySlice[0].role !== "user") {
+          historySlice.shift();
+        }
+        if (historySlice.length === 0) {
+          historySlice = [{ role: "user", parts: [{ text: text }] }];
+        }
         const payloadContents = historySlice.map((item, idx) => {
           if (idx === historySlice.length - 1 && item.role === "user") {
             return { role: "user", parts: [{ text: enrichedUserPrompt }] };
@@ -1779,8 +1816,11 @@
         });
 
         const data = await resp.json();
-        if (data.candidates && data.candidates[0].content && data.candidates[0].content.parts[0].text) {
-          const aiText = data.candidates[0].content.parts[0].text;
+        if (data.candidates && data.candidates[0].content && data.candidates[0].content.parts) {
+          const textParts = data.candidates[0].content.parts
+            .filter(p => !p.thought && typeof p.text === "string")
+            .map(p => p.text);
+          const aiText = textParts.join("").trim() || (data.candidates[0].content.parts[0].text || "（無文字回應）");
           loadBubble.innerText = aiText;
           curTopic.history.push({ role: "model", parts: [{ text: aiText }] });
           saveTopics();
@@ -1793,8 +1833,11 @@
         loadBubble.innerText = "連線失敗：" + err.message;
         curTopic.history.pop();
         saveTopics();
+      } finally {
+        isAiQueryInProgress = false;
+        if (sendBtn) sendBtn.disabled = false;
+        box.scrollTop = box.scrollHeight;
       }
-      box.scrollTop = box.scrollHeight;
     }
 
     // --- Init ---
@@ -1802,7 +1845,10 @@
     updateKeyStatusUI();
     initTopics();
     const modeSel = document.getElementById("modeSelector");
-    if (modeSel) modeSel.value = currentMode;
+    if (modeSel) {
+      modeSel.value = currentMode;
+      onModeChange(currentMode);
+    }
     initGeolocation();
     updateJSTUI();
     setInterval(updateJSTUI, 10000);
