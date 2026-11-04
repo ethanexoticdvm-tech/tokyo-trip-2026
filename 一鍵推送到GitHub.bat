@@ -10,7 +10,6 @@ echo [1/2] Checking git status...
 git status -s
 echo.
 echo [2/2] Pushing to https://github.com/ethanexoticdvm-tech/tokyo-trip-2026.git ...
-echo (If Git Credential Manager opens in browser, please authorize)
 echo.
 git push github main
 if %ERRORLEVEL% EQU 0 (
