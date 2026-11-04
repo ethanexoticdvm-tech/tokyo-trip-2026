@@ -1603,7 +1603,7 @@ HTML_CONTENT = f'''<!DOCTYPE html>
         </div>
 
         <div class="chat-input-row">
-          <input type="text" id="chatInputBox" placeholder="問問導遊：例如『延續剛才的話題...』" onkeypress="if(event.key==='Enter') sendAiQuery()" aria-label="提問文字框">
+          <input type="text" id="chatInputBox" placeholder="問問導遊：例如『延續剛才的話題...』" aria-label="提問文字框">
           <button type="button" id="chatSendBtn" onclick="sendAiQuery()" class="btn-chat-send" aria-label="發送提問">
             <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
             <span>發送</span>
@@ -1626,7 +1626,7 @@ HTML_CONTENT = f'''<!DOCTYPE html>
         <div class="poke-progress-card">
           <div class="poke-progress-header">
             <span>尋寶進度達成率</span>
-            <span id="pokePercentText" style="color:var(--emerald); font-family:var(--font-mono);">0% (<span id="pokeMainCount">0</span>/7)</span>
+            <span id="pokePercentText" style="color:var(--emerald); font-family:var(--font-mono);">0% (0/7)</span>
           </div>
           <div class="poke-progress-track">
             <div class="poke-progress-fill" id="pokeProgressFill" style="width: 0%;"></div>
@@ -1853,13 +1853,19 @@ HTML_CONTENT = f'''<!DOCTYPE html>
     ];
 
     // ==========================================
-    // State & Persistence
+    // State & Persistence (Defensively Hardened)
     // ==========================================
-    let checkedPokes = JSON.parse(
-      localStorage.getItem("tokyo_poke_checks_v140") ||
-      localStorage.getItem("tokyo_poke_checks_v131") ||
-      '{{}}'
-    );
+    function safeGetJson(key, fallback) {{
+      try {{
+        const val = localStorage.getItem(key);
+        return val ? JSON.parse(val) : fallback;
+      }} catch (e) {{
+        console.warn("Storage read error for key: " + key, e);
+        return fallback;
+      }}
+    }}
+
+    let checkedPokes = safeGetJson("tokyo_poke_checks_v140", safeGetJson("tokyo_poke_checks_v131", {{}}));
 
     let geminiApiKey =
       localStorage.getItem("tokyo_gemini_key_v140") ||
@@ -2123,7 +2129,7 @@ HTML_CONTENT = f'''<!DOCTYPE html>
         if (el) el.style.display = v === viewId ? "block" : "none";
       }});
       document.querySelectorAll(".bottom-tab").forEach(b => {{
-        const isTarget = b.getAttribute("onclick").includes(viewId);
+        const isTarget = (b.getAttribute("onclick") || "").includes(viewId);
         b.classList.toggle("active", isTarget);
         b.setAttribute("aria-selected", isTarget ? "true" : "false");
       }});
@@ -2157,13 +2163,44 @@ HTML_CONTENT = f'''<!DOCTYPE html>
     }}
 
     // ==========================================
-    // Leaflet Interactive Pokemon Map System
+    // Leaflet Interactive Pokemon Map System (Defensively Hardened)
     // ==========================================
+    function getPokePopupHtml(p) {{
+      let distanceStr = "";
+      if (currentCoords) {{
+        const dist = calculateDistance(currentCoords.lat, currentCoords.lng, p.lat, p.lng);
+        distanceStr = `<div style="font-size:0.75rem; color:#38bdf8; margin:4px 0;">📍 距離您目前位置：<strong>${{dist < 1000 ? dist + 'm' : (dist/1000).toFixed(1) + 'km'}}</strong></div>`;
+      }}
+
+      return `
+        <div style="min-width:210px; padding:2px;">
+          <div style="font-weight:800; font-size:0.92rem; color:#fff; margin-bottom:2px;">#${{p.num}} ${{p.name}}</div>
+          <div style="font-size:0.78rem; color:#cbd5e1;">${{p.loc}}</div>
+          ${{distanceStr}}
+          <a href="https://www.google.com/maps/dir/?api=1&destination=${{p.lat}},${{p.lng}}" target="_blank" rel="noopener noreferrer" class="btn-maps" style="width:100%; height:36px; margin-top:8px; font-size:0.78rem; display:flex; align-items:center; justify-content:center; gap:5px;">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+            Google 地圖導航
+          </a>
+        </div>
+      `;
+    }}
+
     function initOrRefreshPokemonMap() {{
       const mapContainer = document.getElementById("pokeMap");
       if (!mapContainer) return;
 
-      if (!pokeMap && typeof L !== "undefined") {{
+      if (typeof L === "undefined") {{
+        mapContainer.innerHTML = `
+          <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; color:#94a3b8; font-size:0.85rem; text-align:center; padding:20px; line-height:1.6;">
+            <div style="font-size:1.8rem; margin-bottom:8px;">🗺️</div>
+            <div style="color:#f1f5f9; font-weight:700;">離線模式 / 尚無圖資連線</div>
+            <div style="font-size:0.75rem; color:#64748b; margin-top:4px;">地圖圖資需網路連線；您仍可直接點擊下方各景點『導航』按鈕開啟 Google Maps 離線導航。</div>
+          </div>
+        `;
+        return;
+      }}
+
+      if (!pokeMap) {{
         pokeMap = L.map("pokeMap", {{
           zoomControl: false,
           attributionControl: false
@@ -2191,25 +2228,7 @@ HTML_CONTENT = f'''<!DOCTYPE html>
           }});
 
           const marker = L.marker([p.lat, p.lng], {{ icon: customIcon }}).addTo(pokeMap);
-
-          let distanceStr = "";
-          if (currentCoords) {{
-            const dist = calculateDistance(currentCoords.lat, currentCoords.lng, p.lat, p.lng);
-            distanceStr = `<div style="font-size:0.75rem; color:#94a3b8; margin:4px 0;">📍 距離您目前位置：<strong>${{dist < 1000 ? dist + 'm' : (dist/1000).toFixed(1) + 'km'}}</strong></div>`;
-          }}
-
-          const popupHtml = `
-            <div style="min-width:200px;">
-              <div style="font-weight:800; font-size:0.92rem; color:#fff; margin-bottom:2px;">#${{p.num}} ${{p.name}}</div>
-              <div style="font-size:0.78rem; color:#cbd5e1;">${{p.loc}}</div>
-              ${{distanceStr}}
-              <a href="https://www.google.com/maps/dir/?api=1&destination=${{p.lat}},${{p.lng}}" target="_blank" rel="noopener noreferrer" class="btn-maps" style="width:100%; height:36px; margin-top:8px; font-size:0.78rem; display:flex; align-items:center; justify-content:center; gap:5px;">
-                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
-                Google 地圖導航
-              </a>
-            </div>
-          `;
-          marker.bindPopup(popupHtml);
+          marker.bindPopup(() => getPokePopupHtml(p));
           pokeMarkers[p.id] = marker;
         }});
 
@@ -2238,6 +2257,13 @@ HTML_CONTENT = f'''<!DOCTYPE html>
         userMarker = L.marker(userLatLng, {{ icon: userIcon }}).addTo(pokeMap);
         userMarker.bindPopup("<b>📍 目前位置 (You Are Here)</b>");
       }}
+
+      // Refresh any open popups with fresh distance
+      POKEMON_DATA.forEach(p => {{
+        if (pokeMarkers[p.id] && pokeMarkers[p.id].isPopupOpen && pokeMarkers[p.id].isPopupOpen()) {{
+          pokeMarkers[p.id].setPopupContent(getPokePopupHtml(p));
+        }}
+      }});
     }}
 
     function panToUserLocation() {{
@@ -2266,9 +2292,11 @@ HTML_CONTENT = f'''<!DOCTYPE html>
       if (!p || !pokeMap) return;
       pokeMap.flyTo([p.lat, p.lng], 16, {{ duration: 0.8 }});
       if (pokeMarkers[id]) {{
+        pokeMarkers[id].setPopupContent(getPokePopupHtml(p));
         pokeMarkers[id].openPopup();
       }}
-      document.getElementById("pokeMap").scrollIntoView({{ behavior: "smooth", block: "center" }});
+      const mapEl = document.getElementById("pokeMap");
+      if (mapEl) mapEl.scrollIntoView({{ behavior: "smooth", block: "center" }});
     }}
 
     // --- Pokemon Checklist Rendering ---
@@ -2302,8 +2330,8 @@ HTML_CONTENT = f'''<!DOCTYPE html>
 
       const total = POKEMON_DATA.length;
       const pct = Math.round((count / total) * 100);
-      document.getElementById("pokeMainCount").innerText = count;
-      document.getElementById("pokePercentText").innerText = `${{pct}}% (${{count}}/${{total}})`;
+      const pctEl = document.getElementById("pokePercentText");
+      if (pctEl) pctEl.innerText = `${{pct}}% (${{count}}/${{total}})`;
       const fill = document.getElementById("pokeProgressFill");
       if (fill) fill.style.width = pct + "%";
       const tabPoke = document.getElementById("tabPokeCount");
@@ -2434,10 +2462,7 @@ HTML_CONTENT = f'''<!DOCTYPE html>
       }}
 
       if (!topics || topics.length === 0) {{
-        const oldHistory = JSON.parse(
-          localStorage.getItem("tokyo_gemini_history_v131") ||
-          "[]"
-        );
+        const oldHistory = safeGetJson("tokyo_gemini_history_v131", []);
         topics = [
           {{
             id: "topic_" + Date.now(),
@@ -2808,23 +2833,45 @@ HTML_CONTENT = f'''<!DOCTYPE html>
           return item;
         }});
 
-        const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${{geminiApiKey}}`, {{
-          method: "POST",
-          headers: {{ "Content-Type": "application/json" }},
-          body: JSON.stringify({{
-            system_instruction: {{
-              parts: [{{ text: SYSTEM_KNOWLEDGE }}]
-            }},
-            contents: payloadContents,
-            generationConfig: {{
-              thinkingConfig: {{
-                thinkingLevel: thinkingLevel
+        // 35s Mobile Network Timeout Controller
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 35000);
+
+        let resp;
+        try {{
+          resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${{geminiApiKey}}`, {{
+            method: "POST",
+            headers: {{ "Content-Type": "application/json" }},
+            signal: controller.signal,
+            body: JSON.stringify({{
+              system_instruction: {{
+                parts: [{{ text: SYSTEM_KNOWLEDGE }}]
+              }},
+              contents: payloadContents,
+              generationConfig: {{
+                thinkingConfig: {{
+                  thinkingLevel: thinkingLevel
+                }}
               }}
-            }}
-          }})
-        }});
+            }})
+          }});
+        }} finally {{
+          clearTimeout(timeoutId);
+        }}
 
         const data = await resp.json();
+
+        if (!resp.ok) {{
+          let errDetail = `HTTP ${{resp.status}}`;
+          if (data && data.error && data.error.message) {{
+            errDetail = data.error.message;
+          }}
+          loadBubble.innerText = `⚠️ API 回傳錯誤 (${{errDetail}})\n請檢查 API Key 是否正確，或至 Google AI Studio 確認額度。`;
+          curTopic.history.pop();
+          saveTopics();
+          return;
+        }}
+
         if (data.candidates && data.candidates[0].content && data.candidates[0].content.parts) {{
           const textParts = data.candidates[0].content.parts
             .filter(p => !p.thought && typeof p.text === "string")
@@ -2845,12 +2892,16 @@ HTML_CONTENT = f'''<!DOCTYPE html>
           curTopic.history.push({{ role: "model", parts: [{{ text: aiText }}] }});
           saveTopics();
         }} else {{
-          loadBubble.innerText = "回傳異常，請檢查 API Key 或配額：" + JSON.stringify(data);
+          loadBubble.innerText = "回傳結構異常，請稍後重試：" + JSON.stringify(data);
           curTopic.history.pop();
           saveTopics();
         }}
       }} catch (err) {{
-        loadBubble.innerText = "連線失敗：" + err.message;
+        if (err.name === "AbortError") {{
+          loadBubble.innerText = "⚠️ 連線超時（35 秒無回應）：可能處於地下鐵或網路訊號盲區，請確認網路後重新提問。";
+        }} else {{
+          loadBubble.innerText = "連線失敗：" + err.message;
+        }}
         curTopic.history.pop();
         saveTopics();
       }} finally {{
@@ -2861,6 +2912,17 @@ HTML_CONTENT = f'''<!DOCTYPE html>
         }}
         box.scrollTop = box.scrollHeight;
       }}
+    }}
+
+    // --- CJK IME Composition Safe Input Listener ---
+    const chatInputEl = document.getElementById("chatInputBox");
+    if (chatInputEl) {{
+      chatInputEl.addEventListener("keydown", (e) => {{
+        if (e.key === "Enter" && !e.isComposing) {{
+          e.preventDefault();
+          sendAiQuery();
+        }}
+      }});
     }}
 
     // --- Initialization ---

@@ -2,12 +2,20 @@
 
 ## 1. 專案目標與定位
 - **專案名稱**：`tokyo-trip-assistant` (新宿・橫濱・箱根 6日遊隨身戰情室)
-- **當前版本**：`v1.4.3` (EGM金魚審查閉環 ＋ API穩健度與跨架構時鐘修復版)
+- **當前版本**：`v1.5.1 PRO` (多輪代碼審查硬化 ＋ Headless Chrome E2E零異常驗證版)
 - **核心目標**：為使用者及全家 2 大 2 小（**小孩年齡 11 歲與 12 歲國小高年級/國中生**，2026/11/26～12/01）提供出國隨身攜帶、整合 Gemini 3.8 Flash 實時時空雙感知、5 大導遊實質決策模式與 Funliday 動態行程聯動的手機端旅行戰情指揮中心。
 
 ---
 
 ## 2. 已完成工作 (Done)
+- [x] **多輪代碼深層審查、邊界防禦與 Headless Chrome E2E 驗證 (v1.5.1 PRO)**：
+  - 🔴 **動態 DOM 破壞致命修復 (Crucial DOM Bug Fixed)**：透過真實無頭瀏覽器模擬點擊發現，初始化更新 `pokePercentText.innerText` 時會覆蓋並破壞內嵌之 `<span id="pokeMainCount">`，導致後續使用者在寶可夢打卡清單打勾時拋出 `TypeError: Cannot set properties of null (setting 'innerText')` 阻斷腳本運行。已重構為獨立安全文字節點，杜絕 DOM 覆蓋破壞。
+  - 🔴 **代碼語法與編譯全檢驗**：使用 Node.js `--check` 靜態語法解析與 CDP 動態即時評估，消除所有未閉合標籤與重複語法殘留，達成 0 語法錯誤。
+  - 🛡️ **本地儲存韌性防禦 (`safeGetJson`)**：封裝統一防禦型讀取函式，全面攔截 `JSON.parse` 異常，防止手機瀏覽器因快取損壞或殘留髒資料導致整頁腳本癱瘓。
+  - ⏱️ **Gemini API 弱網 35 秒超時控制器 (AbortController)**：手機在日本地鐵或地下商場訊號盲區時，自動於 35 秒觸發 AbortController 中斷連線，並顯示友善超時提示與狀態釋放，徹底防止 AI 按鈕無限期「思考中...」鎖死。
+  - 🈳 **繁中/日語輸入法 (CJK IME) 拼字 Enter 防誤送**：替換過時 inline `onkeypress`，改採標準 `keydown` 搭配 `!event.isComposing` 檢測，解決使用者打注音/拼音/日文選字按 Enter 意外送出未完成文字的痛點。
+  - 🗺️ **寶可夢地圖彈窗即時動態測距 (Dynamic Popup Distance) 與離線降級告示**：將地圖 Marker Popup 內容改為動態函式綁定，隨 GPS 定位即時更新精確距離；並加入離線無圖資時的清楚導航指引，離線依然可用。
+  - 🌐 **真實無頭 Chrome 瀏覽器 E2E 自動化測試套件**：建立 `e2e_browser_test.mjs`，透過 CDP 驅動獨立無痕 Chrome 模擬使用者完整操作（5 大分頁輪流切換、5 種 AI 模式點擊、寶可夢打卡持久化、地圖據點平移、死線折疊開合、話題增刪），驗證達成 **0 Uncaught Runtime Exceptions** 與 **0 Console Errors**。
 - [x] **使用者反饋專案精修 (v1.5.1)**：
   - ✂️ **移除 Hero 卡片**：扣除重複大橫幅，大幅釋放手機螢幕縱向空間，開頁即核心動線內容。
   - 🗺️ **橫濱寶可夢尋寶互動地圖 (Leaflet + Esri Dark Canvas)**：嵌入深黑無浮水印戰情地圖，精確標繪 7 大據點座標與目前 GPS 定位點，點擊標籤直接啟動 Google Maps 導航。
