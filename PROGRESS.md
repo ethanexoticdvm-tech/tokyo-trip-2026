@@ -1,85 +1,50 @@
 # 專案進度與架構快照 (PROGRESS.md)
+> 快照時間：2026-11-04 23:40:00 (v1.5.2 PRO 封裝完成)
 
-## 1. 專案目標與定位
-- **專案名稱**：`tokyo-trip-assistant` (新宿・橫濱・箱根 6日遊隨身戰情室)
-- **當前版本**：`v1.5.2 PRO` (楓葉設定視窗 ＋ 全域字體縮放 ＋ 雙向破圖極限自適應修復版)
-- **核心目標**：為使用者及全家 2 大 2 小（**小孩年齡 11 歲與 12 歲國小高年級/國中生**，2026/11/26～12/01）提供出國隨身攜帶、整合 Gemini 3.8 Flash 實時時空雙感知、5 大導遊實質決策模式與 Funliday 動態行程聯動的手機端旅行戰情指揮中心。
+## 1. 核心目標
+- **專案定位**：`tokyo-trip-assistant` (新宿・橫濱・箱根 6日遊隨身戰情室)
+- **當前版本**：`v1.5.2 PRO` (極致無破圖自適應 ＋ 楓葉偏好設定視窗 ＋ 全域字體縮放 ＋ AI純淨版)
+- **核心目標**：為使用者及全家 2 大 2 小（11 歲與 12 歲青少年國小高年級/國中生，2026/11/26～12/01）提供出國隨身攜帶、整合 Gemini 3.8 Flash 實時時空雙感知、5 大導遊實質決策模式與 Funliday 動態行程聯動的手機端旅行戰情指揮中心。
 
----
+## 2. 已完成工作 (Completed)
+- [x] **5大截圖問題全面修復與手機極限自適應重構 (v1.5.2 PRO)**：
+  - 🍁 **楓葉點擊進入設定彈窗 (`#settingsModal`)**：頂欄左側品牌按鈕改為彈性按鈕（內含 🍁 圖標、版本號、小齒輪，點擊帶 `navigator.vibrate` 觸感）。整合 **Google Gemini API Key 管理**（明文/密文眼睛切換、儲存、清除、狀態晶片、AI Studio 免費連結）與 **5 段字體縮放系統**（90%、100%、112%、125%、140%，即時切換 `--font-scale` 與 `html` 基準根字級，localStorage 持久化）。
+  - ✂️ **刪除 AI 大腦舊版冗餘 API 佔位卡片**：自 `#viewGemini` 分頁徹底移除 `.key-status-bar`，釋放垂直空間；若未填 Key 提問，自動於對話泡泡引導一鍵開啟楓葉設定。
+  - ✂️ **徹底扣除頂部 Hero 卡片**：完全清除 `FAMILY TOKYO TRIP` 橫幅，首屏直接以 Funliday 實時行程開展。
+  - 📐 **修復「下方破圖」**：`.bottom-bar` 底部內距升級為 `max(16px, env(safe-area-inset-bottom, 16px))`，`.bottom-tab` 改為自適應高度與文字溢出保護，Android 虛擬手勢條與 iOS Home Indicator 100% 避讓，零壓字。
+  - 📱 **修復「右側破圖」與全站自適應加強**：頂欄邊距微調至 10px，按鈕彈性收縮；加入 `@media (max-width: 375px)` 窄螢幕斷點（自動隱藏微型版本徽章），全站套用 `*, *::before, *::after { box-sizing: border-box; }` 與 `html, body { max-width: 100vw; overflow-x: hidden; }`，360px~375px 窄螢幕 100% 容納無橫向捲軸。
+- [x] **無頭 Chrome (CDP) 自動化測試與像素級驗證 (0 Errors / 0 Warnings)**：
+  - `ai-engine/e2e_browser_test.mjs`：8 大單元端對端測試全數通過（5 大分頁、5 種模式、打卡持久化、地圖平移、死線切換、話題管理、0 運行時例外與 0 主控台錯誤）。
+  - `ai-engine/capture_cdp_screenshots.mjs`：全真機 390x844 與 375x667 像素截圖生成，留存於專案 artifacts。
+- [x] **EGM 深度代碼審查與前置缺陷修復 (v1.5.1 PRO)**：
+  - 🔴 動態 DOM 破壞致命修復 (`pokePercentText` 獨立節點重構)。
+  - 🛡️ 本地儲存韌性防禦 (`safeGetJson` 攔截損壞快取)。
+  - ⏱️ 35 秒 AbortController 弱網超時中斷與狀態防呆。
+  - 🈳 CJK IME 拼字 Enter 防誤送 (`!event.isComposing`)。
+- [x] **雙軌發布與跨設備同步**：
+  - 🚀 **GitHub Pages**：已自動部署至 `https://ethanexoticdvm-tech.github.io/tokyo-trip-2026/`
+  - 💾 **Google Drive 交付目錄**：已產出至 `G:\我的雲端硬碟\AI-Programe\新宿6日遊隨身戰情室_v1.5.2\`
+  - 🔄 **Bare Repo**：已推送至 `G:\我的雲端硬碟\antigravity_repos\tokyo-trip-assistant.git`
 
-## 2. 已完成工作 (Done)
-- [x] **使用者需求回饋與全網頁自適應重構 (v1.5.2 PRO)**：
-  - 🍁 **楓葉點擊開啟系統偏好設定 (Settings Modal)**：點擊左上角楓葉按鈕即彈出深黑磨砂設定面板，整合 **Google Gemini API Key 管理**（明文/密文切換、儲存、清除、Google AI Studio 免費申請入口）與 **全域頁面字體縮放系統**（90%、100%、112%、125%、140% 五段微調，即時更新 `--font-scale` 與 `html` 基準根字級，適用強烈陽光與長輩閱讀，自動持久化保存）。
-  - ✂️ **刪除 AI 大腦舊版冗餘 API 卡片**：自 `#viewGemini` 分頁徹底移除舊版佔位按鈕，釋放 60px+ 手機垂直瀏覽空間；若未設定 Key 發送訊息時，自動彈出友善氣泡並一鍵喚起設定面板。
-  - 📐 **修復下方破圖 (Bottom Bar Safe Area Padding)**：為 `.bottom-bar` 注入 `max(16px, env(safe-area-inset-bottom, 16px))` 安全底距，`.bottom-tab` 改為自適應高度與彈性文字佈局，徹底解決 Android 手勢橫條與 iOS Home Indicator 遮蔽標籤文字之問題。
-  - 📱 **修復右側破圖與全網頁自適應加強 (Responsive Top Bar Overhaul)**：縮減頂欄橫向邊距，重構 `.brand-btn` 與 `.top-pill` 為響應式彈性結構，在 375px/360px 窄螢幕下自動隱藏次要版號標籤，確保「翻譯」與「回飯店」按鈕 100% 完整容納於螢幕寬度內，杜絕右側溢位被裁切。
-  - 🧪 **真實無頭 Chrome (CDP) 像素測量驗證**：於 375px (iPhone SE) 與 390px (iPhone 14/15) 視窗尺寸下以 Chrome DevTools Protocol 進行雙向像素測量，全站元素溢位歸零 (`scrollWidth <= windowWidth`)，達成 **0 Uncaught Exceptions** 與 **0 Console Errors**。
-- [x] **多輪代碼深層審查、邊界防禦與 Headless Chrome E2E 驗證 (v1.5.1 PRO)**：
-  - 🔴 **動態 DOM 破壞致命修復 (Crucial DOM Bug Fixed)**：透過真實無頭瀏覽器模擬點擊發現，初始化更新 `pokePercentText.innerText` 時會覆蓋並破壞內嵌之 `<span id="pokeMainCount">`，導致後續使用者在寶可夢打卡清單打勾時拋出 `TypeError: Cannot set properties of null (setting 'innerText')` 阻斷腳本運行。已重構為獨立安全文字節點，杜絕 DOM 覆蓋破壞。
-  - 🔴 **代碼語法與編譯全檢驗**：使用 Node.js `--check` 靜態語法解析與 CDP 動態即時評估，消除所有未閉合標籤與重複語法殘留，達成 0 語法錯誤。
-  - 🛡️ **本地儲存韌性防禦 (`safeGetJson`)**：封裝統一防禦型讀取函式，全面攔截 `JSON.parse` 異常，防止手機瀏覽器因快取損壞或殘留髒資料導致整頁腳本癱瘓。
-  - ⏱️ **Gemini API 弱網 35 秒超時控制器 (AbortController)**：手機在日本地鐵或地下商場訊號盲區時，自動於 35 秒觸發 AbortController 中斷連線，並顯示友善超時提示與狀態釋放，徹底防止 AI 按鈕無限期「思考中...」鎖死。
-  - 🈳 **繁中/日語輸入法 (CJK IME) 拼字 Enter 防誤送**：替換過時 inline `onkeypress`，改採標準 `keydown` 搭配 `!event.isComposing` 檢測，解決使用者打注音/拼音/日文選字按 Enter 意外送出未完成文字的痛點。
-  - 🗺️ **寶可夢地圖彈窗即時動態測距 (Dynamic Popup Distance) 與離線降級告示**：將地圖 Marker Popup 內容改為動態函式綁定，隨 GPS 定位即時更新精確距離；並加入離線無圖資時的清楚導航指引，離線依然可用。
-  - 🌐 **真實無頭 Chrome 瀏覽器 E2E 自動化測試套件**：建立 `e2e_browser_test.mjs`，透過 CDP 驅動獨立無痕 Chrome 模擬使用者完整操作（5 大分頁輪流切換、5 種 AI 模式點擊、寶可夢打卡持久化、地圖據點平移、死線折疊開合、話題增刪），驗證達成 **0 Uncaught Runtime Exceptions** 與 **0 Console Errors**。
-- [x] **使用者反饋專案精修 (v1.5.1)**：
-  - ✂️ **移除 Hero 卡片**：扣除重複大橫幅，大幅釋放手機螢幕縱向空間，開頁即核心動線內容。
-  - 🗺️ **橫濱寶可夢尋寶互動地圖 (Leaflet + Esri Dark Canvas)**：嵌入深黑無浮水印戰情地圖，精確標繪 7 大據點座標與目前 GPS 定位點，點擊標籤直接啟動 Google Maps 導航。
-  - ⏰ **英文 Deadlines 與動態過期自動過濾**：底欄與卡片改採英文 Deadlines，依時間嚴格正序排列，並依即時日本時間自動隱藏已過期死線（保留折疊檢視）。
-- [x] **UI/UX Pro Max 戰情室全面升級 (v1.5.0)**：
-  - 🎨 **OLED Tactical Midnight 戰情視覺規範**：導入 dark-mode-oled，深黑基底搭配 Aurora 柔光，達成戶外抗反光與 OLED 極致省電。
-  - 📐 **全結構性向量 SVG 圖標系統**：全域剔除結構性 Emoji，全面改採 crisp 2px stroke SVG 向量圖標（Lucide 風格），跨 iOS/Android/PC 渲染一致。
-  - 🔘 **觸控靶區與無障礙 (A11y/WCAG AA) 合規**：所有點擊元件強制達標 ≥44x44px 觸控靶區，對比度達 4.5:1 ~ 15:1，適配 :focus-visible 與 prefers-reduced-motion。
-  - 🎫 **擬真小田急浪漫特快車票 (Skeuomorphic Ticket)**：加入左右打孔邊緣、路線指示、金色高對比大字座位車廂標籤，斷網行走時秒讀。
-  - 🎮 **寶可夢進度光條與觸覺震動 (Haptic Feedback)**：新增百分比進度條與打卡震動 (
-avigator.vibrate)，提升尋寶沉浸感。
-  - 📅 **Funliday 6天動線分日步進器 (Day Filter Stepper)**：支援 [全部] [D1] [D2] [D3] [D4] [D5] [D6] 快速切換過濾，免除長篇滾動。
-  - 🎭 **5 大導遊模式觸感膠囊 (Tactile Grid Pills)**：視覺化膠囊按鈕與實時推演說明提示框。
-  - 📋 **AI 訊息一鍵複製與 Toast 浮動氣泡**：方便旅途中快速複製地址與日語問句。
-- [x] **EGM 金魚審查閉環與 API 穩健度全面強化 (v1.4.3)**：
-  - 🔴 **語法阻斷修復**：修復 `promptApiKey()` 內未轉義換行引發之 `SyntaxError`，保障 iOS/Android 首次載入 100% 正常。
-  - 🔴 **Gemini API 交替規範防禦**：確保切片歷史 (`historySlice`) 永遠以 `user` turn 起始，阻絕 HTTP 400 Bad Request。
-  - 🟡 **Thinking 思考 Token 穿透防護**：於 `ThinkingLevel: HIGH` 模式下精準過濾 `thought: true` 部分，平滑拼接多 part 文字。
-  - 🟡 **防連擊並發鎖定**：引入 `isAiQueryInProgress` 狀態旗標與按鈕停用防護，避免弱網環境重複請求。
-  - 🟡 **時區計算跨設備強化**：改採 `Intl.DateTimeFormat` 取得標準 `Asia/Tokyo` JST 時間，徹底杜絕跨時區/夏令時 Epoch 偏斜。
-  - 🟡 **iOS Funliday App 退避回退**：iOS 端若呼叫 `funliday://` 協議無反應，1.5 秒自動優雅回退至 Web 版網址。
-  - 🟢 **青少年細節與 UI 狀態同步**：歡迎訊息移除推車殘留文字，頁面初始化主動呼叫 `onModeChange()` 同步輸入框提示。
-- [x] **青少年（11、12 歲）量身深度適配與去除嬰幼兒邏輯 (v1.4.1)**：
-  - **全面剔除嬰兒設定**：徹底移除推車、尿布台、哺乳室與幼童安全座椅等不適用需求。
-  - **體能與節奏升級**：確認 11/12 歲體能近成人、步速快、能自行爬樓梯疾走。
-  - **青少年興趣與飲食鎖定**：聚焦動漫電玩（寶可夢、吉卜力、鋼彈、哥吉拉、一番賞、夾娃娃機、大型扭蛋店）、酷炫體驗（合味道杯麵 DIY、橫濱纜車、箱根海賊船、大涌谷火山黑玉子）與發育期成人份量美食小吃。
-- [x] **5 大導遊實質決策模式體系 (v1.4.1)**：
-  - **☕ 輕鬆模式 (Relaxed - 青少年潮玩慢活 ＋ 美食放鬆)**：`Thinking: LOW`。主動砍掉枯燥景點，推薦夾娃娃、扭蛋、一番賞與人氣街頭點心，避免青少年走太多無聊路產生厭世情緒。
-  - **📝 詳細模式 (Detailed - 深度全景推演 ＋ Plan B 備案 ＋ 份量預約全攻略)**：**Gemini 3.8 Flash ＋ `Thinking: HIGH`**。精算 2大2小成人份量配餐、手作 DIY 攻略、周遊券邊界精算與適合青少年的文化趣味歷史。
-  - **🛡️ 嚴肅模式 (Serious - 軍事級死線防禦 ＋ 危機預警 ＋ 安全第一)**：**Gemini 3.8 Flash ＋ `Thinking: HIGH`**。強制倒推 30~45 分鐘安全撤退線，嚴格防範江之島搭錯單軌電車、月台迷航、人潮走失與急診藥局對策。
-  - **💨 精簡模式 (Brief - HUD 抬頭顯示戰報 ＋ 1秒速讀指令)**：`Thinking: MINIMAL`。極簡儀表板輸出（目標、路線/月台、耗時、死線倒數），走路趕路時單手 1 秒掌握指令。
-  - **⚡ 簡潔模式 (Concise - 標準敏捷行動派 - 預設)**：`Thinking: MEDIUM`。2~4 點直擊核心，平衡效率與趣味。
-- [x] **AI 隨身導遊大腦升級 (v1.4.0 基礎)**：
-  - 實時日本時間與進度感知 (JST & Stage Engine)。
-  - 即時 GPS 空間感知與 18 大地標反向錨定。
-  - 多話題 Session 管理系統 (Multi-Topic Manager)。
-  - Funliday 行程動態異動覆蓋 (Dynamic Itinerary Override)。
-- [x] **底欄防破圖與 Android Intent 適配 (v1.3.1)**。
-- [x] **iOS Standalone PWA 零閃退防護 (v1.2.1)**。
-- [x] **零外洩安全架構**：100% 零硬編碼 API Key，密鑰加密存於手機本地。
-- [x] **雙軌發布與跨設備同步就緒**：
-  - **GitHub Pages**：部署至 `https://ethanexoticdvm-tech.github.io/tokyo-trip-2026/`。
-  - **Google Drive Bare Repo**：同步至 `G:\我的雲端硬碟\antigravity_repos\tokyo-trip-assistant.git`。
-  - **Google Drive 交付目錄**：`G:\我的雲端硬碟\AI-Programe\新宿6日遊隨身戰情室_v1.4.1\`。
+## 3. 關鍵架構決策與重要檔案
+- **核心單檔入口**：[`index.html`](file:///c:/Users/inche/Antigravity/tokyo-trip-assistant/index.html)（自包含所有 CSS/JS/離線資源，免伺服器直接離線雙擊運行）。
+- **生成與建置引擎**：[`ai-engine/generate_v152.py`](file:///c:/Users/inche/Antigravity/tokyo-trip-assistant/ai-engine/generate_v152.py)（集中管理知識庫與 HTML 模板，單元維護）。
+- **跨平台雙機啟動器**：`啟動_隨身戰情室.bat`（診斷與自適應）與 `啟動_隨身戰情室.vbs`（靜默啟動）。
+- **字體縮放架構**：採用 CSS 變數 `--font-scale` 配合動態 `html.style.fontSize`，全站所有尺寸依 `rem` 等比縮放，不破壞排版佈局。
+- **邊距防禦原則**：涉及手機邊緣浮動元素，一律強制 `max(16px, env(safe-area-...))` 雙重保險。
 
----
+## 4. 測試與驗證方法
+1. **端對端自動化測試**：`node ai-engine/e2e_browser_test.mjs`（驗證全站邏輯、分頁切換與 0 異常）。
+2. **無頭 CDP 截圖產出**：`node ai-engine/capture_cdp_screenshots.mjs`（於 390px/375px 真實尺寸擷取渲染畫面）。
+3. **本機快速開起**：雙擊 `啟動_隨身戰情室.bat` 或在終端輸入 `cmd.exe /c 啟動_隨身戰情室.bat`。
 
-## 3. 關鍵架構與設計決策
-1. **實質決策分流與 High 深度思考**：
-   - 當使用者選擇「詳細」或「嚴肅」時，API 調用 `gemini-3.8-flash` 且代入 `generationConfig: { thinkingConfig: { thinkingLevel: "HIGH" } }`，執行最深層推理運算。
-2. **青少年心理與生理適配**：
-   - 拒絕把 11/12 歲當幼童，重視食量、自主行動力與專屬青少年的動漫潮玩熱點。
+## 5. 下一步待辦事項 (Next Steps)
+1. **出發前行前檢核 (11月中旬)**：
+   - 橫濱紅磚倉庫聖誕市集 asoview! 優先入場券開賣搶票。
+   - TableCheck 新宿牛舌檸檬訂位代碼與人數最終覆核。
+2. **家人實機手機測試**：
+   - 請家人以手機瀏覽器開啟 GitHub Pages 網址，實測設定彈窗（API Key 與字體大小調整）及離線車票與寶可夢打卡。
 
----
-
-## 4. 下一步待辦事項 (Next Steps)
-1. **出發前一週 (11月中旬)**：
-   - 複核橫濱紅磚倉庫聖誕市集 asoview! 優先入場票開賣與購票狀態。
-   - 複核 Day 1 新宿牛舌檸檬 TableCheck 訂位代碼。
-2. **家人手機部署實機測試**：
-   - 請家人以手機打開網址並實測 5 種模式切換、GPS 定位與 AI 提問。
+## 6. 給接續 Agent 的執行建議
+- 本專案採用純靜態高相容性單檔架構，任何 HTML/CSS/JS 修改建議透過 `ai-engine/generate_v152.py`（或後續遞增版本）產生，避免手動編輯 `index.html` 時發生標籤未閉合或特殊字元轉義問題。
+- 每次更動後必須執行 `node ai-engine/e2e_browser_test.mjs` 確保 0 console errors，並依全域規範自動遞增版本號及同步交付至 Google Drive。
