@@ -3,369 +3,558 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>新宿・橫濱・箱根 6日遊隨身戰情室 v1.4.3</title>
+  <title>新宿・橫濱・箱根 6日遊隨身戰情室 v1.5.0</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="theme-color" content="#090d16">
+  <meta name="theme-color" content="#070a12">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍁</text></svg>">
+  
+  <!-- Typography: JetBrains Mono + Orbitron + Noto Sans TC -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Orbitron:wght@600;700;800;900&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+
   <style>
+    /* ==========================================================================
+       UI/UX Pro Max Design System Tokens (OLED Tactical Midnight)
+       ========================================================================== */
     :root {
-      --bg: #090d16;
-      --card-bg: #121929;
-      --card-border: rgba(255, 255, 255, 0.08);
+      --bg: #070a12;
+      --bg-card: #0f1728;
+      --bg-card-hover: #152238;
+      --bg-surface: #141d30;
+      --bg-glass: rgba(15, 23, 40, 0.88);
+      
+      --border: rgba(255, 255, 255, 0.08);
+      --border-hover: rgba(255, 255, 255, 0.18);
+      --border-accent: rgba(56, 189, 248, 0.35);
+      
       --primary: #f43f5e;
-      --primary-glow: rgba(244, 63, 94, 0.25);
-      --accent: #38bdf8;
-      --accent-purple: #c084fc;
-      --warning: #f59e0b;
-      --success: #10b981;
+      --primary-glow: rgba(244, 63, 94, 0.3);
+      --primary-gradient: linear-gradient(135deg, #f43f5e, #fb7185);
+      
+      --cyan: #38bdf8;
+      --cyan-glow: rgba(56, 189, 248, 0.25);
+      --purple: #a855f7;
+      --purple-glow: rgba(168, 85, 247, 0.3);
+      --amber: #f59e0b;
+      --amber-glow: rgba(245, 158, 11, 0.25);
+      --emerald: #10b981;
+      --emerald-glow: rgba(16, 185, 129, 0.25);
+      --danger: #ef4444;
       --funliday: #ff7a00;
+      --funliday-gradient: linear-gradient(135deg, #ff7a00, #ff9500);
+
+      /* High-contrast WCAG AA typography tokens */
       --text-1: #f8fafc;
-      --text-2: #94a3b8;
-      --text-3: #64748b;
-      --radius-lg: 18px;
+      --text-2: #cbd5e1;
+      --text-3: #94a3b8;
+      --text-muted: #64748b;
+      
+      --radius-xl: 20px;
+      --radius-lg: 16px;
       --radius-md: 12px;
       --radius-sm: 8px;
+      --radius-full: 9999px;
+      
+      --font-mono: 'JetBrains Mono', monospace;
+      --font-title: 'Orbitron', sans-serif;
+      --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, "Noto Sans TC", sans-serif;
+      
+      --touch-min: 44px;
+      --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
+
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
       -webkit-tap-highlight-color: transparent;
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, "Noto Sans TC", sans-serif;
+      font-family: var(--font-sans);
     }
+
     body {
       background: var(--bg);
       color: var(--text-1);
       min-height: 100vh;
       overflow-x: hidden;
-      padding-bottom: calc(75px + env(safe-area-inset-bottom));
+      padding-bottom: calc(84px + env(safe-area-inset-bottom));
+      line-height: 1.5;
+      font-size: 15px;
     }
-    
-    /* Top Sticky App Bar */
+
+    /* Accessibility focus indicators */
+    button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+      outline: 2px solid var(--cyan);
+      outline-offset: 2px;
+    }
+
+    /* ==========================================================================
+       Top Sticky App Bar
+       ========================================================================== */
     header {
       position: sticky;
       top: 0;
-      background: rgba(9, 13, 22, 0.92);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
+      background: rgba(7, 10, 18, 0.94);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
       z-index: 100;
-      border-bottom: 1px solid var(--card-border);
-      padding: max(10px, env(safe-area-inset-top)) 12px 10px;
+      border-bottom: 1px solid var(--border);
+      padding: max(12px, env(safe-area-inset-top)) 16px 12px;
     }
+
     .header-inner {
-      max-width: 620px;
+      max-width: 640px;
       margin: 0 auto;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
     }
-    .logo-badge {
+
+    .brand-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      color: var(--text-1);
+    }
+
+    .brand-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-sm);
+      background: linear-gradient(135deg, rgba(244, 63, 94, 0.2), rgba(244, 63, 94, 0.05));
+      border: 1px solid rgba(244, 63, 94, 0.35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+
+    .brand-title {
+      font-weight: 800;
+      font-size: 0.95rem;
+      letter-spacing: -0.2px;
+      white-space: nowrap;
       display: flex;
       align-items: center;
       gap: 6px;
-      font-weight: 800;
-      font-size: 0.96rem;
-      letter-spacing: -0.3px;
-      white-space: nowrap;
-      flex-shrink: 0;
     }
-    .badge-tag {
-      background: linear-gradient(135deg, #f43f5e, #fb7185);
-      color: white;
-      font-size: 0.65rem;
+
+    .badge-ver {
+      background: var(--primary-gradient);
+      color: #fff;
+      font-size: 0.62rem;
+      font-family: var(--font-mono);
+      font-weight: 800;
       padding: 2px 7px;
-      border-radius: 999px;
-      font-weight: 800;
+      border-radius: var(--radius-full);
+      box-shadow: 0 2px 8px var(--primary-glow);
     }
+
     .header-actions {
       display: flex;
       gap: 8px;
       align-items: center;
     }
+
     .top-pill {
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid var(--card-border);
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
       color: var(--text-1);
-      font-size: 0.76rem;
-      padding: 7px 12px;
-      border-radius: 999px;
-      display: flex;
+      font-size: 0.8rem;
+      font-weight: 700;
+      padding: 0 14px;
+      height: var(--touch-min);
+      border-radius: var(--radius-full);
+      display: inline-flex;
       align-items: center;
-      gap: 5px;
+      justify-content: center;
+      gap: 6px;
       text-decoration: none;
-      font-weight: 600;
       cursor: pointer;
-      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    .top-pill:active { transform: scale(0.96); }
-    .top-pill-primary {
-      background: linear-gradient(135deg, #2563eb, #3b82f6);
-      border: none;
-      color: white;
-      box-shadow: 0 2px 10px rgba(37, 99, 235, 0.35);
+      transition: var(--transition);
+      white-space: nowrap;
     }
 
-    /* Container */
+    .top-pill:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: var(--border-hover);
+      transform: translateY(-1px);
+    }
+
+    .top-pill:active {
+      transform: scale(0.96);
+    }
+
+    .top-pill-primary {
+      background: linear-gradient(135deg, #0284c7, #0369a1);
+      border: none;
+      color: #fff;
+      box-shadow: 0 2px 12px rgba(2, 132, 199, 0.4);
+    }
+
+    .top-pill-primary:hover {
+      background: linear-gradient(135deg, #0369a1, #0284c7);
+    }
+
+    /* ==========================================================================
+       Container & Layout
+       ========================================================================== */
     .app-container {
-      max-width: 620px;
+      max-width: 640px;
       margin: 0 auto;
       padding: 16px;
     }
 
-    /* Hero Banner */
+    /* ==========================================================================
+       Hero Banner (Aurora Glow + Tactical Glass)
+       ========================================================================== */
     .hero-card {
-      background: linear-gradient(145deg, #1e293b 0%, #0f172a 100%);
-      border: 1px solid rgba(244, 63, 94, 0.25);
-      border-radius: var(--radius-lg);
-      padding: 18px;
+      background: linear-gradient(145deg, #131b2e 0%, #0d1424 100%);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      border-radius: var(--radius-xl);
+      padding: 20px;
       margin-bottom: 16px;
       position: relative;
       overflow: hidden;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+      box-shadow: 0 10px 30px -8px rgba(0, 0, 0, 0.6);
     }
-    .hero-card::after {
-      content: '🍁';
+
+    .hero-card::before {
+      content: '';
       position: absolute;
-      right: 12px;
-      bottom: -10px;
-      font-size: 5rem;
-      opacity: 0.15;
+      top: -40px;
+      right: -40px;
+      width: 140px;
+      height: 140px;
+      background: radial-gradient(circle, rgba(244, 63, 94, 0.25) 0%, transparent 70%);
       pointer-events: none;
     }
+
     .hero-sub {
-      font-size: 0.78rem;
-      color: #fda4af;
+      font-size: 0.72rem;
+      font-family: var(--font-title);
+      color: var(--cyan);
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 4px;
+      letter-spacing: 1px;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
+
     .hero-title {
-      font-size: 1.25rem;
+      font-size: 1.35rem;
       font-weight: 900;
       color: #fff;
-      margin-bottom: 6px;
+      margin-bottom: 8px;
+      letter-spacing: -0.3px;
     }
+
     .hero-meta {
-      font-size: 0.8rem;
-      color: var(--text-2);
       display: flex;
-      gap: 12px;
+      gap: 8px;
       flex-wrap: wrap;
     }
 
-    /* Cards */
-    .content-card {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: var(--radius-lg);
-      padding: 16px;
-      margin-bottom: 16px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    .hero-tag {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 5px 10px;
+      font-size: 0.76rem;
+      color: var(--text-2);
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-weight: 600;
     }
+
+    .hero-tag-highlight {
+      background: rgba(244, 63, 94, 0.12);
+      border-color: rgba(244, 63, 94, 0.3);
+      color: #fda4af;
+    }
+
+    /* ==========================================================================
+       Content Card Base
+       ========================================================================== */
+    .content-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 18px;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      transition: var(--transition);
+    }
+
     .card-title-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 12px;
-    }
-    .card-title {
-      font-size: 0.98rem;
-      font-weight: 800;
-      display: flex;
-      align-items: center;
-      gap: 6px;
+      margin-bottom: 14px;
     }
 
-    /* Funliday Integration Card */
+    .card-title {
+      font-size: 1rem;
+      font-weight: 800;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-title svg {
+      color: var(--cyan);
+      flex-shrink: 0;
+    }
+
+    /* ==========================================================================
+       Funliday Card & Day Stepper
+       ========================================================================== */
     .funliday-card {
-      background: linear-gradient(135deg, rgba(255, 122, 0, 0.15) 0%, rgba(18, 25, 41, 0.8) 100%);
+      background: linear-gradient(135deg, rgba(255, 122, 0, 0.15) 0%, rgba(15, 23, 40, 0.95) 100%);
       border: 1px solid rgba(255, 122, 0, 0.35);
-      border-radius: var(--radius-lg);
-      padding: 18px;
+      border-radius: var(--radius-xl);
+      padding: 20px;
       margin-bottom: 16px;
       text-align: center;
+      box-shadow: 0 8px 25px -5px rgba(255, 122, 0, 0.2);
     }
-    .funliday-logo {
-      font-size: 2.2rem;
-      margin-bottom: 6px;
+
+    .funliday-brand {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 52px;
+      height: 52px;
+      border-radius: var(--radius-md);
+      background: var(--funliday-gradient);
+      color: #fff;
+      margin-bottom: 12px;
+      box-shadow: 0 4px 15px rgba(255, 122, 0, 0.4);
     }
+
     .funliday-title {
-      font-size: 1.15rem;
+      font-size: 1.2rem;
       font-weight: 900;
       color: #fff;
       margin-bottom: 6px;
     }
+
     .funliday-desc {
-      font-size: 0.82rem;
+      font-size: 0.84rem;
       color: var(--text-2);
-      line-height: 1.5;
+      line-height: 1.55;
       margin-bottom: 16px;
-      max-width: 450px;
+      max-width: 480px;
       margin-left: auto;
       margin-right: auto;
     }
+
     .funliday-actions {
       display: flex;
       flex-direction: column;
       gap: 10px;
-      max-width: 320px;
+      max-width: 360px;
       margin: 0 auto;
     }
+
     .btn-funliday-app {
-      background: linear-gradient(135deg, #ff7a00, #ff9500);
+      background: var(--funliday-gradient);
       color: white;
       text-decoration: none;
       font-weight: 800;
       font-size: 0.95rem;
-      padding: 12px 20px;
+      padding: 0 20px;
+      height: 48px;
       border-radius: var(--radius-md);
-      box-shadow: 0 4px 15px rgba(255, 122, 0, 0.4);
-      display: flex;
+      box-shadow: 0 4px 18px rgba(255, 122, 0, 0.45);
+      display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
       cursor: pointer;
+      transition: var(--transition);
+      border: none;
     }
-    .btn-funliday-app:active { transform: scale(0.98); }
+
+    .btn-funliday-app:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 22px rgba(255, 122, 0, 0.6);
+    }
+
+    .btn-funliday-app:active { transform: scale(0.97); }
+
     .btn-funliday-web {
-      background: rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.05);
       border: 1px solid rgba(255, 255, 255, 0.15);
       color: var(--text-1);
       text-decoration: none;
       font-weight: 700;
-      font-size: 0.82rem;
-      padding: 9px 16px;
+      font-size: 0.85rem;
+      padding: 0 16px;
+      height: 44px;
       border-radius: var(--radius-md);
-      display: flex;
+      display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 6px;
+      transition: var(--transition);
     }
 
-    /* Alerts / Deadlines */
-    .deadline-item {
-      background: rgba(244, 63, 94, 0.08);
-      border-left: 4px solid var(--primary);
-      border-radius: 0 var(--radius-md) var(--radius-md) 0;
-      padding: 12px 14px;
-      margin-bottom: 10px;
+    .btn-funliday-web:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.25);
     }
-    .deadline-item.warning {
-      background: rgba(245, 158, 11, 0.08);
-      border-color: var(--warning);
-    }
-    .deadline-item.info {
-      background: rgba(56, 189, 248, 0.08);
-      border-color: var(--accent);
-    }
-    .deadline-head {
-      font-size: 0.88rem;
-      font-weight: 800;
-      color: #fff;
-      margin-bottom: 4px;
+
+    /* Day Stepper Filter Tabs */
+    .day-tabs-scroll {
       display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      margin-bottom: 14px;
+      scrollbar-width: none;
+    }
+    .day-tabs-scroll::-webkit-scrollbar { display: none; }
+
+    .day-tab-btn {
+      flex: 0 0 auto;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
+      color: var(--text-2);
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 0 14px;
+      height: 38px;
+      border-radius: var(--radius-full);
+      cursor: pointer;
+      display: inline-flex;
       align-items: center;
       gap: 6px;
-    }
-    .deadline-body {
-      font-size: 0.8rem;
-      color: var(--text-2);
-      line-height: 1.45;
+      transition: var(--transition);
     }
 
-    /* Tickets */
-    .ticket-badge {
-      background: linear-gradient(135deg, #1e293b, #0f172a);
-      border: 1px solid rgba(56, 189, 248, 0.35);
+    .day-tab-btn:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+    }
+
+    .day-tab-btn.active {
+      background: rgba(244, 63, 94, 0.18);
+      border-color: var(--primary);
+      color: #fff;
+      box-shadow: 0 2px 10px var(--primary-glow);
+    }
+
+    .day-card-item {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border);
       border-radius: var(--radius-md);
       padding: 14px;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
+      transition: var(--transition);
     }
-    .ticket-tag {
-      font-size: 0.7rem;
+
+    .day-card-item:hover {
+      background: rgba(255, 255, 255, 0.04);
+      border-color: var(--border-hover);
+    }
+
+    .day-card-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .day-badge {
+      background: rgba(56, 189, 248, 0.15);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      color: var(--cyan);
+      font-family: var(--font-mono);
       font-weight: 800;
-      color: var(--accent);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 4px;
-    }
-    .ticket-route {
-      font-size: 1.05rem;
-      font-weight: 900;
-      color: #fff;
-      margin-bottom: 6px;
-    }
-    .ticket-seats {
-      display: inline-block;
-      background: rgba(254, 240, 138, 0.12);
-      border: 1px solid rgba(254, 240, 138, 0.3);
-      color: #fef08a;
-      font-size: 0.82rem;
-      font-weight: 800;
-      padding: 4px 10px;
+      font-size: 0.75rem;
+      padding: 2px 8px;
       border-radius: 6px;
     }
 
-    /* Pokemon List (User Praised) */
-    .poke-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid var(--card-border);
-      border-radius: var(--radius-md);
-      padding: 12px;
-      margin-bottom: 10px;
-      gap: 12px;
-    }
-    .poke-check-btn {
-      width: 26px;
-      height: 26px;
-      border-radius: 8px;
-      border: 2px solid #475569;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
+    .day-route-text {
       font-size: 0.85rem;
-      transition: all 0.2s;
+      color: var(--text-2);
+      line-height: 1.6;
     }
-    .poke-check-btn.checked {
-      background: var(--success);
-      border-color: var(--success);
-      color: white;
+
+    .day-route-text strong {
+      color: #fff;
     }
-    .btn-maps {
+
+    /* ==========================================================================
+       Gemini 3.8 Flash AI Brain UI
+       ========================================================================== */
+    .gemini-container {
+      background: linear-gradient(145deg, rgba(20, 24, 48, 0.8) 0%, rgba(13, 19, 36, 0.95) 100%);
+      border: 1px solid var(--purple-glow);
+      border-radius: var(--radius-xl);
+      padding: 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+    }
+
+    .key-status-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 8px 14px;
+      font-size: 0.8rem;
+      margin-bottom: 12px;
+      gap: 8px;
+    }
+
+    .btn-key-action {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #fff;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0 12px;
+      height: 34px;
+      border-radius: 6px;
+      cursor: pointer;
       display: inline-flex;
       align-items: center;
       gap: 5px;
-      background: #0284c7;
-      color: white;
-      text-decoration: none;
-      font-size: 0.75rem;
-      font-weight: 700;
-      padding: 6px 12px;
-      border-radius: 6px;
-      min-height: 36px;
+      transition: var(--transition);
+      white-space: nowrap;
     }
-    .btn-maps:active { background: #0369a1; }
 
-    /* v1.4.0 Real-time Awareness & Topic Management */
+    .btn-key-action:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.35);
+    }
+
+    /* Real-time Temporal & Spatial Awareness Banner */
     .awareness-banner {
-      background: rgba(0, 0, 0, 0.4);
+      background: rgba(0, 0, 0, 0.45);
       border: 1px solid rgba(168, 85, 247, 0.3);
-      border-radius: var(--radius-sm);
-      padding: 8px 12px;
-      margin-bottom: 10px;
+      border-radius: var(--radius-md);
+      padding: 10px 14px;
+      margin-bottom: 12px;
       display: flex;
       flex-direction: column;
-      gap: 5px;
-      font-size: 0.76rem;
+      gap: 6px;
+      font-size: 0.78rem;
     }
+
     .awareness-item {
       display: flex;
       align-items: center;
@@ -373,24 +562,119 @@
       color: var(--text-2);
       flex-wrap: wrap;
     }
+
+    .jst-clock-display {
+      font-family: var(--font-mono);
+      font-weight: 800;
+      color: #fff;
+      font-size: 0.95rem;
+      letter-spacing: 0.5px;
+      font-variant-numeric: tabular-nums;
+    }
+
     .awareness-tag {
-      background: rgba(244, 63, 94, 0.2);
+      background: rgba(244, 63, 94, 0.18);
       color: #fda4af;
-      border: 1px solid rgba(244, 63, 94, 0.4);
-      padding: 1px 6px;
-      border-radius: 4px;
+      border: 1px solid rgba(244, 63, 94, 0.35);
+      padding: 2px 8px;
+      border-radius: 6px;
       font-weight: 700;
-      font-size: 0.7rem;
+      font-size: 0.72rem;
     }
+
     .awareness-gps-tag {
-      background: rgba(16, 185, 129, 0.2);
+      background: rgba(16, 185, 129, 0.18);
       color: #6ee7b7;
-      border: 1px solid rgba(16, 185, 129, 0.4);
-      padding: 1px 6px;
-      border-radius: 4px;
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      padding: 2px 8px;
+      border-radius: 6px;
       font-weight: 700;
-      font-size: 0.7rem;
+      font-size: 0.72rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
     }
+
+    /* Pulsating Dot */
+    .pulse-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--emerald);
+      box-shadow: 0 0 0 0 var(--emerald-glow);
+      animation: pulse-ring 1.8s infinite;
+      display: inline-block;
+    }
+
+    @keyframes pulse-ring {
+      0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6); }
+      70% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    }
+
+    /* 5-Mode Strategy Switcher (Tactile Segmented Bar) */
+    .mode-section {
+      margin-bottom: 12px;
+    }
+
+    .mode-pills-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 6px;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 4px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+    }
+
+    .mode-pill-btn {
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text-3);
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 8px 4px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      transition: var(--transition);
+      min-height: 44px;
+    }
+
+    .mode-pill-btn:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .mode-pill-btn.active {
+      background: rgba(168, 85, 247, 0.25);
+      border-color: var(--purple);
+      color: #fff;
+      box-shadow: 0 2px 10px var(--purple-glow);
+    }
+
+    .mode-pill-btn svg {
+      width: 16px;
+      height: 16px;
+      stroke-width: 2.2;
+    }
+
+    .mode-desc-callout {
+      margin-top: 6px;
+      font-size: 0.74rem;
+      color: var(--text-2);
+      background: rgba(168, 85, 247, 0.08);
+      border-left: 3px solid var(--purple);
+      padding: 6px 10px;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      line-height: 1.4;
+    }
+
+    /* Topic Session Management Bar */
     .topic-management-bar {
       display: flex;
       align-items: center;
@@ -398,631 +682,1106 @@
       gap: 6px;
       margin-bottom: 10px;
       background: rgba(255, 255, 255, 0.03);
-      border: 1px solid var(--card-border);
-      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
       padding: 6px 8px;
     }
+
     .topic-select-wrap {
       flex: 1;
       min-width: 0;
     }
+
     .topic-select-wrap select {
       width: 100%;
-      background: #0f172a;
+      height: 38px;
+      background: #090e1a;
       color: #fff;
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      border-radius: 6px;
-      padding: 5px 8px;
-      font-size: 0.76rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 0 10px;
+      font-size: 0.8rem;
+      font-weight: 600;
       outline: none;
       cursor: pointer;
     }
+
     .topic-btn-group {
       display: flex;
       gap: 4px;
       flex-shrink: 0;
     }
+
     .btn-topic-action {
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.15);
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border);
       color: var(--text-1);
-      padding: 4px 7px;
-      border-radius: 6px;
-      font-size: 0.72rem;
+      width: 38px;
+      height: 38px;
+      border-radius: var(--radius-sm);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
       cursor: pointer;
-      font-weight: 600;
+      transition: var(--transition);
     }
-    .btn-topic-action:active { transform: scale(0.96); }
+
+    .btn-topic-action:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: var(--border-hover);
+    }
+
+    .btn-topic-action:active { transform: scale(0.95); }
+
     .btn-topic-action.btn-danger {
       color: #f87171;
       border-color: rgba(239, 68, 68, 0.3);
     }
+
+    .btn-topic-action.btn-danger:hover {
+      background: rgba(239, 68, 68, 0.15);
+    }
+
+    /* Collapsible Override Box */
     .itinerary-override-box {
       background: rgba(255, 255, 255, 0.02);
       border: 1px dashed rgba(255, 255, 255, 0.15);
-      border-radius: var(--radius-sm);
+      border-radius: var(--radius-md);
       margin-bottom: 12px;
-      font-size: 0.76rem;
+      font-size: 0.78rem;
     }
+
     .itinerary-override-box summary {
-      padding: 7px 10px;
+      padding: 10px 12px;
       cursor: pointer;
       color: var(--text-2);
       font-weight: 600;
       user-select: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
+
     .itinerary-override-content {
-      padding: 8px 10px 10px;
+      padding: 0 12px 12px;
       border-top: 1px solid rgba(255, 255, 255, 0.05);
     }
+
     .itinerary-override-content textarea {
       width: 100%;
       background: #090d16;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: var(--radius-sm);
       color: #fff;
-      padding: 6px 8px;
-      font-size: 0.75rem;
+      padding: 8px 10px;
+      font-size: 0.8rem;
+      font-family: var(--font-mono);
       resize: vertical;
       outline: none;
       box-sizing: border-box;
-    }
-    .override-hint {
-      color: var(--text-3);
-      font-size: 0.68rem;
-      margin-top: 4px;
-    }
-    
-        .mode-selection-bar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-      margin-bottom: 10px;
-      background: rgba(168, 85, 247, 0.08);
-      border: 1px solid rgba(168, 85, 247, 0.25);
-      border-radius: var(--radius-sm);
-      padding: 6px 10px;
-    }
-    .mode-label {
-      font-size: 0.74rem;
-      font-weight: 800;
-      color: #e9d5ff;
-      white-space: nowrap;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-    .mode-select {
-      flex: 1;
-      background: #0f172a;
-      color: #fff;
-      border: 1px solid rgba(168, 85, 247, 0.4);
-      border-radius: 6px;
-      padding: 4px 8px;
-      font-size: 0.75rem;
-      font-weight: 700;
-      outline: none;
-      cursor: pointer;
+      margin-top: 8px;
     }
 
-    /* Gemini Multi-turn Chat Container */
-    .gemini-container {
-      background: linear-gradient(145deg, rgba(30, 27, 75, 0.6) 0%, rgba(15, 23, 42, 0.8) 100%);
-      border: 1px solid rgba(168, 85, 247, 0.35);
-      border-radius: var(--radius-lg);
-      padding: 16px;
-      margin-bottom: 16px;
-    }
-    .key-status-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: rgba(0, 0, 0, 0.3);
-      border-radius: var(--radius-sm);
-      padding: 8px 12px;
-      font-size: 0.78rem;
-      margin-bottom: 12px;
-    }
-    .chat-controls-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 8px;
-      font-size: 0.75rem;
-      color: var(--text-2);
-    }
-    .btn-clear-chat {
-      background: transparent;
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      color: #f87171;
-      padding: 3px 8px;
-      border-radius: 4px;
-      font-size: 0.7rem;
-      cursor: pointer;
-    }
+    /* Quick Question Chips */
     .chip-scroll {
       display: flex;
-      gap: 6px;
+      gap: 8px;
       overflow-x: auto;
       padding-bottom: 8px;
       margin-bottom: 12px;
       scrollbar-width: none;
     }
     .chip-scroll::-webkit-scrollbar { display: none; }
+
     .chat-chip {
       flex: 0 0 auto;
-      background: rgba(168, 85, 247, 0.15);
+      background: rgba(168, 85, 247, 0.12);
       border: 1px solid rgba(168, 85, 247, 0.3);
       color: #e9d5ff;
-      font-size: 0.74rem;
-      padding: 6px 12px;
-      border-radius: 999px;
+      font-size: 0.78rem;
+      padding: 0 14px;
+      height: 36px;
+      border-radius: var(--radius-full);
       cursor: pointer;
       font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: var(--transition);
+      white-space: nowrap;
     }
-    .chat-chip:active { background: rgba(168, 85, 247, 0.35); }
+
+    .chat-chip:hover {
+      background: rgba(168, 85, 247, 0.25);
+      border-color: rgba(168, 85, 247, 0.5);
+      transform: translateY(-1px);
+    }
+
+    .chat-chip:active { transform: scale(0.96); }
+
+    /* Chat Messages Box */
     .chat-messages {
-      background: rgba(11, 15, 25, 0.7);
-      border: 1px solid var(--card-border);
-      border-radius: var(--radius-md);
-      padding: 12px;
-      min-height: 160px;
-      max-height: 340px;
+      background: rgba(9, 13, 24, 0.85);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 14px;
+      min-height: 200px;
+      max-height: 380px;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 12px;
       margin-bottom: 12px;
     }
+
     .bubble {
-      padding: 9px 12px;
-      border-radius: var(--radius-md);
-      font-size: 0.82rem;
-      line-height: 1.45;
-      max-width: 88%;
+      padding: 12px 14px;
+      border-radius: var(--radius-lg);
+      font-size: 0.88rem;
+      line-height: 1.55;
+      max-width: 90%;
+      word-break: break-word;
+      position: relative;
     }
+
     .bubble.user {
       align-self: flex-end;
-      background: var(--primary);
+      background: linear-gradient(135deg, #f43f5e, #e11d48);
       color: white;
+      border-bottom-right-radius: 4px;
+      box-shadow: 0 2px 12px rgba(244, 63, 94, 0.25);
     }
+
     .bubble.ai {
       align-self: flex-start;
-      background: #1e293b;
+      background: #151e33;
       color: #f1f5f9;
-      border: 1px solid rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-bottom-left-radius: 4px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
     }
+
+    .bubble-actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 6px;
+      padding-top: 4px;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .btn-copy-bubble {
+      background: transparent;
+      border: none;
+      color: var(--text-3);
+      font-size: 0.72rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 6px;
+      border-radius: 4px;
+      transition: var(--transition);
+    }
+
+    .btn-copy-bubble:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    /* Chat Input Bar */
     .chat-input-row {
       display: flex;
       gap: 8px;
     }
+
     .chat-input-row input {
       flex: 1;
-      background: rgba(15, 23, 42, 0.9);
-      border: 1px solid var(--card-border);
+      height: 48px;
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid var(--border);
       border-radius: var(--radius-md);
       color: white;
-      padding: 10px 12px;
-      font-size: 0.82rem;
+      padding: 0 14px;
+      font-size: 0.88rem;
       outline: none;
-      min-height: 44px;
-    }
-    .chat-input-row button {
-      background: linear-gradient(135deg, #a855f7, #9333ea);
-      border: none;
-      color: white;
-      padding: 0 16px;
-      border-radius: var(--radius-md);
-      font-weight: 800;
-      font-size: 0.82rem;
-      cursor: pointer;
-      min-height: 44px;
+      transition: var(--transition);
     }
 
-    /* Fixed Bottom Bar - Symmetrical 5-tab Mobile Layout */
+    .chat-input-row input:focus {
+      border-color: var(--purple);
+      box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.2);
+    }
+
+    .btn-chat-send {
+      background: linear-gradient(135deg, #a855f7, #7e22ce);
+      border: none;
+      color: white;
+      padding: 0 18px;
+      height: 48px;
+      border-radius: var(--radius-md);
+      font-weight: 800;
+      font-size: 0.88rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      box-shadow: 0 2px 14px rgba(168, 85, 247, 0.35);
+      transition: var(--transition);
+      white-space: nowrap;
+    }
+
+    .btn-chat-send:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 18px rgba(168, 85, 247, 0.5);
+    }
+
+    .btn-chat-send:active { transform: scale(0.96); }
+    .btn-chat-send:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* ==========================================================================
+       Pokemon Hunt View
+       ========================================================================== */
+    .poke-progress-card {
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 12px 16px;
+      margin-bottom: 14px;
+    }
+
+    .poke-progress-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--text-2);
+      margin-bottom: 8px;
+    }
+
+    .poke-progress-track {
+      width: 100%;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+    }
+
+    .poke-progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #10b981, #38bdf8);
+      border-radius: var(--radius-full);
+      transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .poke-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 12px 14px;
+      margin-bottom: 10px;
+      gap: 12px;
+      transition: var(--transition);
+    }
+
+    .poke-row:hover {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: var(--border-hover);
+    }
+
+    .poke-row.checked-row {
+      background: rgba(16, 185, 129, 0.04);
+      border-color: rgba(16, 185, 129, 0.25);
+    }
+
+    .poke-check-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: var(--radius-md);
+      border: 2px solid #475569;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: var(--transition);
+      background: transparent;
+      color: transparent;
+    }
+
+    .poke-check-btn.checked {
+      background: var(--emerald);
+      border-color: var(--emerald);
+      color: white;
+      box-shadow: 0 2px 10px var(--emerald-glow);
+    }
+
+    .poke-check-btn:active {
+      transform: scale(0.92);
+    }
+
+    .btn-maps {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      background: #0284c7;
+      color: white;
+      text-decoration: none;
+      font-size: 0.8rem;
+      font-weight: 700;
+      padding: 0 14px;
+      height: 44px;
+      border-radius: var(--radius-md);
+      flex-shrink: 0;
+      transition: var(--transition);
+    }
+
+    .btn-maps:hover {
+      background: #0369a1;
+      transform: translateY(-1px);
+    }
+
+    .btn-maps:active { transform: scale(0.96); }
+
+    /* ==========================================================================
+       Deadlines & Critical Alerts
+       ========================================================================== */
+    .deadline-item {
+      background: rgba(239, 68, 68, 0.08);
+      border-left: 4px solid var(--danger);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      padding: 14px 16px;
+      margin-bottom: 12px;
+      transition: var(--transition);
+    }
+
+    .deadline-item.warning {
+      background: rgba(245, 158, 11, 0.08);
+      border-color: var(--amber);
+    }
+
+    .deadline-item.info {
+      background: rgba(56, 189, 248, 0.08);
+      border-color: var(--cyan);
+    }
+
+    .deadline-head {
+      font-size: 0.92rem;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .deadline-body {
+      font-size: 0.84rem;
+      color: var(--text-2);
+      line-height: 1.5;
+    }
+
+    .deadline-body strong {
+      color: #fff;
+    }
+
+    /* ==========================================================================
+       Skeuomorphic Japanese Train Tickets
+       ========================================================================== */
+    .ticket-card {
+      position: relative;
+      background: linear-gradient(145deg, #131c2e 0%, #0d1424 100%);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      border-radius: var(--radius-lg);
+      padding: 16px 18px;
+      margin-bottom: 14px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+    }
+
+    .ticket-card::before, .ticket-card::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--bg);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      transform: translateY(-50%);
+    }
+
+    .ticket-card::before { left: -8px; }
+    .ticket-card::after { right: -8px; }
+
+    .ticket-tag {
+      font-size: 0.72rem;
+      font-family: var(--font-title);
+      font-weight: 800;
+      color: var(--cyan);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .ticket-route {
+      font-size: 1.15rem;
+      font-weight: 900;
+      color: #fff;
+      margin-bottom: 6px;
+    }
+
+    .ticket-time {
+      font-size: 0.88rem;
+      font-family: var(--font-mono);
+      color: var(--text-2);
+      margin-bottom: 10px;
+    }
+
+    .ticket-seats {
+      display: inline-block;
+      background: rgba(254, 240, 138, 0.12);
+      border: 1px solid rgba(254, 240, 138, 0.35);
+      color: #fef08a;
+      font-family: var(--font-mono);
+      font-size: 0.92rem;
+      font-weight: 800;
+      padding: 6px 12px;
+      border-radius: 6px;
+      letter-spacing: 0.3px;
+    }
+
+    /* ==========================================================================
+       Bottom Floating Navigation (5-Tab Symmetrical Layout)
+       ========================================================================== */
     .bottom-bar {
       position: fixed;
       bottom: 0;
       left: 0;
       right: 0;
-      background: rgba(9, 13, 22, 0.96);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border-top: 1px solid var(--card-border);
+      background: rgba(7, 10, 18, 0.96);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border-top: 1px solid var(--border);
       display: flex;
       justify-content: space-around;
       align-items: center;
-      padding: 6px 0 calc(6px + env(safe-area-inset-bottom));
+      padding: 8px 0 calc(8px + env(safe-area-inset-bottom));
       z-index: 100;
       width: 100%;
       box-sizing: border-box;
     }
+
     .bottom-tab {
       flex: 1 1 0;
       min-width: 0;
+      height: 52px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 2px;
+      gap: 3px;
       background: transparent;
       border: none;
-      outline: none;
-      box-shadow: none;
       color: var(--text-3);
-      font-size: 0.72rem;
-      font-weight: 600;
-      padding: 4px 0;
-      white-space: nowrap;
+      font-size: 0.74rem;
+      font-weight: 700;
       cursor: pointer;
-      -webkit-tap-highlight-color: transparent;
+      transition: var(--transition);
+      position: relative;
     }
-    .bottom-tab:focus, .bottom-tab:active {
-      outline: none;
-      box-shadow: none;
-    }
-    .bottom-tab.active {
-      color: var(--primary);
-      font-weight: 800;
-    }
+
     .bottom-tab svg {
-      width: 20px;
-      height: 20px;
+      width: 22px;
+      height: 22px;
       stroke-width: 2.2;
       flex-shrink: 0;
+      transition: var(--transition);
     }
+
+    .bottom-tab:hover {
+      color: var(--text-1);
+    }
+
+    .bottom-tab.active {
+      color: var(--primary);
+    }
+
+    .bottom-tab.active svg {
+      transform: translateY(-2px);
+      filter: drop-shadow(0 2px 8px var(--primary-glow));
+    }
+
     .poke-badge {
       position: absolute;
-      top: -3px;
-      right: -8px;
+      top: 4px;
+      right: calc(50% - 18px);
       background: var(--primary);
       color: white;
-      font-size: 0.58rem;
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
       font-weight: 800;
       padding: 0 4px;
-      border-radius: 999px;
-      min-width: 14px;
-      line-height: 14px;
+      border-radius: var(--radius-full);
+      min-width: 15px;
+      line-height: 15px;
       text-align: center;
       border: 1px solid var(--bg);
     }
 
-    /* Flashcard Modal */
+    /* ==========================================================================
+       Toast Notification System
+       ========================================================================== */
+    .toast-container {
+      position: fixed;
+      top: calc(16px + env(safe-area-inset-top));
+      left: 50%;
+      transform: translateX(-50%) translateY(-20px);
+      background: #1e293b;
+      border: 1px solid var(--border-accent);
+      color: #fff;
+      padding: 10px 18px;
+      border-radius: var(--radius-full);
+      font-size: 0.82rem;
+      font-weight: 700;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+      z-index: 9999;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+    }
+
+    .toast-container.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* ==========================================================================
+       Modal
+       ========================================================================== */
     .modal-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.85);
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(8px);
       z-index: 300;
       display: none;
       align-items: center;
       justify-content: center;
       padding: 20px;
     }
+
     .modal-overlay.open { display: flex; }
+
     .modal-card {
-      background: #182234;
-      border: 2px solid var(--accent);
-      border-radius: var(--radius-lg);
-      padding: 26px 20px;
+      background: #141d30;
+      border: 1px solid var(--border-accent);
+      border-radius: var(--radius-xl);
+      padding: 24px;
       max-width: 90%;
       width: 420px;
       text-align: center;
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.7);
     }
-    .big-ja {
-      font-size: 1.6rem;
-      font-weight: 900;
-      color: #fef08a;
-      margin: 18px 0;
-      line-height: 1.4;
-    }
-    .sub-zh {
-      font-size: 0.95rem;
-      color: var(--text-2);
-      margin-bottom: 22px;
-    }
-    .btn-close-modal {
-      background: #334155;
-      color: white;
-      border: none;
-      padding: 10px 28px;
-      border-radius: var(--radius-sm);
-      font-weight: 800;
-      font-size: 0.9rem;
-      cursor: pointer;
+
+    /* Media query for reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      *, ::before, ::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
     }
   </style>
 </head>
 <body>
 
+  <!-- Toast Notification -->
+  <div id="toastBox" class="toast-container" role="status" aria-live="polite"></div>
+
   <!-- Top Sticky Bar -->
   <header>
     <div class="header-inner">
-      <div class="logo-badge">
-        🍁 新宿6日 <span class="badge-tag">v1.4.3</span>
+      <div class="brand-wrap">
+        <div class="brand-icon" aria-hidden="true">🍁</div>
+        <div class="brand-title">
+          新宿6日 <span class="badge-ver">v1.5.0 PRO</span>
+        </div>
       </div>
       <div class="header-actions">
-        <a href="https://translate.google.com/?sl=auto&tl=zh-TW" target="_blank" rel="noopener noreferrer" class="top-pill top-pill-primary" id="btnTranslate">
-          🌐 翻譯
+        <a href="https://translate.google.com/?sl=auto&tl=zh-TW" target="_blank" rel="noopener noreferrer" class="top-pill top-pill-primary" id="btnTranslate" aria-label="開啟 Google 翻譯">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          翻譯
         </a>
-        <a href="https://www.google.com/maps/search/?api=1&query=Apartment+hotel+Yumenoya+Shinjuku" class="top-pill" target="_blank">
-          🏨 回飯店
+        <a href="https://www.google.com/maps/search/?api=1&query=Apartment+hotel+Yumenoya+Shinjuku" class="top-pill" target="_blank" rel="noopener noreferrer" aria-label="Google 地圖導航回大久保飯店">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 21h18M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16M9 9h1M9 13h1M9 17h1M14 9h1M14 13h1M14 17h1"/></svg>
+          回飯店
         </a>
       </div>
     </div>
   </header>
 
-  <div class="app-container">
+  <main class="app-container">
 
     <!-- Hero Card -->
-    <div class="hero-card">
+    <section class="hero-card" aria-label="旅程概況資訊卡">
       <div class="hero-sub">Family Tokyo Trip 2026</div>
-      <div class="hero-title">新宿・橫濱・箱根 6日遊</div>
+      <h1 class="hero-title">新宿・橫濱・箱根 6日戰情室</h1>
       <div class="hero-meta">
-        <span>📅 2026/11/26 – 12/01</span>
-        <span>👨‍👩‍👧‍👦 2 大 2 小隨身神隊友</span>
+        <span class="hero-tag">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          2026/11/26 – 12/01
+        </span>
+        <span class="hero-tag hero-tag-highlight">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          2 大 2 小 (青少年 11 & 12 歲)
+        </span>
       </div>
-    </div>
+    </section>
 
-    <!-- 1. Funliday 實時動態行程 (Direct App Linking) -->
-    <div id="viewFunliday">
+    <!-- 1. Funliday 實時動態行程 -->
+    <div id="viewFunliday" role="region" aria-label="Funliday 行程檢視">
       <div class="funliday-card">
-        <div class="funliday-logo">✈️</div>
-        <div class="funliday-title">Funliday 最新動態行程</div>
-        <div class="funliday-desc">
-          行程已完全託管於 Funliday！您在手機 App 內做的任何景點調動、時間修改，點擊下方即可一秒直達最新排程，免除同步煩惱。
+        <div class="funliday-brand" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
         </div>
+        <h2 class="funliday-title">Funliday 最新動態行程</h2>
+        <p class="funliday-desc">
+          行程已完全託管於 Funliday！您在手機 App 內做的任何景點調動與時間修改，點擊下方即可一秒直達最新排程，免除手動同步煩惱。
+        </p>
         <div class="funliday-actions">
-          <a href="javascript:void(0)" onclick="openFunlidaySmart(event)" class="btn-funliday-app">
-            🚀 開啟 Funliday App (iOS / Android 智慧喚起)
-          </a>
+          <button type="button" onclick="openFunlidaySmart(event)" class="btn-funliday-app">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09zM12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6.05 11a22.35 22.35 0 0 1-3.95 2z"/></svg>
+            開啟 Funliday App (智慧喚起)
+          </button>
           <a href="https://www.funliday.com/m_Njg1M2NmMzEzMzc1NDY4YzcxZDUwMWFl0/trips/6a3ba8367e546c054da4fab1/overview" target="_blank" rel="noopener noreferrer" class="btn-funliday-web">
-            🌐 瀏覽器開啟完整行程 (官方網頁版 100% 穩定)
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            瀏覽器開啟完整行程 (官方網頁版)
           </a>
-          <div style="font-size:0.72rem; color:var(--text-3); margin-top:4px;">* Android 支援 Intent 秒開 App，iOS 支援安全外部調度防閃退</div>
+          <div style="font-size:0.75rem; color:var(--text-3); margin-top:4px;">* Android 支援 Intent 秒開 App，iOS 支援外部防閃退調度</div>
         </div>
       </div>
 
-      <!-- Quick Day Overview Summary Cards -->
+      <!-- Quick Day Overview Summary with Filter Stepper -->
       <div class="content-card">
         <div class="card-title-row">
-          <div class="card-title">📅 6天核心主題與關鍵動線</div>
+          <div class="card-title">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            6天核心動線速覽
+          </div>
         </div>
-        <div style="font-size:0.8rem; color:var(--text-2); line-height:1.6; display:flex; flex-direction:column; gap:8px;">
-          <div style="background:rgba(255,255,255,0.03); padding:8px 10px; border-radius:8px;">
-            <strong style="color:#fff;">D1 (11/26 週四)</strong>：松山 ➔ 羽田 ➔ 大久保飯店 ➔ 新宿檸檬牛舌 (20:34)
+
+        <!-- Filter Stepper -->
+        <div class="day-tabs-scroll" role="tablist" aria-label="每日行程篩選器">
+          <button class="day-tab-btn active" onclick="filterDayOverview('all', this)" role="tab" aria-selected="true">全部 6 天</button>
+          <button class="day-tab-btn" onclick="filterDayOverview('d1', this)" role="tab" aria-selected="false">D1 新宿/牛舌</button>
+          <button class="day-tab-btn" onclick="filterDayOverview('d2', this)" role="tab" aria-selected="false">D2 銀杏/童話</button>
+          <button class="day-tab-btn" onclick="filterDayOverview('d3', this)" role="tab" aria-selected="false">D3 橫濱/市集</button>
+          <button class="day-tab-btn" onclick="filterDayOverview('d4', this)" role="tab" aria-selected="false">D4 江之島/鎌倉</button>
+          <button class="day-tab-btn" onclick="filterDayOverview('d5', this)" role="tab" aria-selected="false">D5 箱根/纜車</button>
+          <button class="day-tab-btn" onclick="filterDayOverview('d6', this)" role="tab" aria-selected="false">D6 返抵國門</button>
+        </div>
+
+        <div id="dayOverviewList">
+          <div class="day-card-item" data-day="d1">
+            <div class="day-card-head">
+              <span class="day-badge">D1 (11/26 週四)</span>
+              <span style="font-size:0.75rem; color:#fda4af; font-weight:700;">🚨 20:34 檸檬牛舌預約</span>
+            </div>
+            <div class="day-route-text">
+              松山機場 ➔ 羽田機場入境 ➔ 大久保飯店安頓 ➔ <strong>新宿牛たんの檸檬 (20:34)</strong>
+            </div>
           </div>
-          <div style="background:rgba(255,255,255,0.03); padding:8px 10px; border-radius:8px;">
-            <strong style="color:#fff;">D2 (11/27 週五)</strong>：神宮外苑銀杏 ➔ 豪德寺 ➔ 吉祥寺白髭泡芙/童話村 ➔ 大田黑公園夜楓 ➔ 新宿哥吉拉/一番街
+
+          <div class="day-card-item" data-day="d2">
+            <div class="day-card-head">
+              <span class="day-badge">D2 (11/27 週五)</span>
+              <span style="font-size:0.75rem; color:var(--cyan); font-weight:700;">🍁 夜楓 ＆ 龍貓泡芙</span>
+            </div>
+            <div class="day-route-text">
+              神宮外苑銀杏 ➔ 豪德寺 ➔ 吉祥寺白髭龍貓泡芙/童話村 ➔ 大田黑公園夜楓 ➔ 新宿哥吉拉/一番街
+            </div>
           </div>
-          <div style="background:rgba(255,255,255,0.03); padding:8px 10px; border-radius:8px;">
-            <strong style="color:#fff;">D3 (11/28 週六)</strong>：橫濱港灣寶可夢尋寶 ➔ 合味道手作杯麵 (10:45) ➔ 冰川丸 ➔ 紅磚聖誕市集 (17:00) ➔ 纜車
+
+          <div class="day-card-item" data-day="d3">
+            <div class="day-card-head">
+              <span class="day-badge">D3 (11/28 週六)</span>
+              <span style="font-size:0.75rem; color:#fef08a; font-weight:700;">🍜 10:45 合味道手作 ＆ 聖誕市集</span>
+            </div>
+            <div class="day-route-text">
+              橫濱港灣寶可夢尋寶 ➔ <strong>合味道手作杯麵 (10:45)</strong> ➔ 冰川丸 ➔ <strong>紅磚聖誕市集 (17:00)</strong> ➔ 空中纜車
+            </div>
           </div>
-          <div style="background:rgba(255,255,255,0.03); padding:8px 10px; border-radius:8px;">
-            <strong style="color:#fff;">D4 (11/29 週日)</strong>：浪漫特快江之島33號 ➔ 岩屋/見晴亭 ➔ 江之電至長谷寺紅葉 ➔ 鎌倉小町通/八幡宮 ➔ 都廳夜景
+
+          <div class="day-card-item" data-day="d4">
+            <div class="day-card-head">
+              <span class="day-badge">D4 (11/29 週日)</span>
+              <span style="font-size:0.75rem; color:#fda4af; font-weight:700;">⚠️ 13:23 認明綠色江之電</span>
+            </div>
+            <div class="day-route-text">
+              浪漫特快江之島33號 ➔ 仲見世通 ➔ 岩屋/見晴亭 ➔ <strong>江之電往長谷寺</strong> ➔ 鎌倉小町通/八幡宮 ➔ 都廳夜景
+            </div>
           </div>
-          <div style="background:rgba(255,255,255,0.03); padding:8px 10px; border-radius:8px;">
-            <strong style="color:#fff;">D5 (11/30 週一)</strong>：箱根41號特快 ➔ 元箱根港平和鳥居 ➔ 龍宮殿純泡湯 ➔ 海賊船 ➔ 大涌谷下山死線 (15:15) ➔ 湯本商店街
+
+          <div class="day-card-item" data-day="d5">
+            <div class="day-card-head">
+              <span class="day-badge">D5 (11/30 週一)</span>
+              <span style="font-size:0.75rem; color:#ef4444; font-weight:800;">🚨 15:15 大涌谷準時下山死線</span>
+            </div>
+            <div class="day-route-text">
+              箱根41號特快 ➔ 元箱根港平和鳥居 ➔ 龍宮殿純泡湯 ➔ 海賊船 ➔ <strong>大涌谷纜車下山 (15:15)</strong> ➔ 湯本商店街
+            </div>
           </div>
-          <div style="background:rgba(255,255,255,0.03); padding:8px 10px; border-radius:8px;">
-            <strong style="color:#fff;">D6 (12/01 週二)</strong>：大久保退房 ➔ 羽田機場 T3 免稅店採買 ➔ 松山機場返抵國門
+
+          <div class="day-card-item" data-day="d6">
+            <div class="day-card-head">
+              <span class="day-badge">D6 (12/01 週二)</span>
+              <span style="font-size:0.75rem; color:var(--emerald); font-weight:700;">🛫 羽田免稅返台</span>
+            </div>
+            <div class="day-route-text">
+              大久保退房 ➔ 新宿最後採買 ➔ 前往羽田 T3 免稅店 ➔ 搭乘長榮 BR191 返抵台北松山
+            </div>
           </div>
         </div>
       </div>
     </div>
 
     <!-- 2. Gemini 3.8 Flash 具備完整上下文記憶之大腦 -->
-    <div id="viewGemini" style="display: none;">
+    <div id="viewGemini" style="display: none;" role="region" aria-label="AI 導遊對話大腦">
       <div class="gemini-container">
         <div class="card-title-row">
-          <div class="card-title" style="color: #c084fc;">🤖 Gemini 3.8 Flash 多輪記憶導遊</div>
+          <div class="card-title" style="color: #c084fc;">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4M8 15h0M16 15h0"/></svg>
+            Gemini 3.8 Flash 多輪導遊大腦
+          </div>
         </div>
 
         <div class="key-status-bar">
-          <span id="keyStatusText">🟡 未設定 API Key</span>
-          <button onclick="promptApiKey()" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #fff; font-size: 0.72rem; padding: 4px 10px; border-radius: 6px; cursor: pointer;">🔑 設定/更換 Key</button>
+          <span id="keyStatusText" style="display:inline-flex; align-items:center; gap:6px;">
+            <span class="pulse-dot"></span> 連線中...
+          </span>
+          <button onclick="promptApiKey()" class="btn-key-action">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 2l-2 2m-1.5 1.5L14 9l-3-3L3.5 13.5a5 5 0 1 0 7 7L18 13l3.5-3.5L21 2z"/></svg>
+            設定/更換 Key
+          </button>
         </div>
-        <!-- Real-time Temporal & Spatial Awareness Banner -->
+
+        <!-- Real-time Temporal & Spatial Awareness Banner (HUD) -->
         <div class="awareness-banner">
           <div class="awareness-item">
-            <span>🕒 日本時間：</span>
-            <strong id="jstClockText" style="color:#fff;">--:--</strong>
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <span>日本時間：</span>
+            <strong class="jst-clock-display" id="jstClockText">--:--</strong>
             <span class="awareness-tag" id="tripStageBadge">📅 計算中</span>
           </div>
           <div class="awareness-item">
-            <span>📍 即時位置：</span>
-            <span class="awareness-gps-tag" id="gpsStatusBadge">📡 GPS 定位中...</span>
-            <span id="nearestAnchorText" style="color:var(--text-3); font-size:0.7rem;"></span>
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <span>即時位置：</span>
+            <span class="awareness-gps-tag" id="gpsStatusBadge">
+              <span class="pulse-dot"></span> GPS 定位中...
+            </span>
+            <span id="nearestAnchorText" style="color:var(--text-3); font-size:0.75rem;"></span>
           </div>
         </div>
 
-                <!-- 🎭 5-Mode Strategy Selector (v1.4.1) -->
-        <div class="mode-selection-bar">
-          <span class="mode-label">🎭 導遊模式：</span>
-          <select class="mode-select" id="modeSelector" onchange="onModeChange(this.value)">
-            <option value="concise">⚡ 簡潔 (標準敏捷行動)</option>
-            <option value="detailed">📝 詳細 (High深度推演/全攻略)</option>
-            <option value="serious">🛡️ 嚴肅 (High死線防禦/戰情)</option>
-            <option value="relaxed">☕ 輕鬆 (青少年潮玩/美食放鬆)</option>
-            <option value="brief">💨 精簡 (HUD抬頭速讀戰報)</option>
-          </select>
+        <!-- 5-Mode Strategy Selector (Tactile Grid Pills) -->
+        <div class="mode-section">
+          <div style="font-size:0.76rem; font-weight:800; color:#e9d5ff; margin-bottom:6px; display:flex; align-items:center; gap:5px;">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            導遊決策模式切換：
+          </div>
+          <div class="mode-pills-grid" role="radiogroup" aria-label="導遊決策模式選擇">
+            <button type="button" class="mode-pill-btn active" data-mode="concise" onclick="selectMode('concise')" role="radio" aria-checked="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              <span>簡潔</span>
+            </button>
+            <button type="button" class="mode-pill-btn" data-mode="detailed" onclick="selectMode('detailed')" role="radio" aria-checked="false">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+              <span>詳細</span>
+            </button>
+            <button type="button" class="mode-pill-btn" data-mode="serious" onclick="selectMode('serious')" role="radio" aria-checked="false">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              <span>嚴肅</span>
+            </button>
+            <button type="button" class="mode-pill-btn" data-mode="relaxed" onclick="selectMode('relaxed')" role="radio" aria-checked="false">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 8h1a4 4 0 0 1 0 8h-1M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+              <span>輕鬆</span>
+            </button>
+            <button type="button" class="mode-pill-btn" data-mode="brief" onclick="selectMode('brief')" role="radio" aria-checked="false">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+              <span>精簡</span>
+            </button>
+          </div>
+          <div class="mode-desc-callout" id="modeDescCallout">
+            ⚡ <strong>簡潔模式</strong>：標準敏捷行動派 (Thinking: MEDIUM)。2~4 點直擊核心，兼顧青少年喜好與效率。
+          </div>
         </div>
 
         <!-- Topic Session Management Bar -->
         <div class="topic-management-bar">
           <div class="topic-select-wrap">
-            <select id="topicSelector" onchange="onTopicChange(this.value)">
+            <select id="topicSelector" onchange="onTopicChange(this.value)" aria-label="切換對話話題">
               <!-- Populated by JS -->
             </select>
           </div>
           <div class="topic-btn-group">
-            <button class="btn-topic-action" onclick="createNewTopic()" title="開啟新話題">➕ 新話題</button>
-            <button class="btn-topic-action" onclick="renameCurrentTopic()" title="改名">✏️</button>
-            <button class="btn-topic-action btn-danger" onclick="deleteCurrentTopic()" title="刪除">🗑️</button>
-            <button class="btn-topic-action" onclick="exportTopicsBackup()" title="導出對話備份">📥 備份</button>
+            <button class="btn-topic-action" onclick="createNewTopic()" title="開啟新話題" aria-label="開啟新話題">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+            </button>
+            <button class="btn-topic-action" onclick="renameCurrentTopic()" title="重新命名當前話題" aria-label="重新命名話題">
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+            </button>
+            <button class="btn-topic-action btn-danger" onclick="deleteCurrentTopic()" title="刪除話題" aria-label="刪除話題">
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+            </button>
+            <button class="btn-topic-action" onclick="exportTopicsBackup()" title="導出對話備份 JSON" aria-label="導出備份">
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+            </button>
           </div>
         </div>
 
         <!-- Dynamic Funliday Itinerary Override Box -->
         <details class="itinerary-override-box">
-          <summary>📝 Funliday 行程臨時異動備忘（點此輸入，AI即時感知）</summary>
+          <summary>
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            Funliday 行程臨時異動備忘（點此輸入，AI即時感知）
+          </summary>
           <div class="itinerary-override-content">
-            <textarea id="itineraryOverrideInput" placeholder="例如：明天取消豪德寺，改下午去新宿御苑，晚上去居酒屋..." rows="2" onchange="saveItineraryOverride()"></textarea>
-            <div class="override-hint">* 自動儲存於手機本機，發送訊息時會自動帶入即時上下文，AI 將優先按新行程推算順路與死線。</div>
+            <textarea id="itineraryOverrideInput" placeholder="例如：明天取消豪德寺，改下午去新宿御苑，晚上去居酒屋..." rows="2" onchange="saveItineraryOverride()" aria-label="自訂行程異動備忘"></textarea>
+            <div style="color:var(--text-3); font-size:0.72rem; margin-top:4px;">* 自動儲存於手機本機，發送訊息時會自動帶入即時上下文，AI 將優先按新行程推算。</div>
           </div>
         </details>
 
-        <div class="chat-controls-row">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; font-size:0.76rem; color:var(--text-2);">
           <span>🧠 連貫對話記憶（本話題獨立保存）</span>
-          <button class="btn-clear-chat" onclick="clearCurrentTopicChat()">清空本話題紀錄</button>
-        </div>
-        <div class="chip-scroll">
-          <div class="chat-chip" onclick="askChip('拍菜單問推薦：請推薦適合2位大人與2位小孩吃的熱門招牌菜，避開辛辣，告訴我們如何點餐？')">📋 菜單推薦(避辣)</div>
-          <div class="chat-chip" onclick="askChip('小朋友走累了，這附近有什麼可以坐下來休息、喝熱飲或吃甜點的好地方？')">☕ 小朋友累了找休息</div>
-          <div class="chat-chip" onclick="askChip('我們現在在元箱根港，推薦哪間走路3分鐘內不用大排長龍的午餐？')">🍱 元箱根港午餐推薦</div>
-          <div class="chat-chip" onclick="askChip('我們在箱根，回程浪漫特快是幾點幾號車廂？請告訴我幾點必須開始往車站走？')">⏰ 箱根回程車次提醒</div>
-          <div class="chat-chip" onclick="askChip('我們現在迷路了，怎麼走回大久保的飯店 Apartment hotel Yumenoya？')">🗺️ 怎麼走回飯店</div>
+          <button onclick="clearCurrentTopicChat()" style="background:transparent; border:1px solid rgba(255,255,255,0.15); color:#f87171; padding:3px 8px; border-radius:4px; font-size:0.72rem; cursor:pointer;">清空本話題紀錄</button>
         </div>
 
-        <div class="chat-messages" id="chatMsgBox">
+        <!-- Quick Question Chips -->
+        <div class="chip-scroll" role="toolbar" aria-label="常用提問範例">
+          <button type="button" class="chat-chip" onclick="askChip('拍菜單問推薦：請推薦適合2位大人與2位小孩（11/12歲）吃的熱門招牌菜，避開辛辣，告訴我們如何點餐？')">📋 菜單推薦(避辣)</button>
+          <button type="button" class="chat-chip" onclick="askChip('小朋友走累了，這附近有什麼可以坐下來休息、喝熱飲或吃甜點的好地方？')">☕ 小朋友累了找休息</button>
+          <button type="button" class="chat-chip" onclick="askChip('我們現在在元箱根港，推薦哪間走路3分鐘內不用大排長龍的午餐？')">🍱 元箱根港午餐推薦</button>
+          <button type="button" class="chat-chip" onclick="askChip('我們在箱根，回程浪漫特快是幾點幾號車廂？請告訴我幾點必須開始往車站走？')">⏰ 箱根回程車次提醒</button>
+          <button type="button" class="chat-chip" onclick="askChip('我們現在迷路了，怎麼走回大久保的飯店 Apartment hotel Yumenoya？')">🗺️ 怎麼走回飯店</button>
+          <button type="button" class="chat-chip" onclick="askChip('這附近最近且乾淨、不用排隊的公共洗手間在哪裡？')">🚻 找最近洗手間</button>
+        </div>
+
+        <div class="chat-messages" id="chatMsgBox" role="log" aria-live="polite">
           <div class="bubble ai">
-            您好！我是您的 <strong>Gemini 3.8 Flash</strong> 專屬隨身導遊。我已經完整記憶這 6 天所有班次、座位號、死線、人孔蓋與飯店資訊，並且<strong>支援多輪對話記憶延續</strong>！路上有任何狀況，隨時問我！
+            您好！我是您的 <strong>Gemini 3.8 Flash</strong> 專屬隨身全能導遊。已啟用<strong>實時日本時間與 GPS 雙感知</strong>！當前話題：『新宿・行程隨身諮詢』。路上有任何狀況（找廁所、動漫潮玩熱點、美食補給、電梯無障礙捷徑、順路排程、突發更動），隨時問我！
           </div>
         </div>
 
         <div class="chat-input-row">
-          <input type="text" id="chatInputBox" placeholder="問問 Gemini：例如『延續剛才的話題...』" onkeypress="if(event.key==='Enter') sendAiQuery()">
-          <button id="chatSendBtn" onclick="sendAiQuery()">發送</button>
+          <input type="text" id="chatInputBox" placeholder="問問導遊：例如『延續剛才的話題...』" onkeypress="if(event.key==='Enter') sendAiQuery()" aria-label="提問文字框">
+          <button type="button" id="chatSendBtn" onclick="sendAiQuery()" class="btn-chat-send" aria-label="發送提問">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            <span>發送</span>
+          </button>
         </div>
       </div>
     </div>
 
-    <!-- 3. 寶可夢人孔蓋＆郵筒打卡 (User Praised - Fully Preserved) -->
-    <div id="viewPokemon" style="display: none;">
+    <!-- 3. 寶可夢人孔蓋＆郵筒打卡 -->
+    <div id="viewPokemon" style="display: none;" role="region" aria-label="橫濱寶可夢尋寶任務">
       <div class="content-card">
         <div class="card-title-row">
-          <div class="card-title">🎮 橫濱寶可夢尋寶任務 (<span id="pokeMainCount">0</span>/7)</div>
+          <div class="card-title">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            橫濱寶可夢尋寶任務
+          </div>
         </div>
-        <p style="font-size: 0.8rem; color: var(--text-2); margin-bottom: 12px;">
-          打卡勾選會自動記錄在您的手機，點擊右側按鈕可一鍵直接開啟 Google Maps 精確座標導航！
+
+        <!-- Progress Tracker Bar -->
+        <div class="poke-progress-card">
+          <div class="poke-progress-header">
+            <span>尋寶進度達成率</span>
+            <span id="pokePercentText" style="color:var(--emerald); font-family:var(--font-mono);">0% (<span id="pokeMainCount">0</span>/7)</span>
+          </div>
+          <div class="poke-progress-track">
+            <div class="poke-progress-fill" id="pokeProgressFill" style="width: 0%;"></div>
+          </div>
+        </div>
+
+        <p style="font-size: 0.82rem; color: var(--text-2); margin-bottom: 14px;">
+          打卡勾選會自動加密儲存於手機，點擊右側按鈕可一鍵直接開啟 Google Maps 精確座標導航！
         </p>
+
         <div id="pokeContainer"></div>
       </div>
     </div>
 
     <!-- 4. 核心死線告警 -->
-    <div id="viewDeadlines" style="display: none;">
+    <div id="viewDeadlines" style="display: none;" role="region" aria-label="行程關鍵死線與交通陷阱">
       <div class="content-card">
         <div class="card-title-row">
-          <div class="card-title">⚡ 行程關鍵死線與交通陷阱</div>
+          <div class="card-title" style="color:#fda4af;">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            行程關鍵死線與交通陷阱
+          </div>
         </div>
 
         <div class="deadline-item">
-          <div class="deadline-head">🚨 Day 5 箱根：15:15 大涌谷準時下山（核心死線）</div>
+          <div class="deadline-head">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Day 5 箱根：15:15 大涌谷準時搭纜車下山（核心死線）
+          </div>
           <div class="deadline-body">
-            不可延誤！必須按時搭乘：空中纜車 ➔ 早雲山 ➔ 強羅 ➔ 登山電車 返回箱根湯本，確保銜接 <strong>17:46 浪漫特快 (箱根18號 MSE6)</strong>！
+            絕不可延誤！必須按時搭乘：空中纜車 ➔ 早雲山 ➔ 強羅 ➔ 登山電車 返回箱根湯本，確保銜接 <strong>17:46 浪漫特快 (箱根18號 MSE6)</strong>！
           </div>
         </div>
 
         <div class="deadline-item warning">
-          <div class="deadline-head">⚠️ Day 4 鎌倉：13:23 認明【江之電】（切勿搭單軌）</div>
+          <div class="deadline-head">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            Day 4 鎌倉：13:23 認明【綠色江之電】（切勿搭單軌）
+          </div>
           <div class="deadline-body">
             從江之島往長谷寺，務必前往<strong>「江之島電鐵（綠色江之電）江之島站」</strong>直達長谷站！千萬不要走進「湘南單軌電車（往大船繞大遠路）」。
           </div>
         </div>
 
         <div class="deadline-item warning">
-          <div class="deadline-head">🐿️ Day 4 鎌倉：紅谷「核桃糕 (くるみっ子)」時限</div>
+          <div class="deadline-head">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            Day 4 鎌倉：紅谷「核桃糕 (くるみっ子)」售罄時限
+          </div>
           <div class="deadline-body">
             週日下午觀光客極多，招牌核桃糕常在中午前後售罄。下午 15:30 逛小町通時若看到特約店有現貨先買！
           </div>
         </div>
 
         <div class="deadline-item info">
-          <div class="deadline-head">🎄 Day 3 橫濱：紅磚倉庫聖誕市集 (17:00)</div>
+          <div class="deadline-head">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+            Day 3 橫濱：紅磚倉庫聖誕市集 (17:00)
+          </div>
           <div class="deadline-body">
             16:00 已點燈。週六傍晚人潮達最高峰，建議持「優先入場票」走專用通道秒進場；若不進木屋區，外圍與商場可免費逛。
           </div>
         </div>
 
         <div class="deadline-item info">
-          <div class="deadline-head">🍜 Day 3 橫濱：合味道紀念館 (10:45)</div>
+          <div class="deadline-head">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/></svg>
+            Day 3 橫濱：合味道紀念館手作體驗 (10:45)
+          </div>
           <div class="deadline-body">
-            已預約 11:30/12:00 手作杯麵體驗，走完臨港公園後直接搭電梯至 4 樓吃麵第一波、準時至 3 樓報到。
+            已預約手作杯麵體驗，走完臨港公園後直接搭電梯至 4 樓吃麵第一波、準時至 3 樓報到自繪杯麵。
           </div>
         </div>
 
         <div class="deadline-item">
-          <div class="deadline-head">🥩 Day 1 新宿：牛たんの檸檬 (20:34)</div>
+          <div class="deadline-head">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Day 1 新宿：牛たんの檸檬 (20:34)
+          </div>
           <div class="deadline-body">
-            極厚切牛舌排隊名店，務必確認已在 TableCheck 完成預約，避免第一晚帶小孩舟車勞頓現場久候。
+            極厚切牛舌排隊名店，已在 TableCheck 完成預約，需提前 10 分鐘抵達門口，避免現場久候。
           </div>
         </div>
       </div>
     </div>
 
     <!-- 5. 離線車票速查 -->
-    <div id="viewTickets" style="display: none;">
+    <div id="viewTickets" style="display: none;" role="region" aria-label="離線車票與座位速查">
       <div class="content-card">
         <div class="card-title-row">
-          <div class="card-title">🎫 離線車票與座位速查（斷網可用）</div>
+          <div class="card-title">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="4" y="3" width="16" height="16" rx="2"/><path d="M4 11h16M12 3v8M8 15h.01M16 15h.01M6 19l-2 2M18 19l2 2"/></svg>
+            離線車票與座位速查（斷網可用）
+          </div>
         </div>
 
-        <div class="ticket-badge">
-          <div class="ticket-tag">Day 4 (11/29 週日) 浪漫特快</div>
+        <!-- Ticket 1 -->
+        <div class="ticket-card">
+          <div class="ticket-tag">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="3" width="16" height="16" rx="2"/><path d="M4 11h16"/></svg>
+            Day 4 (11/29 週日) 去程浪漫特快
+          </div>
           <div class="ticket-route">江之島33號 (EXE4)</div>
-          <div style="font-size:0.85rem; color:#94a3b8; margin-bottom:8px;">新宿 08:20 ➔ 09:28 片瀨江之島</div>
+          <div class="ticket-time">新宿 08:20 ➔ 09:28 片瀨江之島</div>
           <div class="ticket-seats">💺 07號車廂 2A, 2B, 3A, 3B</div>
         </div>
 
-        <div class="ticket-badge">
-          <div class="ticket-tag">Day 5 (11/30 週一) 去程浪漫特快</div>
+        <!-- Ticket 2 -->
+        <div class="ticket-card">
+          <div class="ticket-tag">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="3" width="16" height="16" rx="2"/><path d="M4 11h16"/></svg>
+            Day 5 (11/30 週一) 去程浪漫特快
+          </div>
           <div class="ticket-route">箱根41號 (EXE10)</div>
-          <div style="font-size:0.85rem; color:#94a3b8; margin-bottom:8px;">新宿 07:37 ➔ 09:22 箱根湯本</div>
+          <div class="ticket-time">新宿 07:37 ➔ 09:22 箱根湯本</div>
           <div class="ticket-seats">💺 04號車廂 8C, 8D, 9C, 9D</div>
         </div>
 
-        <div class="ticket-badge">
-          <div class="ticket-tag">Day 5 (11/30 週一) 回程浪漫特快</div>
+        <!-- Ticket 3 -->
+        <div class="ticket-card">
+          <div class="ticket-tag">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="3" width="16" height="16" rx="2"/><path d="M4 11h16"/></svg>
+            Day 5 (11/30 週一) 回程浪漫特快
+          </div>
           <div class="ticket-route">箱根18號 (MSE6)</div>
-          <div style="font-size:0.85rem; color:#94a3b8; margin-bottom:8px;">箱根湯本 17:46 ➔ 19:26 新宿</div>
+          <div class="ticket-time">箱根湯本 17:46 ➔ 19:26 新宿</div>
           <div class="ticket-seats">💺 04號車廂 8C, 8D, 9C, 9D</div>
         </div>
 
-        <div style="background:rgba(255,255,255,0.03); border:1px solid var(--card-border); border-radius:var(--radius-md); padding:12px; font-size:0.82rem; color:var(--text-2);">
-          <div style="font-weight:800; color:#fff; margin-bottom:4px;">🛫 班機時刻表</div>
-          <div>去程：11/26 11:30 松山 T1 ➔ 17:45 羽田 T3</div>
-          <div>回程：12/01 12:15 羽田 T3 ➔ 14:32 松山 T1</div>
+        <!-- Flight Info -->
+        <div style="background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:var(--radius-md); padding:14px; font-size:0.84rem; color:var(--text-2);">
+          <div style="font-weight:800; color:#fff; margin-bottom:6px; display:flex; align-items:center; gap:6px;">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.3c.4-.2.6-.6.5-1.1z"/></svg>
+            長榮航空班機時刻表
+          </div>
+          <div style="margin-bottom:4px;"><strong style="color:#fff;">去程 BR192：</strong>11/26 11:30 松山 T1 ➔ 17:45 羽田 T3</div>
+          <div><strong style="color:#fff;">回程 BR191：</strong>12/01 12:15 羽田 T3 ➔ 14:32 松山 T1</div>
         </div>
       </div>
     </div>
 
-  </div>
+  </main>
 
-  <!-- Bottom Floating Navigation -->
-  <nav class="bottom-bar">
-    <button class="bottom-tab active" onclick="switchNavTab('funliday')">
-      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
-      Funliday
+  <!-- Bottom Floating Navigation (5-Tab Symmetrical Layout) -->
+  <nav class="bottom-bar" role="tablist" aria-label="底欄導覽">
+    <button class="bottom-tab active" onclick="switchNavTab('funliday')" role="tab" aria-selected="true" aria-label="切換到 Funliday 行程">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+      <span>Funliday</span>
     </button>
-    <button class="bottom-tab" onclick="switchNavTab('gemini')">
-      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-      AI大腦
+    <button class="bottom-tab" onclick="switchNavTab('gemini')" role="tab" aria-selected="false" aria-label="切換到 AI 導遊大腦">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4M8 15h0M16 15h0"/></svg>
+      <span>AI大腦</span>
     </button>
-    <button class="bottom-tab" onclick="switchNavTab('pokemon')">
+    <button class="bottom-tab" onclick="switchNavTab('pokemon')" role="tab" aria-selected="false" aria-label="切換到 橫濱寶可夢尋寶">
       <div style="position:relative; display:inline-flex;">
-        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
         <span class="poke-badge" id="tabPokeCount">0</span>
       </div>
-      寶可夢
+      <span>寶可夢</span>
     </button>
-    <button class="bottom-tab" onclick="switchNavTab('deadlines')">
-      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
-      死線
+    <button class="bottom-tab" onclick="switchNavTab('deadlines')" role="tab" aria-selected="false" aria-label="切換到 行程死線">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <span>死線</span>
     </button>
-    <button class="bottom-tab" onclick="switchNavTab('tickets')">
-      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"/></svg>
-      車票
+    <button class="bottom-tab" onclick="switchNavTab('tickets')" role="tab" aria-selected="false" aria-label="切換到 離線車票">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="4" y="3" width="16" height="16" rx="2"/><path d="M4 11h16M12 3v8M8 15h.01M16 15h.01M6 19l-2 2M18 19l2 2"/></svg>
+      <span>車票</span>
     </button>
   </nav>
 
@@ -1039,29 +1798,43 @@
     ];
 
     // ==========================================
-    // 🍁 v1.4.0 State & Real-Time Awareness System
+    // State & Persistence
     // ==========================================
     let checkedPokes = JSON.parse(
       localStorage.getItem("tokyo_poke_checks_v140") ||
       localStorage.getItem("tokyo_poke_checks_v131") ||
-      localStorage.getItem("tokyo_poke_checks_v130") ||
-      "{}"
+      "{"}
     );
 
     let geminiApiKey =
       localStorage.getItem("tokyo_gemini_key_v140") ||
       localStorage.getItem("tokyo_gemini_key_v131") ||
-      localStorage.getItem("tokyo_gemini_key_v130") ||
-      localStorage.getItem("tokyo_gemini_key_v120") ||
       "";
 
     let topics = [];
     let currentTopicId = "";
     let itineraryOverrideText = localStorage.getItem("tokyo_itinerary_override_v140") || "";
-
     let currentMode = localStorage.getItem("tokyo_mode_v141") || "concise";
-    let currentCoords = null; // { lat, lng, acc }
-    let nearestAnchor = null; // { name, dist }
+    let currentCoords = null;
+    let nearestAnchor = null;
+
+    // Toast Notification helper
+    function showToast(msg, duration = 2500) {
+      const t = document.getElementById("toastBox");
+      if (!t) return;
+      t.innerText = msg;
+      t.classList.add("show");
+      setTimeout(() => {
+        t.classList.remove("show");
+      }, duration);
+    }
+
+    // Haptic feedback helper
+    function triggerHaptic() {
+      if (typeof navigator !== "undefined" && navigator.vibrate) {
+        navigator.vibrate(15);
+      }
+    }
 
     // 18 Core Trip Geographic Anchors
     const GEO_ANCHORS = [
@@ -1127,7 +1900,6 @@
         if (badge) badge.innerText = "瀏覽器不支援 GPS";
         return;
       }
-      if (badge) badge.innerText = "📡 搜尋 GPS 中...";
 
       const geoSuccess = (pos) => {
         currentCoords = {
@@ -1136,7 +1908,7 @@
           acc: Math.round(pos.coords.accuracy)
         };
         if (badge) {
-          badge.innerText = `🟢 GPS 已鎖定 (±${currentCoords.acc}m)`;
+          badge.innerHTML = `<span class="pulse-dot"></span> GPS 已鎖定 (±${currentCoords.acc}m)`;
           badge.className = "awareness-gps-tag";
         }
         updateNearestAnchor(currentCoords.lat, currentCoords.lng);
@@ -1209,19 +1981,19 @@
 
         if (d === "26") {
           stageBadge = `🚀 D1 [啟程➔羽田➔牛舌]`;
-          stageDescription = `Day 1 (${timePeriod})：松山飛抵羽田 ➔ 前往大久保飯店安頓 ➔ 今晚核心死線：20:34【牛たんの檸檬 (牛舌檸檬)】預約候位`;
+          stageDescription = `Day 1 (${timePeriod})：松山飛抵羽田 ➔ 前往大久保飯店安頓 ➔ 今晚核心死線：20:34【牛たんの檸檬】預約候位`;
         } else if (d === "27") {
           stageBadge = `🍂 D2 [銀杏➔吉祥寺➔夜楓]`;
           stageDescription = `Day 2 (${timePeriod})：神宮外苑銀杏 ➔ 豪德寺 ➔ 吉祥寺散策 ➔ 傍晚大田黑公園夜楓 ➔ 新宿晚餐`;
         } else if (d === "28") {
           stageBadge = `🍜 D3 [橫濱泡麵➔市集]`;
-          stageDescription = `Day 3 (${timePeriod})：橫濱港未來21 ➔ 關鍵死線：10:45【合味道杯麵館】3F報到 ➔ 寶可夢尋寶 ➔ 傍晚紅磚倉庫聖誕市集`;
+          stageDescription = `Day 3 (${timePeriod})：橫濱港未來21 ➔ 關鍵死線：10:45【合味道杯麵館】報到 ➔ 寶可夢尋寶 ➔ 傍晚紅磚倉庫聖誕市集`;
         } else if (d === "29") {
           stageBadge = `🌊 D4 [江之島➔長谷寺➔鎌倉]`;
-          stageDescription = `Day 4 (${timePeriod})：浪漫特快江之島33號 (08:20) ➔ 仲見世通 ➔ 13:23 江之電往長谷寺 ➔ 鎌倉小町通/八幡宮`;
+          stageDescription = `Day 4 (${timePeriod})：浪漫特快江之島33號 ➔ 仲見世通 ➔ 13:23 綠色江之電往長谷寺 ➔ 鎌倉小町通/八幡宮`;
         } else if (d === "30") {
           stageBadge = `♨️ D5 [箱根大環線➔龍宮殿]`;
-          stageDescription = `Day 5 (${timePeriod})：浪漫特快箱根41號 (07:37) ➔ 龍宮殿絕景風呂 ➔ 12:00 返元箱根港 ➔ 海賊船 ➔ 🚨致命死線：15:15 大涌谷纜車必須準時下山！`;
+          stageDescription = `Day 5 (${timePeriod})：浪漫特快箱根41號 ➔ 龍宮殿絕景風呂 ➔ 12:00 返元箱根港 ➔ 海賊船 ➔ 🚨死線：15:15 大涌谷纜車必須準時下山！`;
         } else if (d === "01") {
           stageBadge = `✈️ D6 [最後採買➔羽田返台]`;
           stageDescription = `Day 6 (${timePeriod})：新宿大久保退房 ➔ 藥妝補貨 ➔ 前往羽田 T3 採買退稅 ➔ 搭乘 BR191 (12:15) 返抵台北松山`;
@@ -1244,9 +2016,10 @@
       if (badgeEl) badgeEl.innerText = info.stageBadge;
     }
 
-    // --- Cross-Platform Funliday Smart Launcher ---
+    // --- Funliday Smart Launcher ---
     function openFunlidaySmart(e) {
       if (e) e.preventDefault();
+      triggerHaptic();
       const isAndroid = /Android/i.test(navigator.userAgent);
       const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
       const webUrl = "https://www.funliday.com/m_Njg1M2NmMzEzMzc1NDY4YzcxZDUwMWFl0/trips/6a3ba8367e546c054da4fab1/overview";
@@ -1278,65 +2051,93 @@
       }
     }
 
-    function safeOpenExternal(url) {
-      window.open(url, "_blank", "noopener,noreferrer");
-    }
-
     // --- View Navigation ---
     const VIEWS = ["funliday", "gemini", "pokemon", "deadlines", "tickets"];
-    function switchMainView(viewId) {
-      switchNavTab(viewId);
-    }
 
     function switchNavTab(viewId) {
+      triggerHaptic();
       VIEWS.forEach(v => {
         const el = document.getElementById("view" + v.charAt(0).toUpperCase() + v.slice(1));
         if (el) el.style.display = v === viewId ? "block" : "none";
       });
       document.querySelectorAll(".bottom-tab").forEach(b => {
-        b.classList.toggle("active", b.getAttribute("onclick").includes(viewId));
+        const isTarget = b.getAttribute("onclick").includes(viewId);
+        b.classList.toggle("active", isTarget);
+        b.setAttribute("aria-selected", isTarget ? "true" : "false");
       });
       window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    // Day Stepper Filter for Funliday overview
+    function filterDayOverview(day, btn) {
+      triggerHaptic();
+      document.querySelectorAll(".day-tab-btn").forEach(b => {
+        b.classList.remove("active");
+        b.setAttribute("aria-selected", "false");
+      });
+      if (btn) {
+        btn.classList.add("active");
+        btn.setAttribute("aria-selected", "true");
+      }
+      const cards = document.querySelectorAll("#dayOverviewList .day-card-item");
+      cards.forEach(c => {
+        if (day === "all" || c.dataset.day === day) {
+          c.style.display = "block";
+        } else {
+          c.style.display = "none";
+        }
+      });
     }
 
     // --- Pokemon Rendering ---
     function renderPokemon() {
       const c = document.getElementById("pokeContainer");
+      if (!c) return;
       c.innerHTML = "";
       let count = 0;
       POKEMON_DATA.forEach(p => {
         const isDone = !!checkedPokes[p.id];
         if (isDone) count++;
         const row = document.createElement("div");
-        row.className = "poke-row";
+        row.className = "poke-row " + (isDone ? "checked-row" : "");
         row.innerHTML = `
-          <div style="display: flex; align-items: center; gap: 10px;">
-            <div class="poke-check-btn ${isDone ? 'checked' : ''}" onclick="togglePoke('${p.id}')">
-              ${isDone ? '✓' : ''}
-            </div>
-            <div>
-              <div style="font-size: 0.88rem; font-weight: 800; color: #fff;">${p.name}</div>
-              <div style="font-size: 0.75rem; color: var(--text-2);">📍 ${p.loc}</div>
+          <div style="display: flex; align-items: center; gap: 12px; min-width: 0;">
+            <button type="button" class="poke-check-btn ${isDone ? 'checked' : ''}" onclick="togglePoke('${p.id}')" aria-label="切換完成打卡 ${p.name}">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="3" style="display:${isDone ? 'block' : 'none'}"><polyline points="20 6 9 17 4 12"/></svg>
+            </button>
+            <div style="min-width: 0;">
+              <div style="font-size: 0.9rem; font-weight: 800; color: #fff; ${isDone ? 'text-decoration: line-through; opacity: 0.8;' : ''}">${p.name}</div>
+              <div style="font-size: 0.76rem; color: var(--text-2);">📍 ${p.loc}</div>
             </div>
           </div>
-          <a class="btn-maps" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(p.q)}" target="_blank" style="flex-shrink:0;">
-            導航
+          <a class="btn-maps" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(p.q)}" target="_blank" rel="noopener noreferrer" aria-label="導航至 ${p.name}">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+            <span>導航</span>
           </a>
         `;
         c.appendChild(row);
       });
+
+      const total = POKEMON_DATA.length;
+      const pct = Math.round((count / total) * 100);
       document.getElementById("pokeMainCount").innerText = count;
-      const tabPoke = document.getElementById("tabPokeCount"); if (tabPoke) tabPoke.innerText = count;
+      document.getElementById("pokePercentText").innerText = `${pct}% (${count}/${total})`;
+      const fill = document.getElementById("pokeProgressFill");
+      if (fill) fill.style.width = pct + "%";
+      const tabPoke = document.getElementById("tabPokeCount");
+      if (tabPoke) tabPoke.innerText = count;
     }
 
     function togglePoke(id) {
+      triggerHaptic();
       checkedPokes[id] = !checkedPokes[id];
       localStorage.setItem("tokyo_poke_checks_v140", JSON.stringify(checkedPokes));
       renderPokemon();
+      showToast(checkedPokes[id] ? "🎉 打卡完成！" : "已取消打卡");
     }
 
     // ==========================================
-    // 🧠 Multi-Topic Session Management
+    // System Instruction Canonical
     // ==========================================
     const SYSTEM_KNOWLEDGE = `
 # 🍁 新宿・橫濱・箱根 6日遊 AI隨身全能導遊大腦 (System Instruction)
@@ -1487,6 +2288,9 @@
 7. **橫濱紅磚倉庫 2號館**（皮卡丘+阿羅拉雷丘人孔蓋）：紅磚公園靠大棧橋方向走道。
 `;
 
+    // ==========================================
+    // Multi-Topic Session Management
+    // ==========================================
     function initTopics() {
       const saved = localStorage.getItem("tokyo_topics_v140");
       if (saved) {
@@ -1498,8 +2302,6 @@
       if (!topics || topics.length === 0) {
         const oldHistory = JSON.parse(
           localStorage.getItem("tokyo_gemini_history_v131") ||
-          localStorage.getItem("tokyo_gemini_history_v130") ||
-          localStorage.getItem("tokyo_gemini_history_v120") ||
           "[]"
         );
         topics = [
@@ -1550,29 +2352,54 @@
       });
     }
 
-    
-    function onModeChange(val) {
-      currentMode = val;
+    // 5-Mode Strategy Switcher
+    function selectMode(mode) {
+      triggerHaptic();
+      currentMode = mode;
       localStorage.setItem("tokyo_mode_v141", currentMode);
-      const modeNames = {
-        concise: "⚡ 簡潔 (標準敏捷)",
-        detailed: "📝 詳細 (High 深度推演)",
-        serious: "🛡️ 嚴肅 (High 死線戰情)",
-        relaxed: "☕ 輕鬆 (青少年潮玩放鬆)",
-        brief: "💨 精簡 (HUD 速讀)"
+
+      document.querySelectorAll(".mode-pill-btn").forEach(btn => {
+        const isActive = btn.dataset.mode === mode;
+        btn.classList.toggle("active", isActive);
+        btn.setAttribute("aria-checked", isActive ? "true" : "false");
+      });
+
+      const descriptions = {
+        concise: "⚡ <strong>簡潔模式</strong>：標準敏捷行動派 (Thinking: MEDIUM)。2~4 點條列核心行動，節奏明快，兼顧青少年喜好與效率。",
+        detailed: "📝 <strong>詳細模式</strong>：全景深層推演 (Thinking: HIGH)。精算 2大2小（11/12歲）配餐份量、多重備案 Plan B 與適合青少年的文化冷知識。",
+        serious: "🛡️ <strong>嚴肅模式</strong>：軍事級戰情警戒 (Thinking: HIGH)。直擊核心死線，一律強制倒推 30~45 分鐘安全集合撤退線，防範搭錯車與人潮走失。",
+        relaxed: "☕ <strong>輕鬆模式</strong>：青少年潮玩慢活防線 (Thinking: LOW)。主動砍掉枯燥景點，優先推薦扭蛋店、夾娃娃機、一番賞與人氣街頭排隊美食小吃。",
+        brief: "💨 <strong>精簡模式</strong>：HUD 抬頭速讀戰報 (Thinking: MINIMAL)。極速直出，1秒看懂【目標】、【路線/月台】、【耗時】、【死線倒數】極簡格式。"
       };
-      // brief notification
+
+      const callout = document.getElementById("modeDescCallout");
+      if (callout) callout.innerHTML = descriptions[mode] || descriptions.concise;
+
       const input = document.getElementById("chatInputBox");
-      if (input) input.placeholder = `問問導遊 [當前模式: ${modeNames[val]}]...`;
+      if (input) {
+        const modeTitleMap = {
+          concise: "簡潔",
+          detailed: "詳細",
+          serious: "嚴肅",
+          relaxed: "輕鬆",
+          brief: "精簡"
+        };
+        input.placeholder = `問問導遊 [當前模式: ${modeTitleMap[mode] || "簡潔"}]...`;
+      }
+
+      showToast(`已切換至「${mode.toUpperCase()}」導遊模式`);
     }
 
     function onTopicChange(topicId) {
+      triggerHaptic();
       currentTopicId = topicId;
       saveTopics();
       renderChatHistory();
+      showToast("已切換話題");
     }
 
     function createNewTopic() {
+      triggerHaptic();
       const name = prompt("請輸入新話題名稱（例如：箱根交通、吉祥寺藥妝、突發找廁所）：", `💬 話題 ${topics.length + 1}: 自訂諮詢`);
       if (name && name.trim()) {
         const newTopic = {
@@ -1585,20 +2412,24 @@
         saveTopics();
         renderTopicSelector();
         renderChatHistory();
+        showToast("✅ 新話題已建立！");
       }
     }
 
     function renameCurrentTopic() {
+      triggerHaptic();
       const cur = getCurrentTopic();
       const newName = prompt("重新命名當前話題：", cur.name);
       if (newName && newName.trim()) {
         cur.name = newName.trim();
         saveTopics();
         renderTopicSelector();
+        showToast("✅ 話題名稱已更新");
       }
     }
 
     function deleteCurrentTopic() {
+      triggerHaptic();
       if (topics.length <= 1) {
         alert("至少必須保留 1 個話題！您可以選擇清空本話題紀錄。");
         return;
@@ -1610,10 +2441,12 @@
         saveTopics();
         renderTopicSelector();
         renderChatHistory();
+        showToast("🗑️ 已刪除話題");
       }
     }
 
     function exportTopicsBackup() {
+      triggerHaptic();
       const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(topics, null, 2));
       const downloadAnchor = document.createElement("a");
       downloadAnchor.setAttribute("href", dataStr);
@@ -1621,7 +2454,7 @@
       document.body.appendChild(downloadAnchor);
       downloadAnchor.click();
       downloadAnchor.remove();
-      alert("✅ 已將所有話題對話紀錄導出為 JSON 備份檔！可隨時複製歸檔至 Google Drive。");
+      showToast("📥 已導出話題對話紀錄備份");
     }
 
     function saveItineraryOverride() {
@@ -1629,36 +2462,67 @@
       if (input) {
         itineraryOverrideText = input.value.trim();
         localStorage.setItem("tokyo_itinerary_override_v140", itineraryOverrideText);
+        showToast("📝 行程異動備忘已儲存");
       }
     }
 
     function clearCurrentTopicChat() {
+      triggerHaptic();
       const cur = getCurrentTopic();
       if (confirm(`確定要清空話題『${cur.name}』的所有對話記憶嗎？`)) {
         cur.history = [];
         saveTopics();
         renderChatHistory();
+        showToast("已清空話題紀錄");
       }
     }
 
     function updateKeyStatusUI() {
       const el = document.getElementById("keyStatusText");
+      if (!el) return;
       if (geminiApiKey) {
-        el.innerHTML = '<span style="color:#10b981; font-weight:800;">🟢 已連線 Gemini 3.8 Flash (多輪記憶就緒)</span>';
+        el.innerHTML = '<span class="pulse-dot"></span> <span style="color:#10b981; font-weight:800;">已連線 Gemini 3.8 Flash (多輪記憶就緒)</span>';
       } else {
         el.innerHTML = '<span style="color:#f59e0b; font-weight:800;">🟡 未設定 API Key（點右側輸入）</span>';
       }
     }
 
     function promptApiKey() {
+      triggerHaptic();
       const current = geminiApiKey || "";
       const input = prompt("請輸入您的 Google Gemini API Key\n(此 Key 僅加密儲存在您手機的本地瀏覽器中，絕不上傳 GitHub 或任何伺服器)：", current);
       if (input !== null) {
         geminiApiKey = input.trim();
         localStorage.setItem("tokyo_gemini_key_v140", geminiApiKey);
         updateKeyStatusUI();
-        alert(geminiApiKey ? "✅ API Key 已安全存於本機！" : "已清除本機 API Key。");
+        showToast(geminiApiKey ? "✅ API Key 已安全存於本機！" : "已清除本機 API Key");
       }
+    }
+
+    // Copy Bubble Text Helper
+    function copyBubbleText(text, btn) {
+      triggerHaptic();
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => {
+          showToast("📋 已複製回答至剪貼簿！");
+        }).catch(() => {
+          fallbackCopy(text);
+        });
+      } else {
+        fallbackCopy(text);
+      }
+    }
+
+    function fallbackCopy(text) {
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      ta.style.position = "fixed";
+      ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      document.body.removeChild(ta);
+      showToast("📋 已複製！");
     }
 
     function renderChatHistory() {
@@ -1668,22 +2532,36 @@
 
       const curTopic = getCurrentTopic();
 
-      // Default welcome
+      // Welcome bubble
       const welcome = document.createElement("div");
       welcome.className = "bubble ai";
-      welcome.innerHTML = `您好！我是您的 <strong>Gemini 3.8 Flash</strong> 專屬隨身全能導遊。已啟用<strong>實時日本時間與 GPS 雙感知</strong>！當前話題：『${curTopic.name}』。路上有任何狀況（找廁所、動漫潮玩熱點、美食補給、電梯無障礙快速捷徑、順路排程、突發更動），隨時問我！`;
+      welcome.innerHTML = `您好！我是您的 <strong>Gemini 3.8 Flash</strong> 專屬隨身全能導遊。已啟用<strong>實時日本時間與 GPS 雙感知</strong>！當前話題：『${curTopic.name}』。路上有任何狀況（找廁所、動漫潮玩熱點、美食補給、電梯無障礙捷徑、順路排程、突發更動），隨時問我！`;
       box.appendChild(welcome);
 
       curTopic.history.forEach(item => {
         const b = document.createElement("div");
         b.className = "bubble " + (item.role === "user" ? "user" : "ai");
-        b.innerText = item.parts[0].text;
+        const msgText = item.parts && item.parts[0] ? item.parts[0].text : "";
+        b.innerText = msgText;
+
+        if (item.role === "model") {
+          const act = document.createElement("div");
+          act.className = "bubble-actions";
+          act.innerHTML = `
+            <button type="button" class="btn-copy-bubble" onclick="copyBubbleText(this.parentElement.parentElement.innerText.replace('複製', '').trim(), this)">
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              複製
+            </button>
+          `;
+          b.appendChild(act);
+        }
         box.appendChild(b);
       });
       box.scrollTop = box.scrollHeight;
     }
 
     function askChip(txt) {
+      triggerHaptic();
       document.getElementById("chatInputBox").value = txt;
       sendAiQuery();
     }
@@ -1697,13 +2575,17 @@
       const text = input.value.trim();
       if (!text) return;
 
+      triggerHaptic();
       isAiQueryInProgress = true;
-      if (sendBtn) sendBtn.disabled = true;
+      if (sendBtn) {
+        sendBtn.disabled = true;
+        sendBtn.innerHTML = '<span>思考中...</span>';
+      }
 
       const curTopic = getCurrentTopic();
       const box = document.getElementById("chatMsgBox");
 
-      // Append clean user message to UI
+      // Append user bubble
       const userBubble = document.createElement("div");
       userBubble.className = "bubble user";
       userBubble.innerText = text;
@@ -1711,18 +2593,21 @@
       input.value = "";
       box.scrollTop = box.scrollHeight;
 
-      // Save clean text to user history
+      // Save to topic history
       curTopic.history.push({ role: "user", parts: [{ text: text }] });
       saveTopics();
 
       if (!geminiApiKey) {
         const errBubble = document.createElement("div");
         errBubble.className = "bubble ai";
-        errBubble.innerHTML = "⚠️ 尚未設定 Google Gemini API Key。請點擊上方『🔑 設定/更換 Key』貼入您的 API Key 即可啟動導遊大腦！<br><small style='color:#94a3b8;'>密鑰僅保存在本機手機瀏覽器，絕不上傳雲端。</small>";
+        errBubble.innerHTML = "⚠️ 尚未設定 Google Gemini API Key。請點擊上方『設定/更換 Key』貼入您的 API Key 即可啟動導遊大腦！<br><small style='color:var(--text-3);'>密鑰僅保存在本機手機瀏覽器，絕不上傳雲端。</small>";
         box.appendChild(errBubble);
         box.scrollTop = box.scrollHeight;
         isAiQueryInProgress = false;
-        if (sendBtn) sendBtn.disabled = false;
+        if (sendBtn) {
+          sendBtn.disabled = false;
+          sendBtn.innerHTML = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg><span>發送</span>';
+        }
         return;
       }
 
@@ -1748,7 +2633,6 @@
         loadText = "Gemini 3.8 Flash (HUD 速讀戰報直出)...";
         modeInstruction = "【指定導遊模式】：精簡 (Brief) - HUD 抬頭顯示戰報。禁止客套與成段散文，1秒看懂：以【目標】、【路線/月台】、【耗時】、【死線倒數】極簡格式輸出。";
       } else {
-        // concise
         thinkingLevel = "MEDIUM";
         loadText = "Gemini 3.8 Flash (敏捷行動模式)...";
         modeInstruction = "【指定導遊模式】：簡潔 (Concise) - 標準敏捷行動派。2~4點條列核心行動，節奏明快，兼顧青少年喜好與效率。";
@@ -1762,7 +2646,6 @@
       box.scrollTop = box.scrollHeight;
 
       try {
-        // Construct Hidden Dynamic Context
         const jst = getJSTInfo();
         let gpsContext = "尚未取得 GPS 訊號（依行程排程推估）";
         if (currentCoords) {
@@ -1784,7 +2667,6 @@
 ----------------------------------------
 [旅客提問]：${text}`;
 
-        // Build contents for API call (replace last turn's text with enrichedUserPrompt)
         let historySlice = curTopic.history.slice(-14);
         while (historySlice.length > 0 && historySlice[0].role !== "user") {
           historySlice.shift();
@@ -1822,10 +2704,22 @@
             .map(p => p.text);
           const aiText = textParts.join("").trim() || (data.candidates[0].content.parts[0].text || "（無文字回應）");
           loadBubble.innerText = aiText;
+
+          // Add copy button
+          const act = document.createElement("div");
+          act.className = "bubble-actions";
+          act.innerHTML = `
+            <button type="button" class="btn-copy-bubble" onclick="copyBubbleText(this.parentElement.parentElement.innerText.replace('複製', '').trim(), this)">
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              複製
+            </button>
+          `;
+          loadBubble.appendChild(act);
+
           curTopic.history.push({ role: "model", parts: [{ text: aiText }] });
           saveTopics();
         } else {
-          loadBubble.innerText = "回傳異常，請檢查 API Key 或額度：" + JSON.stringify(data);
+          loadBubble.innerText = "回傳異常，請檢查 API Key 或配額：" + JSON.stringify(data);
           curTopic.history.pop();
           saveTopics();
         }
@@ -1835,20 +2729,19 @@
         saveTopics();
       } finally {
         isAiQueryInProgress = false;
-        if (sendBtn) sendBtn.disabled = false;
+        if (sendBtn) {
+          sendBtn.disabled = false;
+          sendBtn.innerHTML = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg><span>發送</span>';
+        }
         box.scrollTop = box.scrollHeight;
       }
     }
 
-    // --- Init ---
+    // --- Initialization ---
     renderPokemon();
     updateKeyStatusUI();
     initTopics();
-    const modeSel = document.getElementById("modeSelector");
-    if (modeSel) {
-      modeSel.value = currentMode;
-      onModeChange(currentMode);
-    }
+    selectMode(currentMode);
     initGeolocation();
     updateJSTUI();
     setInterval(updateJSTUI, 10000);

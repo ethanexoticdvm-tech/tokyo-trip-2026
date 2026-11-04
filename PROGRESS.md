@@ -8,6 +8,16 @@
 ---
 
 ## 2. 已完成工作 (Done)
+- [x] **UI/UX Pro Max 戰情室全面升級 (v1.5.0)**：
+  - 🎨 **OLED Tactical Midnight 戰情視覺規範**：導入 dark-mode-oled，深黑基底搭配 Aurora 柔光，達成戶外抗反光與 OLED 極致省電。
+  - 📐 **全結構性向量 SVG 圖標系統**：全域剔除結構性 Emoji，全面改採 crisp 2px stroke SVG 向量圖標（Lucide 風格），跨 iOS/Android/PC 渲染一致。
+  - 🔘 **觸控靶區與無障礙 (A11y/WCAG AA) 合規**：所有點擊元件強制達標 ≥44x44px 觸控靶區，對比度達 4.5:1 ~ 15:1，適配 :focus-visible 與 prefers-reduced-motion。
+  - 🎫 **擬真小田急浪漫特快車票 (Skeuomorphic Ticket)**：加入左右打孔邊緣、路線指示、金色高對比大字座位車廂標籤，斷網行走時秒讀。
+  - 🎮 **寶可夢進度光條與觸覺震動 (Haptic Feedback)**：新增百分比進度條與打卡震動 (
+avigator.vibrate)，提升尋寶沉浸感。
+  - 📅 **Funliday 6天動線分日步進器 (Day Filter Stepper)**：支援 [全部] [D1] [D2] [D3] [D4] [D5] [D6] 快速切換過濾，免除長篇滾動。
+  - 🎭 **5 大導遊模式觸感膠囊 (Tactile Grid Pills)**：視覺化膠囊按鈕與實時推演說明提示框。
+  - 📋 **AI 訊息一鍵複製與 Toast 浮動氣泡**：方便旅途中快速複製地址與日語問句。
 - [x] **EGM 金魚審查閉環與 API 穩健度全面強化 (v1.4.3)**：
   - 🔴 **語法阻斷修復**：修復 `promptApiKey()` 內未轉義換行引發之 `SyntaxError`，保障 iOS/Android 首次載入 100% 正常。
   - 🔴 **Gemini API 交替規範防禦**：確保切片歷史 (`historySlice`) 永遠以 `user` turn 起始，阻絕 HTTP 400 Bad Request。
