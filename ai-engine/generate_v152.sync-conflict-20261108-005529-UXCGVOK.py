@@ -1,0 +1,3599 @@
+# -*- coding: utf-8 -*-
+"""
+generate_v152.py - Tokyo Trip Assistant v1.5.2 PRO
+1. Maple leaf (🍁) click opens Settings Modal (Gemini API Key + Font Scaling).
+2. Removed redundant key status card from viewGemini.
+3. Fixed bottom clipping (下方破圖) with safe padding.
+4. Fixed right clipping (右側也是破圖) with compact header & responsive pills.
+1. Removes Hero Card (saving mobile vertical space).
+2. Adds Leaflet.js Interactive Pokemon Map with GPS location and direct Google Maps navigation.
+3. English Deadlines, chronologically sorted, dynamically filtering out expired deadlines based on JST time.
+"""
+
+import os
+import sys
+
+if sys.platform == "win32":
+    try:
+        sys.stdout.reconfigure(encoding="utf-8")
+        sys.stderr.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
+
+AI_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_DIR = os.path.dirname(AI_DIR)
+SYSTEM_MD = os.path.join(AI_DIR, "system_instruction.md")
+TARGET_HTML = os.path.join(PROJECT_DIR, "index.html")
+
+with open(SYSTEM_MD, "r", encoding="utf-8") as f:
+    SYSTEM_KNOWLEDGE = f.read().strip().replace("`", "\\`")
+
+HTML_CONTENT = f'''<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>新宿・橫濱・箱根 6日遊隨身戰情室 v1.5.2 PRO</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#070a12">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍁</text></svg>">
+  
+  <!-- Typography: JetBrains Mono + Orbitron + Noto Sans TC -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Orbitron:wght@600;700;800;900&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+
+  <!-- Leaflet CSS for Yokohama Pokemon Map -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+
+  <style>
+    /* ==========================================================================
+       UI/UX Pro Max Design System Tokens (OLED Tactical Midnight)
+       ========================================================================== */
+    :root {{
+      --bg: #070a12;
+      --bg-card: #0f1728;
+      --bg-card-hover: #152238;
+      --bg-surface: #141d30;
+      --bg-glass: rgba(15, 23, 40, 0.88);
+      
+      --border: rgba(255, 255, 255, 0.08);
+      --border-hover: rgba(255, 255, 255, 0.18);
+      --border-accent: rgba(56, 189, 248, 0.35);
+      
+      --primary: #f43f5e;
+      --primary-glow: rgba(244, 63, 94, 0.3);
+      --primary-gradient: linear-gradient(135deg, #f43f5e, #fb7185);
+      
+      --cyan: #38bdf8;
+      --cyan-glow: rgba(56, 189, 248, 0.25);
+      --purple: #a855f7;
+      --purple-glow: rgba(168, 85, 247, 0.3);
+      --amber: #f59e0b;
+      --amber-glow: rgba(245, 158, 11, 0.25);
+      --emerald: #10b981;
+      --emerald-glow: rgba(16, 185, 129, 0.25);
+      --danger: #ef4444;
+      --funliday: #ff7a00;
+      --funliday-gradient: linear-gradient(135deg, #ff7a00, #ff9500);
+
+      /* High-contrast WCAG AA typography tokens */
+      --text-1: #f8fafc;
+      --text-2: #cbd5e1;
+      --text-3: #94a3b8;
+      --text-muted: #64748b;
+      
+      --radius-xl: 20px;
+      --radius-lg: 16px;
+      --radius-md: 12px;
+      --radius-sm: 8px;
+      --radius-full: 9999px;
+      
+      --font-mono: 'JetBrains Mono', monospace;
+      --font-title: 'Orbitron', sans-serif;
+      --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, "Noto Sans TC", sans-serif;
+      
+      --touch-min: 44px;
+      --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }}
+
+    * {{
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+      font-family: var(--font-sans);
+    }}
+
+    *, *::before, *::after {{
+      box-sizing: border-box;
+    }}
+
+    html {{
+      font-size: 15px;
+      font-size: calc(15px * var(--font-scale, 1));
+      overflow-x: hidden;
+      max-width: 100vw;
+    }}
+
+    body {{
+      background: var(--bg);
+      color: var(--text-1);
+      min-height: 100vh;
+      overflow-x: hidden;
+      max-width: 100vw;
+      padding-bottom: calc(92px + max(16px, env(safe-area-inset-bottom, 16px)));
+      line-height: 1.5;
+    }}
+
+    button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {{
+      outline: 2px solid var(--cyan);
+      outline-offset: 2px;
+    }}
+
+    /* Top Sticky App Bar (Compact & Responsive) */
+    header {{
+      position: sticky;
+      top: 0;
+      background: rgba(7, 10, 18, 0.96);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      z-index: 100;
+      border-bottom: 1px solid var(--border);
+      padding: max(8px, env(safe-area-inset-top)) 10px 8px;
+      width: 100%;
+      box-sizing: border-box;
+    }}
+
+    .header-inner {{
+      max-width: 640px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 6px;
+      width: 100%;
+      box-sizing: border-box;
+    }}
+
+    .brand-btn {{
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: var(--radius-md);
+      padding: 4px 8px;
+      color: var(--text-1);
+      cursor: pointer;
+      text-decoration: none;
+      transition: var(--transition);
+      min-width: 0;
+      flex-shrink: 1;
+      -webkit-tap-highlight-color: transparent;
+    }}
+
+    .brand-btn:hover, .brand-btn:active {{
+      background: rgba(244, 63, 94, 0.15);
+      border-color: rgba(244, 63, 94, 0.45);
+      transform: translateY(-1px);
+    }}
+
+    .brand-icon {{
+      width: 26px;
+      height: 26px;
+      border-radius: 6px;
+      background: linear-gradient(135deg, rgba(244, 63, 94, 0.25), rgba(244, 63, 94, 0.08));
+      border: 1px solid rgba(244, 63, 94, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.95rem;
+      flex-shrink: 0;
+    }}
+
+    .brand-title {{
+      font-weight: 800;
+      font-size: 0.88rem;
+      letter-spacing: -0.2px;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }}
+
+    .settings-gear-hint {{
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-3);
+      margin-left: 2px;
+      transition: var(--transition);
+    }}
+
+    .brand-btn:hover .settings-gear-hint {{
+      color: var(--primary);
+      transform: rotate(45deg);
+    }}
+
+    .badge-ver {{
+      background: var(--primary-gradient);
+      color: #fff;
+      font-size: 0.6rem;
+      font-family: var(--font-mono);
+      font-weight: 800;
+      padding: 1.5px 5px;
+      border-radius: var(--radius-full);
+      box-shadow: 0 2px 6px var(--primary-glow);
+    }}
+
+    .header-actions {{
+      display: flex;
+      gap: 5px;
+      align-items: center;
+      flex-shrink: 0;
+    }}
+
+    .top-pill {{
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      color: var(--text-1);
+      font-size: 0.74rem;
+      font-weight: 700;
+      padding: 0 9px;
+      height: 34px;
+      min-height: 34px;
+      border-radius: var(--radius-full);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      text-decoration: none;
+      cursor: pointer;
+      transition: var(--transition);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }}
+
+    .top-pill:hover {{
+      background: rgba(255, 255, 255, 0.1);
+      border-color: var(--border-hover);
+    }}
+
+    @media (max-width: 375px) {{
+      .badge-ver {{ display: none; }}
+      .top-pill {{ padding: 0 7px; font-size: 0.72rem; }}
+    }}
+    @media (max-width: 335px) {{
+      .top-pill span {{ display: none; }}
+      .top-pill {{ padding: 0 8px; }}
+    }}
+
+    .top-pill:hover {{
+      background: rgba(255, 255, 255, 0.1);
+      border-color: var(--border-hover);
+      transform: translateY(-1px);
+    }}
+
+    .top-pill:active {{ transform: scale(0.96); }}
+
+    .top-pill-primary {{
+      background: linear-gradient(135deg, #0284c7, #0369a1);
+      border: none;
+      color: #fff;
+      box-shadow: 0 2px 12px rgba(2, 132, 199, 0.4);
+    }}
+
+    .app-container {{
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 16px;
+    }}
+
+    /* Content Card Base */
+    .content-card {{
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 18px;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      transition: var(--transition);
+    }}
+
+    .card-title-row {{
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+    }}
+
+    .card-title {{
+      font-size: 1rem;
+      font-weight: 800;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }}
+
+    .card-title svg {{
+      color: var(--cyan);
+      flex-shrink: 0;
+    }}
+
+    /* Funliday Card & Day Stepper */
+    .funliday-card {{
+      background: linear-gradient(135deg, rgba(255, 122, 0, 0.15) 0%, rgba(15, 23, 40, 0.95) 100%);
+      border: 1px solid rgba(255, 122, 0, 0.35);
+      border-radius: var(--radius-xl);
+      padding: 20px;
+      margin-bottom: 16px;
+      text-align: center;
+      box-shadow: 0 8px 25px -5px rgba(255, 122, 0, 0.2);
+    }}
+
+    .funliday-brand {{
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 52px;
+      height: 52px;
+      border-radius: var(--radius-md);
+      background: var(--funliday-gradient);
+      color: #fff;
+      margin-bottom: 12px;
+      box-shadow: 0 4px 15px rgba(255, 122, 0, 0.4);
+    }}
+
+    .funliday-title {{
+      font-size: 1.2rem;
+      font-weight: 900;
+      color: #fff;
+      margin-bottom: 6px;
+    }}
+
+    .funliday-desc {{
+      font-size: 0.84rem;
+      color: var(--text-2);
+      line-height: 1.55;
+      margin-bottom: 16px;
+      max-width: 480px;
+      margin-left: auto;
+      margin-right: auto;
+    }}
+
+    .funliday-actions {{
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-width: 360px;
+      margin: 0 auto;
+    }}
+
+    .btn-funliday-app {{
+      background: var(--funliday-gradient);
+      color: white;
+      text-decoration: none;
+      font-weight: 800;
+      font-size: 0.95rem;
+      padding: 0 20px;
+      height: 48px;
+      border-radius: var(--radius-md);
+      box-shadow: 0 4px 18px rgba(255, 122, 0, 0.45);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: var(--transition);
+      border: none;
+    }}
+
+    .btn-funliday-app:hover {{
+      transform: translateY(-2px);
+      box-shadow: 0 6px 22px rgba(255, 122, 0, 0.6);
+    }}
+
+    .btn-funliday-app:active {{ transform: scale(0.97); }}
+
+    .btn-funliday-web {{
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: var(--text-1);
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 0.85rem;
+      padding: 0 16px;
+      height: 44px;
+      border-radius: var(--radius-md);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: var(--transition);
+    }}
+
+    .btn-funliday-web:hover {{
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.25);
+    }}
+
+    /* Day Stepper Filter Tabs */
+    .day-tabs-scroll {{
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      margin-bottom: 14px;
+      scrollbar-width: none;
+    }}
+    .day-tabs-scroll::-webkit-scrollbar {{ display: none; }}
+
+    .day-tab-btn {{
+      flex: 0 0 auto;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
+      color: var(--text-2);
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 0 14px;
+      height: 38px;
+      border-radius: var(--radius-full);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: var(--transition);
+    }}
+
+    .day-tab-btn:hover {{
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+    }}
+
+    .day-tab-btn.active {{
+      background: rgba(244, 63, 94, 0.18);
+      border-color: var(--primary);
+      color: #fff;
+      box-shadow: 0 2px 10px var(--primary-glow);
+    }}
+
+    .day-card-item {{
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 14px;
+      margin-bottom: 10px;
+      transition: var(--transition);
+    }}
+
+    .day-card-item:hover {{
+      background: rgba(255, 255, 255, 0.04);
+      border-color: var(--border-hover);
+    }}
+
+    .day-card-head {{
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }}
+
+    .day-badge {{
+      background: rgba(56, 189, 248, 0.15);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      color: var(--cyan);
+      font-family: var(--font-mono);
+      font-weight: 800;
+      font-size: 0.75rem;
+      padding: 2px 8px;
+      border-radius: 6px;
+    }}
+
+    .day-route-text {{
+      font-size: 0.85rem;
+      color: var(--text-2);
+      line-height: 1.6;
+    }}
+
+    .day-route-text strong {{ color: #fff; }}
+
+    /* Gemini 3.8 Flash AI Brain UI */
+    .gemini-container {{
+      background: linear-gradient(145deg, rgba(20, 24, 48, 0.8) 0%, rgba(13, 19, 36, 0.95) 100%);
+      border: 1px solid var(--purple-glow);
+      border-radius: var(--radius-xl);
+      padding: 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+    }}
+
+    .key-status-bar {{
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 8px 14px;
+      font-size: 0.8rem;
+      margin-bottom: 12px;
+      gap: 8px;
+    }}
+
+    .btn-key-action {{
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #fff;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0 12px;
+      height: 34px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: var(--transition);
+      white-space: nowrap;
+    }}
+
+    .btn-key-action:hover {{
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.35);
+    }}
+
+    .awareness-banner {{
+      background: rgba(0, 0, 0, 0.45);
+      border: 1px solid rgba(168, 85, 247, 0.3);
+      border-radius: var(--radius-md);
+      padding: 10px 14px;
+      margin-bottom: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 0.78rem;
+    }}
+
+    .awareness-item {{
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--text-2);
+      flex-wrap: wrap;
+    }}
+
+    .jst-clock-display {{
+      font-family: var(--font-mono);
+      font-weight: 800;
+      color: #fff;
+      font-size: 0.95rem;
+      letter-spacing: 0.5px;
+      font-variant-numeric: tabular-nums;
+    }}
+
+    .awareness-tag {{
+      background: rgba(244, 63, 94, 0.18);
+      color: #fda4af;
+      border: 1px solid rgba(244, 63, 94, 0.35);
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 0.72rem;
+    }}
+
+    .awareness-gps-tag {{
+      background: rgba(16, 185, 129, 0.18);
+      color: #6ee7b7;
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 0.72rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }}
+
+    .pulse-dot {{
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--emerald);
+      box-shadow: 0 0 0 0 var(--emerald-glow);
+      animation: pulse-ring 1.8s infinite;
+      display: inline-block;
+    }}
+
+    @keyframes pulse-ring {{
+      0% {{ box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6); }}
+      70% {{ box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }}
+      100% {{ box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }}
+    }}
+
+    /* 5-Mode Strategy Switcher */
+    .mode-section {{ margin-bottom: 12px; }}
+
+    .mode-pills-grid {{
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 6px;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 4px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+    }}
+
+    .mode-pill-btn {{
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text-3);
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 8px 4px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      transition: var(--transition);
+      min-height: 44px;
+    }}
+
+    .mode-pill-btn:hover {{
+      color: #fff;
+      background: rgba(255, 255, 255, 0.05);
+    }}
+
+    .mode-pill-btn.active {{
+      background: rgba(168, 85, 247, 0.25);
+      border-color: var(--purple);
+      color: #fff;
+      box-shadow: 0 2px 10px var(--purple-glow);
+    }}
+
+    .mode-pill-btn svg {{
+      width: 16px;
+      height: 16px;
+      stroke-width: 2.2;
+    }}
+
+    .mode-desc-callout {{
+      margin-top: 6px;
+      font-size: 0.74rem;
+      color: var(--text-2);
+      background: rgba(168, 85, 247, 0.08);
+      border-left: 3px solid var(--purple);
+      padding: 6px 10px;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      line-height: 1.4;
+    }}
+
+    /* Topic Session Management Bar */
+    .topic-management-bar {{
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      margin-bottom: 10px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 6px 8px;
+    }}
+
+    .topic-select-wrap {{ flex: 1; min-width: 0; }}
+
+    .topic-select-wrap select {{
+      width: 100%;
+      height: 38px;
+      background: #090e1a;
+      color: #fff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 0 10px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      outline: none;
+      cursor: pointer;
+    }}
+
+    .topic-btn-group {{ display: flex; gap: 4px; flex-shrink: 0; }}
+
+    .btn-topic-action {{
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border);
+      color: var(--text-1);
+      width: 38px;
+      height: 38px;
+      border-radius: var(--radius-sm);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: var(--transition);
+    }}
+
+    .btn-topic-action:hover {{
+      background: rgba(255, 255, 255, 0.12);
+      border-color: var(--border-hover);
+    }}
+
+    .btn-topic-action:active {{ transform: scale(0.95); }}
+
+    .btn-topic-action.btn-danger {{
+      color: #f87171;
+      border-color: rgba(239, 68, 68, 0.3);
+    }}
+
+    .btn-topic-action.btn-danger:hover {{ background: rgba(239, 68, 68, 0.15); }}
+
+    .itinerary-override-box {{
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px dashed rgba(255, 255, 255, 0.15);
+      border-radius: var(--radius-md);
+      margin-bottom: 12px;
+      font-size: 0.78rem;
+    }}
+
+    .itinerary-override-box summary {{
+      padding: 10px 12px;
+      cursor: pointer;
+      color: var(--text-2);
+      font-weight: 600;
+      user-select: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }}
+
+    .itinerary-override-content {{
+      padding: 0 12px 12px;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }}
+
+    .itinerary-override-content textarea {{
+      width: 100%;
+      background: #090d16;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: var(--radius-sm);
+      color: #fff;
+      padding: 8px 10px;
+      font-size: 0.8rem;
+      font-family: var(--font-mono);
+      resize: vertical;
+      outline: none;
+      box-sizing: border-box;
+      margin-top: 8px;
+    }}
+
+    .chip-scroll {{
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      margin-bottom: 12px;
+      scrollbar-width: none;
+    }}
+    .chip-scroll::-webkit-scrollbar {{ display: none; }}
+
+    .chat-chip {{
+      flex: 0 0 auto;
+      background: rgba(168, 85, 247, 0.12);
+      border: 1px solid rgba(168, 85, 247, 0.3);
+      color: #e9d5ff;
+      font-size: 0.78rem;
+      padding: 0 14px;
+      height: 36px;
+      border-radius: var(--radius-full);
+      cursor: pointer;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: var(--transition);
+      white-space: nowrap;
+    }}
+
+    .chat-chip:hover {{
+      background: rgba(168, 85, 247, 0.25);
+      border-color: rgba(168, 85, 247, 0.5);
+      transform: translateY(-1px);
+    }}
+
+    .chat-chip:active {{ transform: scale(0.96); }}
+
+    .chat-messages {{
+      background: rgba(9, 13, 24, 0.85);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 14px;
+      min-height: 200px;
+      max-height: 380px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 12px;
+    }}
+
+    .bubble {{
+      padding: 12px 14px;
+      border-radius: var(--radius-lg);
+      font-size: 0.88rem;
+      line-height: 1.55;
+      max-width: 90%;
+      word-break: break-word;
+      position: relative;
+    }}
+
+    .bubble.user {{
+      align-self: flex-end;
+      background: linear-gradient(135deg, #f43f5e, #e11d48);
+      color: white;
+      border-bottom-right-radius: 4px;
+      box-shadow: 0 2px 12px rgba(244, 63, 94, 0.25);
+    }}
+
+    .bubble.ai {{
+      align-self: flex-start;
+      background: #151e33;
+      color: #f1f5f9;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-bottom-left-radius: 4px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    }}
+
+    .bubble-actions {{
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 6px;
+      padding-top: 4px;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+    }}
+
+    .btn-copy-bubble {{
+      background: transparent;
+      border: none;
+      color: var(--text-3);
+      font-size: 0.72rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 6px;
+      border-radius: 4px;
+      transition: var(--transition);
+    }}
+
+    .btn-copy-bubble:hover {{
+      color: #fff;
+      background: rgba(255, 255, 255, 0.08);
+    }}
+
+    .chat-input-row {{ display: flex; gap: 8px; }}
+
+    .chat-input-row input {{
+      flex: 1;
+      height: 48px;
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      color: white;
+      padding: 0 14px;
+      font-size: 0.88rem;
+      outline: none;
+      transition: var(--transition);
+    }}
+
+    .chat-input-row input:focus {{
+      border-color: var(--purple);
+      box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.2);
+    }}
+
+    .btn-chat-send {{
+      background: linear-gradient(135deg, #a855f7, #7e22ce);
+      border: none;
+      color: white;
+      padding: 0 18px;
+      height: 48px;
+      border-radius: var(--radius-md);
+      font-weight: 800;
+      font-size: 0.88rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      box-shadow: 0 2px 14px rgba(168, 85, 247, 0.35);
+      transition: var(--transition);
+      white-space: nowrap;
+    }}
+
+    .btn-chat-send:hover {{
+      transform: translateY(-1px);
+      box-shadow: 0 4px 18px rgba(168, 85, 247, 0.5);
+    }}
+
+    .btn-chat-send:active {{ transform: scale(0.96); }}
+    .btn-chat-send:disabled {{
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }}
+
+    /* ==========================================================================
+       Pokemon Hunt View + Interactive Leaflet Map
+       ========================================================================== */
+    .poke-progress-card {{
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 12px 16px;
+      margin-bottom: 12px;
+    }}
+
+    .poke-progress-header {{
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--text-2);
+      margin-bottom: 8px;
+    }}
+
+    .poke-progress-track {{
+      width: 100%;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+    }}
+
+    .poke-progress-fill {{
+      height: 100%;
+      background: linear-gradient(90deg, #10b981, #38bdf8);
+      border-radius: var(--radius-full);
+      transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }}
+
+    /* Map container & controls */
+    .map-wrapper {{
+      position: relative;
+      margin-bottom: 14px;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      border: 1px solid var(--border-accent);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    }}
+
+    #pokeMap {{
+      width: 100%;
+      height: 300px;
+      background: #090e1a;
+      z-index: 1;
+    }}
+
+    .map-controls-overlay {{
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      z-index: 10;
+      display: flex;
+      gap: 6px;
+    }}
+
+    .map-tool-btn {{
+      background: rgba(15, 23, 42, 0.92);
+      border: 1px solid var(--border-accent);
+      color: #fff;
+      font-size: 0.74rem;
+      font-weight: 700;
+      padding: 0 10px;
+      height: 34px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+      transition: var(--transition);
+      backdrop-filter: blur(8px);
+    }}
+
+    .map-tool-btn:hover {{
+      background: rgba(2, 132, 199, 0.8);
+      border-color: var(--cyan);
+    }}
+
+    .map-tool-btn:active {{ transform: scale(0.96); }}
+
+    /* Custom Leaflet Marker Styling */
+    .custom-poke-pin {{
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #f43f5e, #fb7185);
+      color: #fff;
+      font-family: var(--font-mono);
+      font-weight: 900;
+      font-size: 0.8rem;
+      border: 2px solid #fff;
+      box-shadow: 0 2px 10px rgba(244, 63, 94, 0.6);
+      cursor: pointer;
+      transition: transform 0.2s;
+    }}
+    .custom-poke-pin:hover {{ transform: scale(1.15); }}
+    .custom-poke-pin.checked-pin {{
+      background: linear-gradient(135deg, #10b981, #059669);
+      box-shadow: 0 2px 10px rgba(16, 185, 129, 0.6);
+    }}
+
+    .custom-user-pin {{
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #0284c7;
+      border: 3px solid #fff;
+      box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.4);
+      animation: user-pulse 1.8s infinite;
+    }}
+    @keyframes user-pulse {{
+      0% {{ box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.7); }}
+      70% {{ box-shadow: 0 0 0 10px rgba(2, 132, 199, 0); }}
+      100% {{ box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.7); }}
+    }}
+
+    /* Leaflet popup dark skin */
+    .leaflet-popup-content-wrapper {{
+      background: #141d30 !important;
+      color: #fff !important;
+      border: 1px solid var(--border-accent);
+      border-radius: 10px !important;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.6) !important;
+    }}
+    .leaflet-popup-tip {{
+      background: #141d30 !important;
+    }}
+    .leaflet-popup-content {{
+      margin: 12px 14px !important;
+      font-size: 0.84rem;
+      line-height: 1.4;
+    }}
+
+    .poke-row {{
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 12px 14px;
+      margin-bottom: 10px;
+      gap: 12px;
+      transition: var(--transition);
+      cursor: pointer;
+    }}
+
+    .poke-row:hover {{
+      background: rgba(255, 255, 255, 0.05);
+      border-color: var(--border-hover);
+    }}
+
+    .poke-row.checked-row {{
+      background: rgba(16, 185, 129, 0.04);
+      border-color: rgba(16, 185, 129, 0.25);
+    }}
+
+    .poke-check-btn {{
+      width: 44px;
+      height: 44px;
+      border-radius: var(--radius-md);
+      border: 2px solid #475569;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: var(--transition);
+      background: transparent;
+      color: transparent;
+    }}
+
+    .poke-check-btn.checked {{
+      background: var(--emerald);
+      border-color: var(--emerald);
+      color: white;
+      box-shadow: 0 2px 10px var(--emerald-glow);
+    }}
+
+    .poke-check-btn:active {{ transform: scale(0.92); }}
+
+    .btn-maps {{
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      background: #0284c7;
+      color: white;
+      text-decoration: none;
+      font-size: 0.8rem;
+      font-weight: 700;
+      padding: 0 14px;
+      height: 44px;
+      border-radius: var(--radius-md);
+      flex-shrink: 0;
+      transition: var(--transition);
+    }}
+
+    .btn-maps:hover {{
+      background: #0369a1;
+      transform: translateY(-1px);
+    }}
+
+    .btn-maps:active {{ transform: scale(0.96); }}
+
+    /* ==========================================================================
+       Deadlines & Critical Alerts (English + Date-Sorted Dynamic Filter)
+       ========================================================================== */
+    .deadline-item {{
+      background: rgba(239, 68, 68, 0.08);
+      border-left: 4px solid var(--danger);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      padding: 14px 16px;
+      margin-bottom: 12px;
+      transition: var(--transition);
+      position: relative;
+    }}
+
+    .deadline-item.warning {{
+      background: rgba(245, 158, 11, 0.08);
+      border-color: var(--amber);
+    }}
+
+    .deadline-item.info {{
+      background: rgba(56, 189, 248, 0.08);
+      border-color: var(--cyan);
+    }}
+
+    .deadline-item.expired {{
+      opacity: 0.5;
+      background: rgba(255, 255, 255, 0.02);
+      border-color: #475569;
+    }}
+
+    .deadline-head {{
+      font-size: 0.92rem;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }}
+
+    .deadline-title-text {{
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }}
+
+    .deadline-countdown-badge {{
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 800;
+      padding: 2px 7px;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.08);
+      color: #fda4af;
+      border: 1px solid rgba(244, 63, 94, 0.3);
+      white-space: nowrap;
+    }}
+
+    .deadline-body {{
+      font-size: 0.84rem;
+      color: var(--text-2);
+      line-height: 1.5;
+    }}
+
+    .deadline-body strong {{ color: #fff; }}
+
+    .btn-toggle-expired {{
+      background: transparent;
+      border: 1px dashed rgba(255, 255, 255, 0.2);
+      color: var(--text-3);
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
+      width: 100%;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: var(--transition);
+    }}
+    .btn-toggle-expired:hover {{
+      color: #fff;
+      border-color: rgba(255, 255, 255, 0.4);
+      background: rgba(255, 255, 255, 0.04);
+    }}
+
+    /* Skeuomorphic Japanese Train Tickets */
+    .ticket-card {{
+      position: relative;
+      background: linear-gradient(145deg, #131c2e 0%, #0d1424 100%);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      border-radius: var(--radius-lg);
+      padding: 16px 18px;
+      margin-bottom: 14px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+    }}
+
+    .ticket-card::before, .ticket-card::after {{
+      content: '';
+      position: absolute;
+      top: 50%;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--bg);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      transform: translateY(-50%);
+    }}
+
+    .ticket-card::before {{ left: -8px; }}
+    .ticket-card::after {{ right: -8px; }}
+
+    .ticket-tag {{
+      font-size: 0.72rem;
+      font-family: var(--font-title);
+      font-weight: 800;
+      color: var(--cyan);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }}
+
+    .ticket-route {{
+      font-size: 1.15rem;
+      font-weight: 900;
+      color: #fff;
+      margin-bottom: 6px;
+    }}
+
+    .ticket-time {{
+      font-size: 0.88rem;
+      font-family: var(--font-mono);
+      color: var(--text-2);
+      margin-bottom: 10px;
+    }}
+
+    .ticket-seats {{
+      display: inline-block;
+      background: rgba(254, 240, 138, 0.12);
+      border: 1px solid rgba(254, 240, 138, 0.35);
+      color: #fef08a;
+      font-family: var(--font-mono);
+      font-size: 0.92rem;
+      font-weight: 800;
+      padding: 6px 12px;
+      border-radius: 6px;
+      letter-spacing: 0.3px;
+    }}
+
+    /* Bottom Floating Navigation (5-Tab Symmetrical Layout) */
+    .bottom-bar {{
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(7, 10, 18, 0.96);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding-top: 8px;
+      padding-bottom: max(16px, env(safe-area-inset-bottom, 16px));
+      padding-left: max(4px, env(safe-area-inset-left));
+      padding-right: max(4px, env(safe-area-inset-right));
+      z-index: 100;
+      width: 100%;
+      box-sizing: border-box;
+    }}
+
+    .bottom-tab {{
+      flex: 1 1 0;
+      min-width: 0;
+      min-height: 48px;
+      height: auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      background: transparent;
+      border: none;
+      color: var(--text-3);
+      font-size: 0.72rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition);
+      position: relative;
+      padding: 4px 1px;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }}
+
+    .bottom-tab svg {{
+      width: 20px;
+      height: 20px;
+      stroke-width: 2.2;
+      flex-shrink: 0;
+      transition: var(--transition);
+    }}
+
+    .bottom-tab span {{
+      display: block;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+      letter-spacing: -0.2px;
+      line-height: 1.15;
+    }}
+
+    .bottom-tab svg {{
+      width: 22px;
+      height: 22px;
+      stroke-width: 2.2;
+      flex-shrink: 0;
+      transition: var(--transition);
+    }}
+
+    .bottom-tab:hover {{ color: var(--text-1); }}
+
+    .bottom-tab.active {{ color: var(--primary); }}
+
+    .bottom-tab.active svg {{
+      transform: translateY(-2px);
+      filter: drop-shadow(0 2px 8px var(--primary-glow));
+    }}
+
+    .poke-badge {{
+      position: absolute;
+      top: 4px;
+      right: calc(50% - 18px);
+      background: var(--primary);
+      color: white;
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      font-weight: 800;
+      padding: 0 4px;
+      border-radius: var(--radius-full);
+      min-width: 15px;
+      line-height: 15px;
+      text-align: center;
+      border: 1px solid var(--bg);
+    }}
+
+    /* Toast Notification System */
+    .toast-container {{
+      position: fixed;
+      top: calc(16px + env(safe-area-inset-top));
+      left: 50%;
+      transform: translateX(-50%) translateY(-20px);
+      background: #1e293b;
+      border: 1px solid var(--border-accent);
+      color: #fff;
+      padding: 10px 18px;
+      border-radius: var(--radius-full);
+      font-size: 0.82rem;
+      font-weight: 700;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+      z-index: 9999;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+    }}
+
+    .toast-container.show {{
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }}
+
+    @media (prefers-reduced-motion: reduce) {{
+      *, ::before, ::after {{
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }}
+    }}
+
+    /* Settings Modal Styles (API Key & Font Scaling) */
+    .modal-backdrop {{
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.78);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      animation: fadeIn 0.2s ease-out;
+      box-sizing: border-box;
+    }}
+
+    .modal-card {{
+      background: var(--bg-card);
+      border: 1px solid var(--border-hover);
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 480px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+      animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      box-sizing: border-box;
+    }}
+
+    .modal-header {{
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 18px 12px;
+      border-bottom: 1px solid var(--border);
+    }}
+
+    .modal-title-wrap {{
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }}
+
+    .modal-icon {{
+      font-size: 1.3rem;
+    }}
+
+    .modal-title {{
+      font-size: 1rem;
+      font-weight: 800;
+      color: #fff;
+      margin: 0;
+    }}
+
+    .modal-subtitle {{
+      font-size: 0.75rem;
+      color: var(--text-2);
+      margin: 2px 0 0;
+    }}
+
+    .btn-close-modal {{
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border);
+      color: var(--text-2);
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: var(--transition);
+    }}
+
+    .btn-close-modal:hover {{
+      color: #fff;
+      background: rgba(255, 255, 255, 0.15);
+    }}
+
+    .modal-body {{
+      padding: 16px 18px 20px;
+    }}
+
+    .settings-section {{
+      padding-bottom: 16px;
+      margin-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+    }}
+
+    .settings-label-row {{
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }}
+
+    .settings-label {{
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }}
+
+    .key-status-badge {{
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: var(--radius-full);
+      font-family: var(--font-mono);
+    }}
+
+    .key-status-badge.active {{
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--emerald);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }}
+
+    .key-status-badge.inactive {{
+      background: rgba(245, 158, 11, 0.15);
+      color: var(--amber);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }}
+
+    .api-key-input-wrap {{
+      position: relative;
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+    }}
+
+    .settings-input {{
+      width: 100%;
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 10px 40px 10px 12px;
+      color: #fff;
+      font-size: 0.84rem;
+      font-family: var(--font-mono);
+      outline: none;
+      box-sizing: border-box;
+      transition: var(--transition);
+    }}
+
+    .settings-input:focus {{
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px var(--primary-glow);
+    }}
+
+    .btn-input-icon {{
+      position: absolute;
+      right: 8px;
+      background: none;
+      border: none;
+      color: var(--text-3);
+      cursor: pointer;
+      padding: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition);
+    }}
+
+    .btn-input-icon:hover {{
+      color: #fff;
+    }}
+
+    .settings-actions-row {{
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }}
+
+    .btn-save-key, .btn-clear-key, .btn-get-key {{
+      padding: 7px 12px;
+      border-radius: var(--radius-md);
+      font-size: 0.78rem;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      cursor: pointer;
+      transition: var(--transition);
+      text-decoration: none;
+      border: 1px solid var(--border);
+    }}
+
+    .btn-save-key {{
+      background: var(--primary-gradient);
+      border-color: transparent;
+      color: #fff;
+    }}
+
+    .btn-save-key:hover {{
+      opacity: 0.9;
+      transform: translateY(-1px);
+    }}
+
+    .btn-clear-key {{
+      background: rgba(239, 68, 68, 0.1);
+      border-color: rgba(239, 68, 68, 0.3);
+      color: #fca5a5;
+    }}
+
+    .btn-clear-key:hover {{
+      background: rgba(239, 68, 68, 0.2);
+    }}
+
+    .btn-get-key {{
+      background: rgba(56, 189, 248, 0.1);
+      border-color: rgba(56, 189, 248, 0.3);
+      color: var(--cyan);
+      margin-left: auto;
+    }}
+
+    .btn-get-key:hover {{
+      background: rgba(56, 189, 248, 0.2);
+    }}
+
+    .settings-note {{
+      font-size: 0.73rem;
+      color: var(--text-3);
+      margin-top: 8px;
+      line-height: 1.4;
+    }}
+
+    .font-scale-grid {{
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 6px;
+      margin-bottom: 10px;
+    }}
+
+    .btn-font-scale {{
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 8px 4px;
+      color: var(--text-2);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      cursor: pointer;
+      transition: var(--transition);
+    }}
+
+    .btn-font-scale:hover {{
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+    }}
+
+    .btn-font-scale.active {{
+      background: rgba(244, 63, 94, 0.18);
+      border-color: var(--primary);
+      color: #fff;
+      box-shadow: 0 0 10px var(--primary-glow);
+    }}
+
+    .font-scale-label {{
+      font-size: 0.82rem;
+      font-weight: 800;
+    }}
+
+    .font-scale-pct {{
+      font-size: 0.68rem;
+      font-family: var(--font-mono);
+      opacity: 0.8;
+    }}
+
+    .font-scale-badge {{
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: var(--cyan);
+      font-family: var(--font-mono);
+      padding: 2px 7px;
+      border-radius: var(--radius-full);
+      background: rgba(56, 189, 248, 0.1);
+    }}
+
+    .font-preview-box {{
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 10px 12px;
+    }}
+
+    .font-preview-text {{
+      font-size: 0.95rem;
+      color: #fff;
+      font-weight: 700;
+      line-height: 1.4;
+    }}
+
+    .btn-open-settings-inline {{
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      margin-top: 8px;
+      background: rgba(244, 63, 94, 0.15);
+      border: 1px solid rgba(244, 63, 94, 0.4);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: var(--radius-full);
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition);
+    }}
+
+    .btn-open-settings-inline:hover {{
+      background: rgba(244, 63, 94, 0.25);
+    }}
+
+    @keyframes fadeIn {{
+      from {{ opacity: 0; }}
+      to {{ opacity: 1; }}
+    }}
+
+    @keyframes slideUp {{
+      from {{ transform: translateY(16px); opacity: 0; }}
+      to {{ transform: translateY(0); opacity: 1; }}
+    }}
+
+  </style>
+</head>
+<body>
+
+  <!-- Toast Notification -->
+  <div id="toastBox" class="toast-container" role="status" aria-live="polite"></div>
+
+  <!-- Top Sticky Bar -->
+  <header>
+    <div class="header-inner">
+      <button type="button" class="brand-btn" onclick="openSettingsModal()" aria-label="開啟系統設定（密鑰與字體大小）" title="點擊楓葉開啟設定">
+        <div class="brand-icon" aria-hidden="true">🍁</div>
+        <div class="brand-title">
+          新宿6日 <span class="badge-ver">v1.5.2 PRO</span>
+        </div>
+        <span class="settings-gear-hint" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </span>
+      </button>
+      <div class="header-actions">
+        <a href="https://translate.google.com/?sl=auto&tl=zh-TW" target="_blank" rel="noopener noreferrer" class="top-pill top-pill-primary" id="btnTranslate" aria-label="開啟 Google 翻譯">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          <span>翻譯</span>
+        </a>
+        <a href="https://www.google.com/maps/search/?api=1&query=Apartment+hotel+Yumenoya+Shinjuku" class="top-pill" target="_blank" rel="noopener noreferrer" aria-label="Google 地圖導航回大久保飯店">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 21h18M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16M9 9h1M9 13h1M9 17h1M14 9h1M14 13h1M14 17h1"/></svg>
+          <span>回飯店</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="app-container">
+
+    <!-- 1. Funliday 實時動態行程 -->
+    <div id="viewFunliday" role="region" aria-label="Funliday 行程檢視">
+      <div class="funliday-card">
+        <div class="funliday-brand" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+        </div>
+        <h2 class="funliday-title">Funliday 最新動態行程</h2>
+        <p class="funliday-desc">
+          行程已完全託管於 Funliday！您在手機 App 內做的任何景點調動與時間修改，點擊下方即可一秒直達最新排程，免除手動同步煩惱。
+        </p>
+        <div class="funliday-actions">
+          <button type="button" onclick="openFunlidaySmart(event)" class="btn-funliday-app">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09zM12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6.05 11a22.35 22.35 0 0 1-3.95 2z"/></svg>
+            開啟 Funliday App (智慧喚起)
+          </button>
+          <a href="https://www.funliday.com/m_Njg1M2NmMzEzMzc1NDY4YzcxZDUwMWFl0/trips/6a3ba8367e546c054da4fab1/overview" target="_blank" rel="noopener noreferrer" class="btn-funliday-web">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            瀏覽器開啟完整行程 (官方網頁版)
+          </a>
+          <div style="font-size:0.75rem; color:var(--text-3); margin-top:4px;">* Android 支援 Intent 秒開 App，iOS 支援外部防閃退調度</div>
+        </div>
+      </div>
+
+      <!-- Quick Day Overview Summary with Filter Stepper -->
+      <div class="content-card">
+        <div class="card-title-row">
+          <div class="card-title">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            6天核心動線速覽
+          </div>
+        </div>
+
+        <!-- Filter Stepper -->
+        <div class="day-tabs-scroll" role="tablist" aria-label="每日行程篩選器">
+          <button class="day-tab-btn active" onclick="filterDayOverview('all', this)" role="tab" aria-selected="true">全部 6 天</button>
+          <button class="day-tab-btn" onclick="filterDayOverview('d1', this)" role="tab" aria-selected="false">D1 新宿/牛舌</button>
+          <button class="day-tab-btn" onclick="filterDayOverview('d2', this)" role="tab" aria-selected="false">D2 銀杏/童話</button>
+          <button class="day-tab-btn" onclick="filterDayOverview('d3', this)" role="tab" aria-selected="false">D3 橫濱/市集</button>
+          <button class="day-tab-btn" onclick="filterDayOverview('d4', this)" role="tab" aria-selected="false">D4 江之島/鎌倉</button>
+          <button class="day-tab-btn" onclick="filterDayOverview('d5', this)" role="tab" aria-selected="false">D5 箱根/纜車</button>
+          <button class="day-tab-btn" onclick="filterDayOverview('d6', this)" role="tab" aria-selected="false">D6 返抵國門</button>
+        </div>
+
+        <div id="dayOverviewList">
+          <div class="day-card-item" data-day="d1">
+            <div class="day-card-head">
+              <span class="day-badge">D1 (11/26 週四)</span>
+              <span style="font-size:0.75rem; color:#fda4af; font-weight:700;">🚨 20:34 檸檬牛舌預約</span>
+            </div>
+            <div class="day-route-text">
+              松山機場 ➔ 羽田機場入境 ➔ 大久保飯店安頓 ➔ <strong>新宿牛たんの檸檬 (20:34)</strong>
+            </div>
+          </div>
+
+          <div class="day-card-item" data-day="d2">
+            <div class="day-card-head">
+              <span class="day-badge">D2 (11/27 週五)</span>
+              <span style="font-size:0.75rem; color:var(--cyan); font-weight:700;">🍁 夜楓 ＆ 龍貓泡芙</span>
+            </div>
+            <div class="day-route-text">
+              神宮外苑銀杏 ➔ 豪德寺 ➔ 吉祥寺白髭龍貓泡芙/童話村 ➔ 大田黑公園夜楓 ➔ 新宿哥吉拉/一番街
+            </div>
+          </div>
+
+          <div class="day-card-item" data-day="d3">
+            <div class="day-card-head">
+              <span class="day-badge">D3 (11/28 週六)</span>
+              <span style="font-size:0.75rem; color:#fef08a; font-weight:700;">🍜 10:45 合味道手作 ＆ 聖誕市集</span>
+            </div>
+            <div class="day-route-text">
+              橫濱港灣寶可夢尋寶 ➔ <strong>合味道手作杯麵 (10:45)</strong> ➔ 冰川丸 ➔ <strong>紅磚聖誕市集 (17:00)</strong> ➔ 空中纜車
+            </div>
+          </div>
+
+          <div class="day-card-item" data-day="d4">
+            <div class="day-card-head">
+              <span class="day-badge">D4 (11/29 週日)</span>
+              <span style="font-size:0.75rem; color:#fda4af; font-weight:700;">⚠️ 13:23 認明綠色江之電</span>
+            </div>
+            <div class="day-route-text">
+              浪漫特快江之島33號 ➔ 仲見世通 ➔ 岩屋/見晴亭 ➔ <strong>江之電往長谷寺</strong> ➔ 鎌倉小町通/八幡宮 ➔ 都廳夜景
+            </div>
+          </div>
+
+          <div class="day-card-item" data-day="d5">
+            <div class="day-card-head">
+              <span class="day-badge">D5 (11/30 週一)</span>
+              <span style="font-size:0.75rem; color:#ef4444; font-weight:800;">🚨 15:15 大涌谷準時下山死線</span>
+            </div>
+            <div class="day-route-text">
+              箱根41號特快 ➔ 元箱根港平和鳥居 ➔ 龍宮殿純泡湯 ➔ 海賊船 ➔ <strong>大涌谷纜車下山 (15:15)</strong> ➔ 湯本商店街
+            </div>
+          </div>
+
+          <div class="day-card-item" data-day="d6">
+            <div class="day-card-head">
+              <span class="day-badge">D6 (12/01 週二)</span>
+              <span style="font-size:0.75rem; color:var(--emerald); font-weight:700;">🛫 羽田免稅返台</span>
+            </div>
+            <div class="day-route-text">
+              大久保退房 ➔ 新宿最後採買 ➔ 前往羽田 T3 免稅店 ➔ 搭乘長榮 BR191 返抵台北松山
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. Gemini 3.8 Flash AI 大腦 -->
+    <div id="viewGemini" style="display: none;" role="region" aria-label="AI 導遊對話大腦">
+      <div class="gemini-container">
+        <div class="card-title-row">
+          <div class="card-title" style="color: #c084fc;">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4M8 15h0M16 15h0"/></svg>
+            Gemini 3.8 Flash 多輪導遊大腦
+          </div>
+        </div>
+
+<!-- Real-time Temporal & Spatial Awareness Banner (HUD) -->
+        <div class="awareness-banner">
+          <div class="awareness-item">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <span>日本時間：</span>
+            <strong class="jst-clock-display" id="jstClockText">--:--</strong>
+            <span class="awareness-tag" id="tripStageBadge">📅 計算中</span>
+          </div>
+          <div class="awareness-item">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <span>即時位置：</span>
+            <span class="awareness-gps-tag" id="gpsStatusBadge">
+              <span class="pulse-dot"></span> GPS 定位中...
+            </span>
+            <span id="nearestAnchorText" style="color:var(--text-3); font-size:0.75rem;"></span>
+          </div>
+        </div>
+
+        <!-- 5-Mode Strategy Selector (Tactile Grid Pills) -->
+        <div class="mode-section">
+          <div style="font-size:0.76rem; font-weight:800; color:#e9d5ff; margin-bottom:6px; display:flex; align-items:center; gap:5px;">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            導遊決策模式切換：
+          </div>
+          <div class="mode-pills-grid" role="radiogroup" aria-label="導遊決策模式選擇">
+            <button type="button" class="mode-pill-btn active" data-mode="concise" onclick="selectMode('concise')" role="radio" aria-checked="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              <span>簡潔</span>
+            </button>
+            <button type="button" class="mode-pill-btn" data-mode="detailed" onclick="selectMode('detailed')" role="radio" aria-checked="false">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+              <span>詳細</span>
+            </button>
+            <button type="button" class="mode-pill-btn" data-mode="serious" onclick="selectMode('serious')" role="radio" aria-checked="false">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              <span>嚴肅</span>
+            </button>
+            <button type="button" class="mode-pill-btn" data-mode="relaxed" onclick="selectMode('relaxed')" role="radio" aria-checked="false">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 8h1a4 4 0 0 1 0 8h-1M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+              <span>輕鬆</span>
+            </button>
+            <button type="button" class="mode-pill-btn" data-mode="brief" onclick="selectMode('brief')" role="radio" aria-checked="false">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+              <span>精簡</span>
+            </button>
+          </div>
+          <div class="mode-desc-callout" id="modeDescCallout">
+            ⚡ <strong>簡潔模式</strong>：標準敏捷行動派 (Thinking: MEDIUM)。2~4 點直擊核心，兼顧青少年喜好與效率。
+          </div>
+        </div>
+
+        <!-- Topic Session Management Bar -->
+        <div class="topic-management-bar">
+          <div class="topic-select-wrap">
+            <select id="topicSelector" onchange="onTopicChange(this.value)" aria-label="切換對話話題">
+              <!-- Populated by JS -->
+            </select>
+          </div>
+          <div class="topic-btn-group">
+            <button class="btn-topic-action" onclick="createNewTopic()" title="開啟新話題" aria-label="開啟新話題">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+            </button>
+            <button class="btn-topic-action" onclick="renameCurrentTopic()" title="重新命名當前話題" aria-label="重新命名話題">
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+            </button>
+            <button class="btn-topic-action btn-danger" onclick="deleteCurrentTopic()" title="刪除話題" aria-label="刪除話題">
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+            </button>
+            <button class="btn-topic-action" onclick="exportTopicsBackup()" title="導出對話備份 JSON" aria-label="導出備份">
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Dynamic Funliday Itinerary Override Box -->
+        <details class="itinerary-override-box">
+          <summary>
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            Funliday 行程臨時異動備忘（點此輸入，AI即時感知）
+          </summary>
+          <div class="itinerary-override-content">
+            <textarea id="itineraryOverrideInput" placeholder="例如：明天取消豪德寺，改下午去新宿御苑，晚上去居酒屋..." rows="2" onchange="saveItineraryOverride()" aria-label="自訂行程異動備忘"></textarea>
+            <div style="color:var(--text-3); font-size:0.72rem; margin-top:4px;">* 自動儲存於手機本機，發送訊息時會自動帶入即時上下文，AI 將優先按新行程推算。</div>
+          </div>
+        </details>
+
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; font-size:0.76rem; color:var(--text-2);">
+          <span>🧠 連貫對話記憶（本話題獨立保存）</span>
+          <button onclick="clearCurrentTopicChat()" style="background:transparent; border:1px solid rgba(255,255,255,0.15); color:#f87171; padding:3px 8px; border-radius:4px; font-size:0.72rem; cursor:pointer;">清空本話題紀錄</button>
+        </div>
+
+        <!-- Quick Question Chips -->
+        <div class="chip-scroll" role="toolbar" aria-label="常用提問範例">
+          <button type="button" class="chat-chip" onclick="askChip('拍菜單問推薦：請推薦適合2位大人與2位小孩（11/12歲）吃的熱門招牌菜，避開辛辣，告訴我們如何點餐？')">📋 菜單推薦(避辣)</button>
+          <button type="button" class="chat-chip" onclick="askChip('小朋友走累了，這附近有什麼可以坐下來休息、喝熱飲或吃甜點的好地方？')">☕ 小朋友累了找休息</button>
+          <button type="button" class="chat-chip" onclick="askChip('我們現在在元箱根港，推薦哪間走路3分鐘內不用大排長龍的午餐？')">🍱 元箱根港午餐推薦</button>
+          <button type="button" class="chat-chip" onclick="askChip('我們在箱根，回程浪漫特快是幾點幾號車廂？請告訴我幾點必須開始往車站走？')">⏰ 箱根回程車次提醒</button>
+          <button type="button" class="chat-chip" onclick="askChip('我們現在迷路了，怎麼走回大久保的飯店 Apartment hotel Yumenoya？')">🗺️ 怎麼走回飯店</button>
+          <button type="button" class="chat-chip" onclick="askChip('這附近最近且乾淨、不用排隊的公共洗手間在哪裡？')">🚻 找最近洗手間</button>
+        </div>
+
+        <div class="chat-messages" id="chatMsgBox" role="log" aria-live="polite">
+          <div class="bubble ai">
+            您好！我是您的 <strong>Gemini 3.8 Flash</strong> 專屬隨身全能導遊。已啟用<strong>實時日本時間與 GPS 雙感知</strong>！當前話題：『新宿・行程隨身諮詢』。路上有任何狀況（找廁所、動漫潮玩熱點、美食補給、電梯無障礙捷徑、順路排程、突發更動），隨時問我！
+          </div>
+        </div>
+
+        <div class="chat-input-row">
+          <input type="text" id="chatInputBox" placeholder="問問導遊：例如『延續剛才的話題...』" aria-label="提問文字框">
+          <button type="button" id="chatSendBtn" onclick="sendAiQuery()" class="btn-chat-send" aria-label="發送提問">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            <span>發送</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. 寶可夢人孔蓋＆郵筒打卡 + 互動地圖 -->
+    <div id="viewPokemon" style="display: none;" role="region" aria-label="橫濱寶可夢尋寶任務">
+      <div class="content-card">
+        <div class="card-title-row">
+          <div class="card-title">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            橫濱寶可夢尋寶任務 (Yokohama Pokemon Map)
+          </div>
+        </div>
+
+        <!-- Progress Tracker Bar -->
+        <div class="poke-progress-card">
+          <div class="poke-progress-header">
+            <span>尋寶進度達成率</span>
+            <span id="pokePercentText" style="color:var(--emerald); font-family:var(--font-mono);">0% (0/7)</span>
+          </div>
+          <div class="poke-progress-track">
+            <div class="poke-progress-fill" id="pokeProgressFill" style="width: 0%;"></div>
+          </div>
+        </div>
+
+        <!-- Leaflet Map Container with Live GPS Tracking -->
+        <div class="map-wrapper">
+          <div id="pokeMap"></div>
+          <div class="map-controls-overlay">
+            <button type="button" class="map-tool-btn" onclick="panToUserLocation()">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8z"/><circle cx="12" cy="12" r="3"/></svg>
+              目前定位
+            </button>
+            <button type="button" class="map-tool-btn" onclick="fitAllPokemonSpots()">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+              全 7 據點
+            </button>
+          </div>
+        </div>
+
+        <p style="font-size: 0.82rem; color: var(--text-2); margin-bottom: 14px;">
+          點擊地圖標記或下方據點可即時導航；打卡勾選會自動加密儲存於手機！
+        </p>
+
+        <div id="pokeContainer"></div>
+      </div>
+    </div>
+
+    <!-- 4. Critical Deadlines & Travel Alerts (English + Date-Sorted Dynamic Filter) -->
+    <div id="viewDeadlines" style="display: none;" role="region" aria-label="Deadlines">
+      <div class="content-card">
+        <div class="card-title-row">
+          <div class="card-title" style="color:#fda4af;">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Critical Deadlines & Travel Alerts
+          </div>
+        </div>
+
+        <div id="deadlinesListContainer">
+          <!-- Populated by JS: Sorted chronologically; expired deadlines automatically hidden -->
+        </div>
+
+        <!-- Toggle for expired deadlines -->
+        <button type="button" id="toggleExpiredBtn" class="btn-toggle-expired" onclick="toggleExpiredDeadlines()" style="display:none;">
+          📂 View Expired Deadlines (<span id="expiredCountText">0</span>)
+        </button>
+      </div>
+    </div>
+
+    <!-- 5. 離線車票速查 -->
+    <div id="viewTickets" style="display: none;" role="region" aria-label="離線車票與座位速查">
+      <div class="content-card">
+        <div class="card-title-row">
+          <div class="card-title">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="4" y="3" width="16" height="16" rx="2"/><path d="M4 11h16M12 3v8M8 15h.01M16 15h.01M6 19l-2 2M18 19l2 2"/></svg>
+            離線車票與座位速查（斷網可用）
+          </div>
+        </div>
+
+        <!-- Ticket 1 -->
+        <div class="ticket-card">
+          <div class="ticket-tag">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="3" width="16" height="16" rx="2"/><path d="M4 11h16"/></svg>
+            Day 4 (11/29 週日) 去程浪漫特快
+          </div>
+          <div class="ticket-route">江之島33號 (EXE4)</div>
+          <div class="ticket-time">新宿 08:20 ➔ 09:28 片瀨江之島</div>
+          <div class="ticket-seats">💺 07號車廂 2A, 2B, 3A, 3B</div>
+        </div>
+
+        <!-- Ticket 2 -->
+        <div class="ticket-card">
+          <div class="ticket-tag">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="3" width="16" height="16" rx="2"/><path d="M4 11h16"/></svg>
+            Day 5 (11/30 週一) 去程浪漫特快
+          </div>
+          <div class="ticket-route">箱根41號 (EXE10)</div>
+          <div class="ticket-time">新宿 07:37 ➔ 09:22 箱根湯本</div>
+          <div class="ticket-seats">💺 04號車廂 8C, 8D, 9C, 9D</div>
+        </div>
+
+        <!-- Ticket 3 -->
+        <div class="ticket-card">
+          <div class="ticket-tag">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="3" width="16" height="16" rx="2"/><path d="M4 11h16"/></svg>
+            Day 5 (11/30 週一) 回程浪漫特快
+          </div>
+          <div class="ticket-route">箱根18號 (MSE6)</div>
+          <div class="ticket-time">箱根湯本 17:46 ➔ 19:26 新宿</div>
+          <div class="ticket-seats">💺 04號車廂 8C, 8D, 9C, 9D</div>
+        </div>
+
+        <!-- Flight Info -->
+        <div style="background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:var(--radius-md); padding:14px; font-size:0.84rem; color:var(--text-2);">
+          <div style="font-weight:800; color:#fff; margin-bottom:6px; display:flex; align-items:center; gap:6px;">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.3c.4-.2.6-.6.5-1.1z"/></svg>
+            長榮航空班機時刻表
+          </div>
+          <div style="margin-bottom:4px;"><strong style="color:#fff;">去程 BR192：</strong>11/26 11:30 松山 T1 ➔ 17:45 羽田 T3</div>
+          <div><strong style="color:#fff;">回程 BR191：</strong>12/01 12:15 羽田 T3 ➔ 14:32 松山 T1</div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Bottom Floating Navigation (5-Tab Symmetrical Layout) -->
+  <nav class="bottom-bar" role="tablist" aria-label="底欄導覽">
+    <button class="bottom-tab active" onclick="switchNavTab('funliday')" role="tab" aria-selected="true" aria-label="切換到 Funliday 行程">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+      <span>Funliday</span>
+    </button>
+    <button class="bottom-tab" onclick="switchNavTab('gemini')" role="tab" aria-selected="false" aria-label="切換到 AI 導遊大腦">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4M8 15h0M16 15h0"/></svg>
+      <span>AI大腦</span>
+    </button>
+    <button class="bottom-tab" onclick="switchNavTab('pokemon')" role="tab" aria-selected="false" aria-label="切換到 橫濱寶可夢尋寶">
+      <div style="position:relative; display:inline-flex;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        <span class="poke-badge" id="tabPokeCount">0</span>
+      </div>
+      <span>寶可夢</span>
+    </button>
+    <button class="bottom-tab" onclick="switchNavTab('deadlines')" role="tab" aria-selected="false" aria-label="切換到 Deadlines">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <span>Deadlines</span>
+    </button>
+    <button class="bottom-tab" onclick="switchNavTab('tickets')" role="tab" aria-selected="false" aria-label="切換到 離線車票">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="4" y="3" width="16" height="16" rx="2"/><path d="M4 11h16M12 3v8M8 15h.01M16 15h.01M6 19l-2 2M18 19l2 2"/></svg>
+      <span>車票</span>
+    </button>
+  </nav>
+
+
+  <!-- Settings Modal (API Key & Font Scaling) -->
+  <div id="settingsModal" class="modal-backdrop" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="settingsModalTitle">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <div class="modal-icon">🍁</div>
+          <div>
+            <h3 id="settingsModalTitle" class="modal-title">系統偏好設定</h3>
+            <p class="modal-subtitle">Gemini API Key 與頁面字級偏好</p>
+          </div>
+        </div>
+        <button type="button" class="btn-close-modal" onclick="closeSettingsModal()" aria-label="關閉設定視窗">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <!-- Section 1: Gemini API Key -->
+        <div class="settings-section">
+          <div class="settings-label-row">
+            <label for="settingsApiKeyInput" class="settings-label">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-1.5 1.5L16 7m-3 3l-4 4-2-2-4 4 3 3 4-4-2-2 4-4m5-5l2 2"/></svg>
+              <span>Google Gemini API Key</span>
+            </label>
+            <span id="settingsKeyBadge" class="key-status-badge inactive">未設定</span>
+          </div>
+
+          <div class="api-key-input-wrap">
+            <input type="password" id="settingsApiKeyInput" class="settings-input" placeholder="貼入 AI Studio API Key (AIzaSy...)" autocomplete="off" spellcheck="false">
+            <button type="button" id="btnToggleKeyVisibility" class="btn-input-icon" onclick="toggleApiKeyVisibility()" aria-label="切換密碼顯示">
+              <svg id="iconEye" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+
+          <div class="settings-actions-row">
+            <button type="button" class="btn-save-key" onclick="saveApiKeyFromModal()">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+              <span>儲存密鑰</span>
+            </button>
+            <button type="button" class="btn-clear-key" onclick="clearApiKeyFromModal()">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+              <span>清除</span>
+            </button>
+            <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" class="btn-get-key">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              <span>取得免費 Key</span>
+            </a>
+          </div>
+          <div class="settings-note">
+            🔒 密鑰僅加密存放於手機本機瀏覽器 (LocalStorage)，絕不上傳任何伺服器。
+          </div>
+        </div>
+
+        <!-- Section 2: Font Size Adjustment -->
+        <div class="settings-section">
+          <div class="settings-label-row">
+            <span class="settings-label">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7V4h16v3M9 20h6M12 4v16"/></svg>
+              <span>頁面字體大小 (Font Scaling)</span>
+            </span>
+            <span id="fontScaleDisplayBadge" class="font-scale-badge">100%</span>
+          </div>
+
+          <div class="font-scale-grid">
+            <button type="button" class="btn-font-scale" data-scale="0.9" onclick="setFontScale(0.9)">
+              <span class="font-scale-label">精簡</span>
+              <span class="font-scale-pct">90%</span>
+            </button>
+            <button type="button" class="btn-font-scale active" data-scale="1.0" onclick="setFontScale(1.0)">
+              <span class="font-scale-label">標準</span>
+              <span class="font-scale-pct">100%</span>
+            </button>
+            <button type="button" class="btn-font-scale" data-scale="1.12" onclick="setFontScale(1.12)">
+              <span class="font-scale-label">適中</span>
+              <span class="font-scale-pct">112%</span>
+            </button>
+            <button type="button" class="btn-font-scale" data-scale="1.25" onclick="setFontScale(1.25)">
+              <span class="font-scale-label">清晰</span>
+              <span class="font-scale-pct">125%</span>
+            </button>
+            <button type="button" class="btn-font-scale" data-scale="1.4" onclick="setFontScale(1.4)">
+              <span class="font-scale-label">特大</span>
+              <span class="font-scale-pct">140%</span>
+            </button>
+          </div>
+
+          <!-- Live Text Size Preview Box -->
+          <div class="font-preview-box">
+            <div class="font-preview-text">
+              🍁 預覽文字：新宿・橫濱・箱根 6日戰情室 (11/26~12/01)
+            </div>
+            <div style="font-size:0.75rem; color:var(--text-3); margin-top:3px;">
+              💡 戶外強光下行走時，推薦切換至「清晰 125%」或「特大 140%」便於快速判讀。
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 3: App Info -->
+        <div class="settings-section" style="border-bottom:none; padding-bottom:0; margin-bottom:0;">
+          <div style="font-size:0.75rem; color:var(--text-3); display:flex; justify-content:space-between; align-items:center;">
+            <span>Tokyo Trip Assistant v1.5.2 PRO</span>
+            <button type="button" onclick="resetPreferences()" style="background:none; border:none; color:var(--text-3); font-size:0.75rem; cursor:pointer; text-decoration:underline;">恢復預設值</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+  <script>
+    // --- Pokemon Data with Exact Coordinates ---
+    const POKEMON_DATA = [
+      {{ id: "pk1", num: 1, name: "櫻木町站前 (雙皮卡丘人孔蓋)", loc: "JR櫻木町站東口廣場地面", lat: 35.4507, lng: 139.6309, q: "Sakuragicho Station Yokohama" }},
+      {{ id: "pk2", num: 2, name: "橫濱櫻木郵便局 (波加曼立體郵筒)", loc: "Yokohama Sakuragi Post Office 門口", lat: 35.4501, lng: 139.6318, q: "Yokohama Sakuragi Post Office" }},
+      {{ id: "pk3", num: 3, name: "橫濱市役所 中庭 (皮卡丘與伊布郵筒)", loc: "橫濱市役所戶外步道櫻川橋旁", lat: 35.4485, lng: 139.6358, q: "Yokohama City Hall" }},
+      {{ id: "pk4", num: 4, name: "日本丸紀念公園 (皮卡丘+可達鴨+腕力)", loc: "帆船日本丸旁斜坡走道高台處", lat: 35.4533, lng: 139.6340, q: "Nippon Maru Memorial Park" }},
+      {{ id: "pk5", num: 5, name: "臨港公園 (皮卡丘海邊步道)", loc: "靠近普卡里碼頭 (ぷかりさん橋) 海邊步道", lat: 35.4616, lng: 139.6375, q: "Rinko Park Yokohama" }},
+      {{ id: "pk6", num: 6, name: "橫濱海洋塔 (大噴鸝鳥喙皮卡丘)", loc: "海洋塔後側空地廣場 (中華街4號出口方向)", lat: 35.4440, lng: 139.6515, q: "Yokohama Marine Tower" }},
+      {{ id: "pk7", num: 7, name: "橫濱紅磚倉庫 2號館 (皮卡丘+阿羅拉雷丘)", loc: "紅磚公園靠大棧橋方向邊緣走道", lat: 35.4526, lng: 139.6428, q: "Yokohama Red Brick Warehouse" }}
+    ];
+
+    // --- Critical Deadlines Data (Chronologically Ordered) ---
+    const DEADLINES_DATA = [
+      {{
+        id: "dl1",
+        date: "2026-11-26T20:34:00+09:00",
+        dayStr: "Day 1 (11/26 20:34)",
+        title: "新宿：牛たんの檸檬 (檸檬牛舌)",
+        desc: "極厚切牛舌排隊名店，已在 TableCheck 完成預約，需提前 10 分鐘抵達門口候位，避免現場久候。",
+        level: "critical",
+        badge: "20:34 DINNER"
+      }},
+      {{
+        id: "dl2",
+        date: "2026-11-28T10:45:00+09:00",
+        dayStr: "Day 3 (11/28 10:45)",
+        title: "橫濱：合味道紀念館 手作杯麵體驗報到",
+        desc: "已預約手作杯麵體驗，走完臨港公園後直接搭電梯至 4 樓吃麵第一波、準時至 3 樓報到自繪杯麵。",
+        level: "info",
+        badge: "10:45 WORKSHOP"
+      }},
+      {{
+        id: "dl3",
+        date: "2026-11-28T17:00:00+09:00",
+        dayStr: "Day 3 (11/28 17:00)",
+        title: "橫濱：紅磚倉庫聖誕市集點燈巡禮",
+        desc: "16:00 已點燈。週六傍晚人潮達最高峰，建議持「優先入場票」走專用通道秒進場；外圍與商場可免費逛。",
+        level: "info",
+        badge: "17:00 XMAS MARKET"
+      }},
+      {{
+        id: "dl4",
+        date: "2026-11-29T13:23:00+09:00",
+        dayStr: "Day 4 (11/29 13:23)",
+        title: "鎌倉：13:23 認明【綠色江之電】（切勿搭單軌）",
+        desc: "從江之島往長谷寺，務必前往<strong>「江之島電鐵（綠色江之電）江之島站」</strong>直達長谷站！千萬不要走進「湘南單軌電車（往大船繞大遠路）」。",
+        level: "warning",
+        badge: "13:23 TRAIN TRAP"
+      }},
+      {{
+        id: "dl5",
+        date: "2026-11-29T15:30:00+09:00",
+        dayStr: "Day 4 (11/29 15:30)",
+        title: "鎌倉：紅谷「核桃糕 (くるみっ子)」售罄時限",
+        desc: "週日下午觀光客極多，招牌核桃糕常在中午前後售罄。下午 15:30 逛小町通時若看到特約店有現貨先買！",
+        level: "warning",
+        badge: "15:30 SOUVENIR"
+      }},
+      {{
+        id: "dl6",
+        date: "2026-11-30T15:15:00+09:00",
+        dayStr: "Day 5 (11/30 15:15)",
+        title: "箱根：15:15 大涌谷準時搭纜車下山（核心死線）",
+        desc: "絕不可延誤！必須按時搭乘：空中纜車 ➔ 早雲山 ➔ 強羅 ➔ 登山電車 返回箱根湯本，確保銜接 <strong>17:46 浪漫特快 (箱根18號 MSE6)</strong>！",
+        level: "critical",
+        badge: "15:15 FINAL ROPEWAY"
+      }},
+      {{
+        id: "dl7",
+        date: "2026-11-30T17:46:00+09:00",
+        dayStr: "Day 5 (11/30 17:46)",
+        title: "箱根：17:46 浪漫特快箱根18號 (MSE6) 準時發車",
+        desc: "箱根湯本 17:46 發車返回新宿 (04車廂 8C,8D,9C,9D)，需於 17:30 前返抵月台完成候車。",
+        level: "critical",
+        badge: "17:46 TRAIN DEPART"
+      }},
+      {{
+        id: "dl8",
+        date: "2026-12-01T10:00:00+09:00",
+        dayStr: "Day 6 (12/01 10:00)",
+        title: "羽田機場：10:00 抵達 T3 報到、退稅與免稅採買",
+        desc: "搭乘長榮航空 BR191 (12:15) 返抵台北松山，務必於 10:00 前抵達第三航廈辦理託運。",
+        level: "info",
+        badge: "10:00 HND T3"
+      }}
+    ];
+
+    // ==========================================
+    // State & Persistence (Defensively Hardened)
+    // ==========================================
+    function safeGetJson(key, fallback) {{
+      try {{
+        const val = localStorage.getItem(key);
+        return val ? JSON.parse(val) : fallback;
+      }} catch (e) {{
+        console.warn("Storage read error for key: " + key, e);
+        return fallback;
+      }}
+    }}
+
+    let checkedPokes = safeGetJson("tokyo_poke_checks_v140", safeGetJson("tokyo_poke_checks_v131", {{}}));
+
+    let geminiApiKey =
+      localStorage.getItem("tokyo_gemini_key_v140") ||
+      localStorage.getItem("tokyo_gemini_key_v131") ||
+      "";
+
+    let topics = [];
+    let currentTopicId = "";
+    let itineraryOverrideText = localStorage.getItem("tokyo_itinerary_override_v140") || "";
+    let currentMode = localStorage.getItem("tokyo_mode_v141") || "concise";
+    let currentCoords = null;
+    let nearestAnchor = null;
+
+    let pokeMap = null;
+    let pokeMarkers = {{}};
+    let userMarker = null;
+    let showExpiredDeadlines = false;
+
+    // Toast Notification helper
+    function showToast(msg, duration = 2500) {{
+      const t = document.getElementById("toastBox");
+      if (!t) return;
+      t.innerText = msg;
+      t.classList.add("show");
+      setTimeout(() => {{
+        t.classList.remove("show");
+      }}, duration);
+    }}
+
+    function triggerHaptic() {{
+      if (typeof navigator !== "undefined" && navigator.vibrate) {{
+        navigator.vibrate(15);
+      }}
+    }}
+
+    // 18 Core Trip Geographic Anchors
+    const GEO_ANCHORS = [
+      {{ name: "JR 新宿站 (東南口/南口)", lat: 35.6897, lng: 139.7006 }},
+      {{ name: "Apartment Hotel Yumenoya (大久保飯店)", lat: 35.7008, lng: 139.7002 }},
+      {{ name: "牛たんの檸檬 (牛舌檸檬)", lat: 35.6946, lng: 139.6975 }},
+      {{ name: "明治神宮外苑銀杏並木", lat: 35.6738, lng: 139.7188 }},
+      {{ name: "豪德寺 (招福貓)", lat: 35.6534, lng: 139.6477 }},
+      {{ name: "吉祥寺站 / 井之頭公園", lat: 35.7029, lng: 139.5798 }},
+      {{ name: "大田黑公園 (夜楓)", lat: 35.7011, lng: 139.6133 }},
+      {{ name: "JR 櫻木町站 (橫濱)", lat: 35.4510, lng: 139.6309 }},
+      {{ name: "橫濱合味道紀念館 (泡麵館)", lat: 35.4554, lng: 139.6391 }},
+      {{ name: "橫濱紅磚倉庫", lat: 35.4526, lng: 139.6428 }},
+      {{ name: "山下公園 / 冰川丸", lat: 35.4458, lng: 139.6508 }},
+      {{ name: "片瀨江之島站", lat: 35.3087, lng: 139.4874 }},
+      {{ name: "江之島弁財天仲見世通", lat: 35.2995, lng: 139.4812 }},
+      {{ name: "長谷站 (鎌倉大佛 / 長谷寺)", lat: 35.3115, lng: 139.5358 }},
+      {{ name: "鎌倉站 / 小町通", lat: 35.3190, lng: 139.5505 }},
+      {{ name: "箱根湯本站", lat: 35.2333, lng: 139.1039 }},
+      {{ name: "龍宮殿 (絕景溫泉)", lat: 35.2155, lng: 139.0118 }},
+      {{ name: "元箱根港 / 箱根神社平和鳥居", lat: 35.2014, lng: 139.0279 }},
+      {{ name: "大涌谷 (黑玉子/空中纜車)", lat: 35.2443, lng: 139.0198 }},
+      {{ name: "羽田機場第三航廈 (HND T3)", lat: 35.5494, lng: 139.7798 }}
+    ];
+
+    function calculateDistance(lat1, lon1, lat2, lon2) {{
+      const R = 6371e3;
+      const p1 = lat1 * Math.PI / 180;
+      const p2 = lat2 * Math.PI / 180;
+      const dp = (lat2 - lat1) * Math.PI / 180;
+      const dl = (lon2 - lon1) * Math.PI / 180;
+      const a = Math.sin(dp/2) * Math.sin(dp/2) +
+                Math.cos(p1) * Math.cos(p2) *
+                Math.sin(dl/2) * Math.sin(dl/2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+      return Math.round(R * c);
+    }}
+
+    function updateNearestAnchor(lat, lng) {{
+      let closest = null;
+      let minDis = Infinity;
+      GEO_ANCHORS.forEach(a => {{
+        const d = calculateDistance(lat, lng, a.lat, a.lng);
+        if (d < minDis) {{
+          minDis = d;
+          closest = {{ name: a.name, dist: d }};
+        }}
+      }});
+      nearestAnchor = closest;
+      const txtEl = document.getElementById("nearestAnchorText");
+      if (txtEl && closest) {{
+        if (closest.dist < 1500) {{
+          txtEl.innerText = `（近「${{closest.name}}」約 ${{closest.dist}}m）`;
+        }} else {{
+          txtEl.innerText = `（最近錨點: ${{closest.name}} ${{(closest.dist/1000).toFixed(1)}}km）`;
+        }}
+      }}
+    }}
+
+    function initGeolocation() {{
+      const badge = document.getElementById("gpsStatusBadge");
+      if (!navigator.geolocation) {{
+        if (badge) badge.innerText = "瀏覽器不支援 GPS";
+        return;
+      }}
+
+      const geoSuccess = (pos) => {{
+        currentCoords = {{
+          lat: pos.coords.latitude,
+          lng: pos.coords.longitude,
+          acc: Math.round(pos.coords.accuracy)
+        }};
+        if (badge) {{
+          badge.innerHTML = `<span class="pulse-dot"></span> GPS 已鎖定 (±${{currentCoords.acc}}m)`;
+          badge.className = "awareness-gps-tag";
+        }}
+        updateNearestAnchor(currentCoords.lat, currentCoords.lng);
+        updateUserMapMarker();
+      }};
+
+      const geoError = (err) => {{
+        if (badge) {{
+          badge.innerText = "⚪ GPS 依排程推估中";
+          badge.className = "awareness-tag";
+        }}
+      }};
+
+      navigator.geolocation.watchPosition(geoSuccess, geoError, {{
+        enableHighAccuracy: true,
+        timeout: 12000,
+        maximumAge: 10000
+      }});
+    }}
+
+    function getJSTInfo() {{
+      const now = new Date();
+      const formatter = new Intl.DateTimeFormat("ja-JP", {{
+        timeZone: "Asia/Tokyo",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false
+      }});
+      const parts = formatter.formatToParts(now);
+      const map = {{}};
+      parts.forEach(p => map[p.type] = p.value);
+      const y = map.year;
+      const m = map.month;
+      const d = map.day;
+      const hh = map.hour;
+      const mm = map.minute;
+      const ss = map.second;
+
+      const dowFormatter = new Intl.DateTimeFormat("zh-TW", {{ timeZone: "Asia/Tokyo", weekday: "short" }});
+      const dow = dowFormatter.format(now);
+
+      const jstTimeStr = `${{y}}-${{m}}-${{d}} ${{hh}}:${{mm}}:${{ss}} (${{dow}}) JST`;
+      const jstClockShort = `${{hh}}:${{mm}}`;
+      const jstDate = new Date(`${{y}}-${{m}}-${{d}}T${{hh}}:${{mm}}:${{ss}}+09:00`);
+
+      const tripStart = new Date("2026-11-26T00:00:00+09:00");
+      const tripEnd = new Date("2026-12-01T23:59:59+09:00");
+
+      let stageBadge = "";
+      let stageDescription = "";
+
+      if (jstDate < tripStart) {{
+        const diffDays = Math.ceil((tripStart - jstDate) / (1000 * 60 * 60 * 24));
+        stageBadge = `📅 D-${{diffDays}} 行前籌備`;
+        stageDescription = `距離 11/26 啟程出發還有 ${{diffDays}} 天（行前準備與預約確認期）`;
+      }} else if (jstDate > tripEnd) {{
+        stageBadge = `🎉 旅程圓滿回顧`;
+        stageDescription = `6日東京新宿・橫濱・箱根之旅已圓滿結束`;
+      }} else {{
+        const hr = jstDate.getHours();
+        let timePeriod = "白天時段";
+        if (hr < 11) timePeriod = "上午時段";
+        else if (hr < 14) timePeriod = "午間時段";
+        else if (hr < 17) timePeriod = "下午時段";
+        else if (hr < 21) timePeriod = "傍晚/晚餐時段";
+        else timePeriod = "夜晚/休息時段";
+
+        if (d === "26") {{
+          stageBadge = `🚀 D1 [啟程➔羽田➔牛舌]`;
+          stageDescription = `Day 1 (${{timePeriod}})：松山飛抵羽田 ➔ 前往大久保飯店安頓 ➔ 今晚核心死線：20:34【牛たんの檸檬】預約候位`;
+        }} else if (d === "27") {{
+          stageBadge = `🍂 D2 [銀杏➔吉祥寺➔夜楓]`;
+          stageDescription = `Day 2 (${{timePeriod}})：神宮外苑銀杏 ➔ 豪德寺 ➔ 吉祥寺散策 ➔ 傍晚大田黑公園夜楓 ➔ 新宿晚餐`;
+        }} else if (d === "28") {{
+          stageBadge = `🍜 D3 [橫濱泡麵➔市集]`;
+          stageDescription = `Day 3 (${{timePeriod}})：橫濱港未來21 ➔ 關鍵死線：10:45【合味道杯麵館】報到 ➔ 寶可夢尋寶 ➔ 傍晚紅磚倉庫聖誕市集`;
+        }} else if (d === "29") {{
+          stageBadge = `🌊 D4 [江之島➔長谷寺➔鎌倉]`;
+          stageDescription = `Day 4 (${{timePeriod}})：浪漫特快江之島33號 ➔ 仲見世通 ➔ 13:23 綠色江之電往長谷寺 ➔ 鎌倉小町通/八幡宮`;
+        }} else if (d === "30") {{
+          stageBadge = `♨️ D5 [箱根大環線➔龍宮殿]`;
+          stageDescription = `Day 5 (${{timePeriod}})：浪漫特快箱根41號 ➔ 龍宮殿絕景風呂 ➔ 12:00 返元箱根港 ➔ 海賊船 ➔ 🚨死線：15:15 大涌谷纜車必須準時下山！`;
+        }} else if (d === "01") {{
+          stageBadge = `✈️ D6 [最後採買➔羽田返台]`;
+          stageDescription = `Day 6 (${{timePeriod}})：新宿大久保退房 ➔ 藥妝補貨 ➔ 前往羽田 T3 採買退稅 ➔ 搭乘 BR191 (12:15) 返抵台北松山`;
+        }}
+      }}
+
+      return {{
+        jstDate,
+        jstTimeStr,
+        jstClockShort,
+        stageBadge,
+        stageDescription
+      }};
+    }}
+
+    function updateJSTUI() {{
+      const info = getJSTInfo();
+      const clockEl = document.getElementById("jstClockText");
+      const badgeEl = document.getElementById("tripStageBadge");
+      if (clockEl) clockEl.innerText = info.jstClockShort;
+      if (badgeEl) badgeEl.innerText = info.stageBadge;
+      renderDeadlines();
+    }}
+
+    // --- Funliday Smart Launcher ---
+    function openFunlidaySmart(e) {{
+      if (e) e.preventDefault();
+      triggerHaptic();
+      const isAndroid = /Android/i.test(navigator.userAgent);
+      const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+      const webUrl = "https://www.funliday.com/m_Njg1M2NmMzEzMzc1NDY4YzcxZDUwMWFl0/trips/6a3ba8367e546c054da4fab1/overview";
+      
+      if (isAndroid) {{
+        const intentUrl = "intent://www.funliday.com/m_Njg1M2NmMzEzMzc1NDY4YzcxZDUwMWFl0/trips/6a3ba8367e546c054da4fab1/overview#Intent;scheme=https;package=com.funliday.app;S.browser_fallback_url=" + encodeURIComponent(webUrl) + ";end;";
+        window.location.href = intentUrl;
+      }} else if (isIOS) {{
+        let appOpened = false;
+        const fallbackTimer = setTimeout(() => {{
+          if (!appOpened) {{
+            window.location.href = webUrl;
+          }}
+        }}, 1500);
+        window.addEventListener('pagehide', () => {{
+          appOpened = true;
+          clearTimeout(fallbackTimer);
+        }}, {{ once: true }});
+
+        const a = document.createElement("a");
+        a.href = "funliday://trips/6a3ba8367e546c054da4fab1";
+        a.target = "_blank";
+        a.rel = "noopener noreferrer";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      }} else {{
+        window.open(webUrl, "_blank", "noopener,noreferrer");
+      }}
+    }}
+
+    // --- View Navigation ---
+    const VIEWS = ["funliday", "gemini", "pokemon", "deadlines", "tickets"];
+
+    function switchNavTab(viewId) {{
+      triggerHaptic();
+      VIEWS.forEach(v => {{
+        const el = document.getElementById("view" + v.charAt(0).toUpperCase() + v.slice(1));
+        if (el) el.style.display = v === viewId ? "block" : "none";
+      }});
+      document.querySelectorAll(".bottom-tab").forEach(b => {{
+        const isTarget = (b.getAttribute("onclick") || "").includes(viewId);
+        b.classList.toggle("active", isTarget);
+        b.setAttribute("aria-selected", isTarget ? "true" : "false");
+      }});
+      window.scrollTo({{ top: 0, behavior: "smooth" }});
+
+      if (viewId === "pokemon") {{
+        setTimeout(initOrRefreshPokemonMap, 200);
+      }} else if (viewId === "deadlines") {{
+        renderDeadlines();
+      }}
+    }}
+
+    function filterDayOverview(day, btn) {{
+      triggerHaptic();
+      document.querySelectorAll(".day-tab-btn").forEach(b => {{
+        b.classList.remove("active");
+        b.setAttribute("aria-selected", "false");
+      }});
+      if (btn) {{
+        btn.classList.add("active");
+        btn.setAttribute("aria-selected", "true");
+      }}
+      const cards = document.querySelectorAll("#dayOverviewList .day-card-item");
+      cards.forEach(c => {{
+        if (day === "all" || c.dataset.day === day) {{
+          c.style.display = "block";
+        }} else {{
+          c.style.display = "none";
+        }}
+      }});
+    }}
+
+    // ==========================================
+    // Leaflet Interactive Pokemon Map System (Defensively Hardened)
+    // ==========================================
+    function getPokePopupHtml(p) {{
+      let distanceStr = "";
+      if (currentCoords) {{
+        const dist = calculateDistance(currentCoords.lat, currentCoords.lng, p.lat, p.lng);
+        distanceStr = `<div style="font-size:0.75rem; color:#38bdf8; margin:4px 0;">📍 距離您目前位置：<strong>${{dist < 1000 ? dist + 'm' : (dist/1000).toFixed(1) + 'km'}}</strong></div>`;
+      }}
+
+      return `
+        <div style="min-width:210px; padding:2px;">
+          <div style="font-weight:800; font-size:0.92rem; color:#fff; margin-bottom:2px;">#${{p.num}} ${{p.name}}</div>
+          <div style="font-size:0.78rem; color:#cbd5e1;">${{p.loc}}</div>
+          ${{distanceStr}}
+          <a href="https://www.google.com/maps/dir/?api=1&destination=${{p.lat}},${{p.lng}}" target="_blank" rel="noopener noreferrer" class="btn-maps" style="width:100%; height:36px; margin-top:8px; font-size:0.78rem; display:flex; align-items:center; justify-content:center; gap:5px;">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+            Google 地圖導航
+          </a>
+        </div>
+      `;
+    }}
+
+    function initOrRefreshPokemonMap() {{
+      const mapContainer = document.getElementById("pokeMap");
+      if (!mapContainer) return;
+
+      if (typeof L === "undefined") {{
+        mapContainer.innerHTML = `
+          <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; color:#94a3b8; font-size:0.85rem; text-align:center; padding:20px; line-height:1.6;">
+            <div style="font-size:1.8rem; margin-bottom:8px;">🗺️</div>
+            <div style="color:#f1f5f9; font-weight:700;">離線模式 / 尚無圖資連線</div>
+            <div style="font-size:0.75rem; color:#64748b; margin-top:4px;">地圖圖資需網路連線；您仍可直接點擊下方各景點『導航』按鈕開啟 Google Maps 離線導航。</div>
+          </div>
+        `;
+        return;
+      }}
+
+      if (!pokeMap) {{
+        pokeMap = L.map("pokeMap", {{
+          zoomControl: false,
+          attributionControl: false
+        }}).setView([35.4520, 139.6380], 14);
+
+        // Esri World Dark Gray Base (Free, beautiful dark canvas, zero watermark)
+        L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{{z}}/{{y}}/{{x}}", {{
+          maxZoom: 16
+        }}).addTo(pokeMap);
+        // Esri Labels overlay
+        L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Reference/MapServer/tile/{{z}}/{{y}}/{{x}}", {{
+          maxZoom: 16
+        }}).addTo(pokeMap);
+
+        // Add 7 Pokemon Markers
+        POKEMON_DATA.forEach(p => {{
+          const isDone = !!checkedPokes[p.id];
+          const iconHtml = `<div class="custom-poke-pin ${{isDone ? 'checked-pin' : ''}}" id="pin_${{p.id}}">${{p.num}}</div>`;
+          const customIcon = L.divIcon({{
+            html: iconHtml,
+            className: "leaflet-div-icon-wrapper",
+            iconSize: [28, 28],
+            iconAnchor: [14, 14],
+            popupAnchor: [0, -16]
+          }});
+
+          const marker = L.marker([p.lat, p.lng], {{ icon: customIcon }}).addTo(pokeMap);
+          marker.bindPopup(() => getPokePopupHtml(p));
+          pokeMarkers[p.id] = marker;
+        }});
+
+        updateUserMapMarker();
+      }}
+
+      if (pokeMap) {{
+        pokeMap.invalidateSize();
+      }}
+    }}
+
+    function updateUserMapMarker() {{
+      if (!pokeMap || !currentCoords || typeof L === "undefined") return;
+
+      const userLatLng = [currentCoords.lat, currentCoords.lng];
+
+      if (userMarker) {{
+        userMarker.setLatLng(userLatLng);
+      }} else {{
+        const userIcon = L.divIcon({{
+          html: `<div class="custom-user-pin" title="目前定位"></div>`,
+          className: "leaflet-div-user",
+          iconSize: [18, 18],
+          iconAnchor: [9, 9]
+        }});
+        userMarker = L.marker(userLatLng, {{ icon: userIcon }}).addTo(pokeMap);
+        userMarker.bindPopup("<b>📍 目前位置 (You Are Here)</b>");
+      }}
+
+      // Refresh any open popups with fresh distance
+      POKEMON_DATA.forEach(p => {{
+        if (pokeMarkers[p.id] && pokeMarkers[p.id].isPopupOpen && pokeMarkers[p.id].isPopupOpen()) {{
+          pokeMarkers[p.id].setPopupContent(getPokePopupHtml(p));
+        }}
+      }});
+    }}
+
+    function panToUserLocation() {{
+      triggerHaptic();
+      if (!pokeMap) return;
+      if (currentCoords) {{
+        pokeMap.flyTo([currentCoords.lat, currentCoords.lng], 16, {{ duration: 1 }});
+        if (userMarker) userMarker.openPopup();
+        showToast("🎯 已移動至目前定位");
+      }} else {{
+        showToast("尚未取得 GPS 訊號");
+      }}
+    }}
+
+    function fitAllPokemonSpots() {{
+      triggerHaptic();
+      if (!pokeMap || typeof L === "undefined") return;
+      const bounds = L.latLngBounds(POKEMON_DATA.map(p => [p.lat, p.lng]));
+      pokeMap.fitBounds(bounds, {{ padding: [30, 30] }});
+      showToast("🗺️ 顯示全 7 大據點總覽");
+    }}
+
+    function panToPoke(id) {{
+      triggerHaptic();
+      const p = POKEMON_DATA.find(x => x.id === id);
+      if (!p || !pokeMap) return;
+      pokeMap.flyTo([p.lat, p.lng], 16, {{ duration: 0.8 }});
+      if (pokeMarkers[id]) {{
+        pokeMarkers[id].setPopupContent(getPokePopupHtml(p));
+        pokeMarkers[id].openPopup();
+      }}
+      const mapEl = document.getElementById("pokeMap");
+      if (mapEl) mapEl.scrollIntoView({{ behavior: "smooth", block: "center" }});
+    }}
+
+    // --- Pokemon Checklist Rendering ---
+    function renderPokemon() {{
+      const c = document.getElementById("pokeContainer");
+      if (!c) return;
+      c.innerHTML = "";
+      let count = 0;
+      POKEMON_DATA.forEach(p => {{
+        const isDone = !!checkedPokes[p.id];
+        if (isDone) count++;
+        const row = document.createElement("div");
+        row.className = "poke-row " + (isDone ? "checked-row" : "");
+        row.innerHTML = `
+          <div style="display: flex; align-items: center; gap: 12px; min-width: 0;" onclick="panToPoke('${{p.id}}')">
+            <button type="button" class="poke-check-btn ${{isDone ? 'checked' : ''}}" onclick="event.stopPropagation(); togglePoke('${{p.id}}')" aria-label="切換完成打卡 ${{p.name}}">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="3" style="display:${{isDone ? 'block' : 'none'}}"><polyline points="20 6 9 17 4 12"/></svg>
+            </button>
+            <div style="min-width: 0;">
+              <div style="font-size: 0.9rem; font-weight: 800; color: #fff; ${{isDone ? 'text-decoration: line-through; opacity: 0.8;' : ''}}">#${{p.num}} ${{p.name}}</div>
+              <div style="font-size: 0.76rem; color: var(--text-2);">📍 ${{p.loc}}</div>
+            </div>
+          </div>
+          <a class="btn-maps" href="https://www.google.com/maps/dir/?api=1&destination=${{p.lat}},${{p.lng}}" target="_blank" rel="noopener noreferrer" aria-label="導航至 ${{p.name}}">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+            <span>導航</span>
+          </a>
+        `;
+        c.appendChild(row);
+      }});
+
+      const total = POKEMON_DATA.length;
+      const pct = Math.round((count / total) * 100);
+      const pctEl = document.getElementById("pokePercentText");
+      if (pctEl) pctEl.innerText = `${{pct}}% (${{count}}/${{total}})`;
+      const fill = document.getElementById("pokeProgressFill");
+      if (fill) fill.style.width = pct + "%";
+      const tabPoke = document.getElementById("tabPokeCount");
+      if (tabPoke) tabPoke.innerText = count;
+
+      // Update map marker pins
+      POKEMON_DATA.forEach(p => {{
+        const pinEl = document.getElementById(`pin_${{p.id}}`);
+        if (pinEl) {{
+          pinEl.classList.toggle("checked-pin", !!checkedPokes[p.id]);
+        }}
+      }});
+    }}
+
+    function togglePoke(id) {{
+      triggerHaptic();
+      checkedPokes[id] = !checkedPokes[id];
+      localStorage.setItem("tokyo_poke_checks_v140", JSON.stringify(checkedPokes));
+      renderPokemon();
+      showToast(checkedPokes[id] ? "🎉 打卡完成！" : "已取消打卡");
+    }}
+
+    // ==========================================
+    // Deadlines Rendering: Chronological & Dynamic Filtering
+    // ==========================================
+    function renderDeadlines() {{
+      const container = document.getElementById("deadlinesListContainer");
+      if (!container) return;
+      container.innerHTML = "";
+
+      const jstInfo = getJSTInfo();
+      const nowJST = jstInfo.jstDate.getTime();
+
+      // Sort chronologically ascending
+      const sorted = [...DEADLINES_DATA].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+      let activeCount = 0;
+      let expiredCount = 0;
+
+      sorted.forEach(item => {{
+        const targetTime = new Date(item.date).getTime();
+        const diffMs = targetTime - nowJST;
+        const isExpired = diffMs < 0;
+
+        if (isExpired) expiredCount++;
+        else activeCount++;
+
+        // If expired and not showing expired, skip rendering
+        if (isExpired && !showExpiredDeadlines) return;
+
+        let countdownBadge = "";
+        if (isExpired) {{
+          countdownBadge = `<span class="deadline-countdown-badge" style="color:#94a3b8; border-color:rgba(255,255,255,0.15);">EXPIRED</span>`;
+        }} else {{
+          const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+          const diffDays = Math.floor(diffHours / 24);
+          const remHours = diffHours % 24;
+          const remMins = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+
+          if (diffDays > 0) {{
+            countdownBadge = `<span class="deadline-countdown-badge">⏳ IN ${{diffDays}}d ${{remHours}}h</span>`;
+          }} else if (diffHours > 0) {{
+            countdownBadge = `<span class="deadline-countdown-badge" style="color:#fef08a; border-color:#fef08a;">⏳ IN ${{diffHours}}h ${{remMins}}m</span>`;
+          }} else {{
+            countdownBadge = `<span class="deadline-countdown-badge" style="color:#ef4444; border-color:#ef4444; animation:pulse-ring 1s infinite;">🚨 IN ${{remMins}} MINS</span>`;
+          }}
+        }}
+
+        const card = document.createElement("div");
+        card.className = `deadline-item ${{item.level}} ${{isExpired ? 'expired' : ''}}`;
+        card.innerHTML = `
+          <div class="deadline-head">
+            <div class="deadline-title-text">
+              <span style="font-family:var(--font-mono); font-size:0.75rem; color:var(--cyan);">${{item.dayStr}}</span>
+              <strong>${{item.title}}</strong>
+            </div>
+            ${{countdownBadge}}
+          </div>
+          <div class="deadline-body">${{item.desc}}</div>
+        `;
+        container.appendChild(card);
+      }});
+
+      if (activeCount === 0 && !showExpiredDeadlines) {{
+        container.innerHTML = `
+          <div style="text-align:center; padding:30px 10px; color:var(--text-3);">
+            <div style="font-size:2rem; margin-bottom:8px;">🎉</div>
+            <div style="font-weight:700; color:#fff;">All upcoming trip deadlines are clear!</div>
+            <div style="font-size:0.8rem; margin-top:4px;">No immediate time traps ahead. Enjoy your time!</div>
+          </div>
+        `;
+      }}
+
+      // Toggle Expired Button
+      const toggleBtn = document.getElementById("toggleExpiredBtn");
+      const expiredCountText = document.getElementById("expiredCountText");
+      if (toggleBtn) {{
+        if (expiredCount > 0) {{
+          toggleBtn.style.display = "block";
+          if (expiredCountText) expiredCountText.innerText = expiredCount;
+          toggleBtn.innerText = showExpiredDeadlines ? `📁 Hide Expired Deadlines (${{expiredCount}})` : `📂 View Expired Deadlines (${{expiredCount}})`;
+        }} else {{
+          toggleBtn.style.display = "none";
+        }}
+      }}
+    }}
+
+    function toggleExpiredDeadlines() {{
+      triggerHaptic();
+      showExpiredDeadlines = !showExpiredDeadlines;
+      renderDeadlines();
+    }}
+
+    // ==========================================
+    // System Instruction Canonical
+    // ==========================================
+    const SYSTEM_KNOWLEDGE = `
+{SYSTEM_KNOWLEDGE}
+`;
+
+    // ==========================================
+    // Multi-Topic Session Management
+    // ==========================================
+    function initTopics() {{
+      const saved = localStorage.getItem("tokyo_topics_v140");
+      if (saved) {{
+        try {{ topics = JSON.parse(saved); }} catch (e) {{ topics = []; }}
+      }}
+
+      if (!topics || topics.length === 0) {{
+        const oldHistory = safeGetJson("tokyo_gemini_history_v131", []);
+        topics = [
+          {{
+            id: "topic_" + Date.now(),
+            name: "💬 話題 1: 新宿・行程隨身諮詢",
+            history: oldHistory
+          }}
+        ];
+        saveTopics();
+      }}
+
+      const activeId = localStorage.getItem("tokyo_current_topic_v140");
+      if (activeId && topics.some(t => t.id === activeId)) {{
+        currentTopicId = activeId;
+      }} else {{
+        currentTopicId = topics[0].id;
+      }}
+
+      const overrideInput = document.getElementById("itineraryOverrideInput");
+      if (overrideInput) {{
+        overrideInput.value = itineraryOverrideText;
+      }}
+
+      renderTopicSelector();
+      renderChatHistory();
+    }}
+
+    function saveTopics() {{
+      localStorage.setItem("tokyo_topics_v140", JSON.stringify(topics));
+      localStorage.setItem("tokyo_current_topic_v140", currentTopicId);
+    }}
+
+    function getCurrentTopic() {{
+      return topics.find(t => t.id === currentTopicId) || topics[0];
+    }}
+
+    function renderTopicSelector() {{
+      const sel = document.getElementById("topicSelector");
+      if (!sel) return;
+      sel.innerHTML = "";
+      topics.forEach(t => {{
+        const opt = document.createElement("option");
+        opt.value = t.id;
+        opt.text = t.name;
+        if (t.id === currentTopicId) opt.selected = true;
+        sel.appendChild(opt);
+      }});
+    }}
+
+    function selectMode(mode) {{
+      triggerHaptic();
+      currentMode = mode;
+      localStorage.setItem("tokyo_mode_v141", currentMode);
+
+      document.querySelectorAll(".mode-pill-btn").forEach(btn => {{
+        const isActive = btn.dataset.mode === mode;
+        btn.classList.toggle("active", isActive);
+        btn.setAttribute("aria-checked", isActive ? "true" : "false");
+      }});
+
+      const descriptions = {{
+        concise: "⚡ <strong>簡潔模式</strong>：標準敏捷行動派 (Thinking: MEDIUM)。2~4 點條列核心行動，節奏明快，兼顧青少年喜好與效率。",
+        detailed: "📝 <strong>詳細模式</strong>：全景深層推演 (Thinking: HIGH)。精算 2大2小（11/12歲）配餐份量、多重備案 Plan B 與適合青少年的文化冷知識。",
+        serious: "🛡️ <strong>嚴肅模式</strong>：軍事級戰情警戒 (Thinking: HIGH)。直擊核心死線，一律強制倒推 30~45 分鐘安全集合撤退線，防範搭錯車與人潮走失。",
+        relaxed: "☕ <strong>輕鬆模式</strong>：青少年潮玩慢活防線 (Thinking: LOW)。主動砍掉枯燥景點，優先推薦扭蛋店、夾娃娃機、一番賞與人氣街頭排隊美食小吃。",
+        brief: "💨 <strong>精簡模式</strong>：HUD 抬頭速讀戰報 (Thinking: MINIMAL)。極速直出，1秒看懂【目標】、【路線/月台】、【耗時】、【死線倒數】極簡格式。"
+      }};
+
+      const callout = document.getElementById("modeDescCallout");
+      if (callout) callout.innerHTML = descriptions[mode] || descriptions.concise;
+
+      const input = document.getElementById("chatInputBox");
+      if (input) {{
+        const modeTitleMap = {{
+          concise: "簡潔",
+          detailed: "詳細",
+          serious: "嚴肅",
+          relaxed: "輕鬆",
+          brief: "精簡"
+        }};
+        input.placeholder = `問問導遊 [當前模式: ${{modeTitleMap[mode] || "簡潔"}}]...`;
+      }}
+
+      showToast(`已切換至「${{mode.toUpperCase()}}」導遊模式`);
+    }}
+
+    function onTopicChange(topicId) {{
+      triggerHaptic();
+      currentTopicId = topicId;
+      saveTopics();
+      renderChatHistory();
+      showToast("已切換話題");
+    }}
+
+    function createNewTopic() {{
+      triggerHaptic();
+      const name = prompt("請輸入新話題名稱（例如：箱根交通、吉祥寺藥妝、突發找廁所）：", `💬 話題 ${{topics.length + 1}}: 自訂諮詢`);
+      if (name && name.trim()) {{
+        const newTopic = {{
+          id: "topic_" + Date.now(),
+          name: name.trim(),
+          history: []
+        }};
+        topics.push(newTopic);
+        currentTopicId = newTopic.id;
+        saveTopics();
+        renderTopicSelector();
+        renderChatHistory();
+        showToast("✅ 新話題已建立！");
+      }}
+    }}
+
+    function renameCurrentTopic() {{
+      triggerHaptic();
+      const cur = getCurrentTopic();
+      const newName = prompt("重新命名當前話題：", cur.name);
+      if (newName && newName.trim()) {{
+        cur.name = newName.trim();
+        saveTopics();
+        renderTopicSelector();
+        showToast("✅ 話題名稱已更新");
+      }}
+    }}
+
+    function deleteCurrentTopic() {{
+      triggerHaptic();
+      if (topics.length <= 1) {{
+        alert("至少必須保留 1 個話題！您可以選擇清空本話題紀錄。");
+        return;
+      }}
+      const cur = getCurrentTopic();
+      if (confirm(`確定要刪除話題『${{cur.name}}』及其所有對話記憶嗎？`)) {{
+        topics = topics.filter(t => t.id !== currentTopicId);
+        currentTopicId = topics[0].id;
+        saveTopics();
+        renderTopicSelector();
+        renderChatHistory();
+        showToast("🗑️ 已刪除話題");
+      }}
+    }}
+
+    function exportTopicsBackup() {{
+      triggerHaptic();
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(topics, null, 2));
+      const downloadAnchor = document.createElement("a");
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", `tokyo_trip_chat_backup_${{new Date().toISOString().slice(0,10)}}.json`);
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+      showToast("📥 已導出話題對話紀錄備份");
+    }}
+
+    function saveItineraryOverride() {{
+      const input = document.getElementById("itineraryOverrideInput");
+      if (input) {{
+        itineraryOverrideText = input.value.trim();
+        localStorage.setItem("tokyo_itinerary_override_v140", itineraryOverrideText);
+        showToast("📝 行程異動備忘已儲存");
+      }}
+    }}
+
+    function clearCurrentTopicChat() {{
+      triggerHaptic();
+      const cur = getCurrentTopic();
+      if (confirm(`確定要清空話題『${{cur.name}}』的所有對話記憶嗎？`)) {{
+        cur.history = [];
+        saveTopics();
+        renderChatHistory();
+        showToast("已清空話題紀錄");
+      }}
+    }}
+
+    // ==========================================
+    // Settings Modal & Font Scaling System
+    // ==========================================
+    let currentFontScale = parseFloat(localStorage.getItem("tokyo_font_scale_v152") || "1.0");
+
+    function applyFontScale(scale, save = true) {{
+      currentFontScale = scale;
+      document.documentElement.style.setProperty("--font-scale", scale);
+      document.documentElement.style.fontSize = (15 * scale) + "px";
+
+      if (save) {{
+        localStorage.setItem("tokyo_font_scale_v152", scale.toString());
+      }}
+
+      const badge = document.getElementById("fontScaleDisplayBadge");
+      if (badge) badge.innerText = Math.round(scale * 100) + "%";
+
+      document.querySelectorAll(".btn-font-scale").forEach(btn => {{
+        const s = parseFloat(btn.dataset.scale);
+        const isActive = Math.abs(s - scale) < 0.02;
+        btn.classList.toggle("active", isActive);
+        btn.setAttribute("aria-pressed", isActive ? "true" : "false");
+      }});
+    }}
+
+    function setFontScale(scale) {{
+      triggerHaptic();
+      applyFontScale(scale, true);
+      showToast(`🔤 字體大小已切換為 ${{Math.round(scale * 100)}}%`);
+    }}
+
+    function openSettingsModal() {{
+      triggerHaptic();
+      const modal = document.getElementById("settingsModal");
+      if (!modal) return;
+
+      const keyInput = document.getElementById("settingsApiKeyInput");
+      if (keyInput) {{
+        keyInput.value = geminiApiKey || "";
+        keyInput.type = "password";
+      }}
+
+      updateModalKeyBadge();
+      applyFontScale(currentFontScale, false);
+
+      modal.style.display = "flex";
+      document.body.style.overflow = "hidden";
+    }}
+
+    function closeSettingsModal() {{
+      triggerHaptic();
+      const modal = document.getElementById("settingsModal");
+      if (modal) {{
+        modal.style.display = "none";
+        document.body.style.overflow = "";
+      }}
+    }}
+
+    window.addEventListener("click", (e) => {{
+      const modal = document.getElementById("settingsModal");
+      if (modal && e.target === modal) {{
+        closeSettingsModal();
+      }}
+    }});
+
+    window.addEventListener("keydown", (e) => {{
+      if (e.key === "Escape") {{
+        closeSettingsModal();
+      }}
+    }});
+
+    function toggleApiKeyVisibility() {{
+      triggerHaptic();
+      const keyInput = document.getElementById("settingsApiKeyInput");
+      const eye = document.getElementById("iconEye");
+      if (!keyInput) return;
+
+      if (keyInput.type === "password") {{
+        keyInput.type = "text";
+        if (eye) eye.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>';
+      }} else {{
+        keyInput.type = "password";
+        if (eye) eye.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+      }}
+    }}
+
+    function updateModalKeyBadge() {{
+      const badge = document.getElementById("settingsKeyBadge");
+      if (!badge) return;
+      if (geminiApiKey) {{
+        badge.innerHTML = '<span class="pulse-dot"></span> 已連線 Gemini 3.8 Flash';
+        badge.className = "key-status-badge active";
+      }} else {{
+        badge.innerHTML = '未設定 API Key';
+        badge.className = "key-status-badge inactive";
+      }}
+    }}
+
+    function updateKeyStatusUI() {{
+      updateModalKeyBadge();
+    }}
+
+    function saveApiKeyFromModal() {{
+      triggerHaptic();
+      const keyInput = document.getElementById("settingsApiKeyInput");
+      if (!keyInput) return;
+
+      const val = keyInput.value.trim();
+      geminiApiKey = val;
+      localStorage.setItem("tokyo_gemini_key_v140", geminiApiKey);
+      updateModalKeyBadge();
+
+      if (geminiApiKey) {{
+        showToast("✅ API Key 已安全儲存！導遊大腦就緒");
+      }} else {{
+        showToast("已清除 API Key");
+      }}
+    }}
+
+    function clearApiKeyFromModal() {{
+      triggerHaptic();
+      const keyInput = document.getElementById("settingsApiKeyInput");
+      if (keyInput) keyInput.value = "";
+      geminiApiKey = "";
+      localStorage.removeItem("tokyo_gemini_key_v140");
+      updateModalKeyBadge();
+      showToast("已清除 API Key");
+    }}
+
+    function resetPreferences() {{
+      triggerHaptic();
+      if (confirm("確定要將設定恢復為預設值嗎？（字體大小將重設為 100%）")) {{
+        setFontScale(1.0);
+        showToast("已恢復預設值");
+      }}
+    }}
+
+
+    function copyBubbleText(text, btn) {{
+      triggerHaptic();
+      if (navigator.clipboard && navigator.clipboard.writeText) {{
+        navigator.clipboard.writeText(text).then(() => {{
+          showToast("📋 已複製回答至剪貼簿！");
+        }}).catch(() => {{
+          fallbackCopy(text);
+        }});
+      }} else {{
+        fallbackCopy(text);
+      }}
+    }}
+
+    function fallbackCopy(text) {{
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      ta.style.position = "fixed";
+      ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      document.body.removeChild(ta);
+      showToast("📋 已複製！");
+    }}
+
+    function renderChatHistory() {{
+      const box = document.getElementById("chatMsgBox");
+      if (!box) return;
+      box.innerHTML = "";
+
+      const curTopic = getCurrentTopic();
+
+      const welcome = document.createElement("div");
+      welcome.className = "bubble ai";
+      welcome.innerHTML = `您好！我是您的 <strong>Gemini 3.8 Flash</strong> 專屬隨身全能導遊。已啟用<strong>實時日本時間與 GPS 雙感知</strong>！當前話題：『${{curTopic.name}}』。路上有任何狀況（找廁所、動漫潮玩熱點、美食補給、電梯無障礙捷徑、順路排程、突發更動），隨時問我！`;
+      box.appendChild(welcome);
+
+      curTopic.history.forEach(item => {{
+        const b = document.createElement("div");
+        b.className = "bubble " + (item.role === "user" ? "user" : "ai");
+        const msgText = item.parts && item.parts[0] ? item.parts[0].text : "";
+        b.innerText = msgText;
+
+        if (item.role === "model") {{
+          const act = document.createElement("div");
+          act.className = "bubble-actions";
+          act.innerHTML = `
+            <button type="button" class="btn-copy-bubble" onclick="copyBubbleText(this.parentElement.parentElement.innerText.replace('複製', '').trim(), this)">
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              複製
+            </button>
+          `;
+          b.appendChild(act);
+        }}
+        box.appendChild(b);
+      }});
+      box.scrollTop = box.scrollHeight;
+    }}
+
+    function askChip(txt) {{
+      triggerHaptic();
+      document.getElementById("chatInputBox").value = txt;
+      sendAiQuery();
+    }}
+
+    let isAiQueryInProgress = false;
+
+    async function sendAiQuery() {{
+      if (isAiQueryInProgress) return;
+      const input = document.getElementById("chatInputBox");
+      const sendBtn = document.getElementById("chatSendBtn");
+      const text = input.value.trim();
+      if (!text) return;
+
+      triggerHaptic();
+      isAiQueryInProgress = true;
+      if (sendBtn) {{
+        sendBtn.disabled = true;
+        sendBtn.innerHTML = '<span>思考中...</span>';
+      }}
+
+      const curTopic = getCurrentTopic();
+      const box = document.getElementById("chatMsgBox");
+
+      const userBubble = document.createElement("div");
+      userBubble.className = "bubble user";
+      userBubble.innerText = text;
+      box.appendChild(userBubble);
+      input.value = "";
+      box.scrollTop = box.scrollHeight;
+
+      curTopic.history.push({{ role: "user", parts: [{{ text: text }}] }});
+      saveTopics();
+
+      if (!geminiApiKey) {{
+        const errBubble = document.createElement("div");
+        errBubble.className = "bubble ai";
+        errBubble.innerHTML = `⚠️ 尚未設定 Google Gemini API Key。<br>請點擊左上角<strong>『🍁 楓葉圖標』</strong>或下方按鈕貼入您的密鑰，即可啟動導遊大腦！<br><button type="button" class="btn-open-settings-inline" onclick="openSettingsModal()"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg> 立即開啟設定輸入 Key</button><br><small style="color:var(--text-3); margin-top:4px; display:inline-block;">密鑰僅加密保存在本機手機瀏覽器，絕不上傳伺服器。</small>`;
+        box.appendChild(errBubble);
+        box.scrollTop = box.scrollHeight;
+        isAiQueryInProgress = false;
+        if (sendBtn) {{
+          sendBtn.disabled = false;
+          sendBtn.innerHTML = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg><span>發送</span>';
+        }}
+        openSettingsModal();
+        return;
+      }}
+
+      let thinkingLevel = "MEDIUM";
+      let loadText = "Gemini 3.8 Flash (實時時空感知運算中)...";
+      let modeInstruction = "";
+
+      if (currentMode === "detailed") {{
+        thinkingLevel = "HIGH";
+        loadText = "Gemini 3.8 Flash (High 深度推演中)...";
+        modeInstruction = "【指定導遊模式】：詳細 (Detailed) - 啟動 High 深度思考。請進行全面全景分析、精算 2大2小（11/12歲發育期）菜色份量與配餐、提供多重 Plan A/B 備案、周遊券邊界精算，並附帶適合青少年的文化趣味小故事。";
+      }} else if (currentMode === "serious") {{
+        thinkingLevel = "HIGH";
+        loadText = "Gemini 3.8 Flash (High 死線戰情警戒中)...";
+        modeInstruction = "【指定導遊模式】：嚴肅 (Serious) - 啟動 High 深度思考。軍事級戰情口吻，字字千金，直擊核心死線（一律強制倒推 30~45 分鐘作為最後集合撤退線），預先排查換乘陷阱與人潮走失防護，零客套廢話。";
+      }} else if (currentMode === "relaxed") {{
+        thinkingLevel = "LOW";
+        loadText = "Gemini 3.8 Flash (輕鬆潮玩慢活模式)...";
+        modeInstruction = "【指定導遊模式】：輕鬆 (Relaxed) - 青少年潮玩慢活防線。若行程太緊或景點枯燥，主動建議砍掉無趣逛街點；優先推薦 11/12 歲喜愛的扭蛋店、夾娃娃機遊樂場、一番賞、動漫店，以及排隊不長的人氣街頭小吃甜點。";
+      }} else if (currentMode === "brief") {{
+        thinkingLevel = "MINIMAL";
+        loadText = "Gemini 3.8 Flash (HUD 速讀戰報直出)...";
+        modeInstruction = "【指定導遊模式】：精簡 (Brief) - HUD 抬頭顯示戰報。禁止客套與成段散文，1秒看懂：以【目標】、【路線/月台】、【耗時】、【死線倒數】極簡格式輸出。";
+      }} else {{
+        thinkingLevel = "MEDIUM";
+        loadText = "Gemini 3.8 Flash (敏捷行動模式)...";
+        modeInstruction = "【指定導遊模式】：簡潔 (Concise) - 標準敏捷行動派。2~4點條列核心行動，節奏明快，兼顧青少年喜好與效率。";
+      }}
+
+      const loadBubble = document.createElement("div");
+      loadBubble.className = "bubble ai";
+      loadBubble.innerText = loadText;
+      box.appendChild(loadBubble);
+      box.scrollTop = box.scrollHeight;
+
+      try {{
+        const jst = getJSTInfo();
+        let gpsContext = "尚未取得 GPS 訊號（依行程排程推估）";
+        if (currentCoords) {{
+          gpsContext = `經緯度: ${{currentCoords.lat.toFixed(4)}}, ${{currentCoords.lng.toFixed(4)}} (精確度 ±${{currentCoords.acc}}m)`;
+          if (nearestAnchor) {{
+            gpsContext += ` | 最近核心地標: 「${{nearestAnchor.name}}」（約 ${{nearestAnchor.dist}} 公尺）`;
+          }}
+        }}
+
+        const overrideNote = itineraryOverrideText ? itineraryOverrideText : "無（依原訂 6 天主線排程）";
+
+        const enrichedUserPrompt = `[系統實時動態感知 (無感注入)]
+- 當前日本時間 (JST)：${{jst.jstTimeStr}}
+- 旅程進度狀態：${{jst.stageDescription}}
+- 即時 GPS 位置：${{gpsContext}}
+- 旅客成員結構：全家同行（2 位大人 + 2 位小孩，小孩年齡為 11 歲與 12 歲國小高年級/國中生。食量大接近成人、步速快、無需推車/無障礙哺乳室，熱愛動漫電玩、寶可夢、手作體驗與熱門街頭小吃）
+- ${{modeInstruction}}
+- 旅客自訂行程異動備忘：${{overrideNote}}
+----------------------------------------
+[旅客提問]：${{text}}`;
+
+        let historySlice = curTopic.history.slice(-14);
+        while (historySlice.length > 0 && historySlice[0].role !== "user") {{
+          historySlice.shift();
+        }}
+        if (historySlice.length === 0) {{
+          historySlice = [{{ role: "user", parts: [{{ text: text }}] }}];
+        }}
+        const payloadContents = historySlice.map((item, idx) => {{
+          if (idx === historySlice.length - 1 && item.role === "user") {{
+            return {{ role: "user", parts: [{{ text: enrichedUserPrompt }}] }};
+          }}
+          return item;
+        }});
+
+        // 35s Mobile Network Timeout Controller
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 35000);
+
+        let resp;
+        try {{
+          resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${{geminiApiKey}}`, {{
+            method: "POST",
+            headers: {{ "Content-Type": "application/json" }},
+            signal: controller.signal,
+            body: JSON.stringify({{
+              system_instruction: {{
+                parts: [{{ text: SYSTEM_KNOWLEDGE }}]
+              }},
+              contents: payloadContents,
+              generationConfig: {{
+                thinkingConfig: {{
+                  thinkingLevel: thinkingLevel
+                }}
+              }}
+            }})
+          }});
+        }} finally {{
+          clearTimeout(timeoutId);
+        }}
+
+        const data = await resp.json();
+
+        if (!resp.ok) {{
+          let errDetail = `HTTP ${{resp.status}}`;
+          if (data && data.error && data.error.message) {{
+            errDetail = data.error.message;
+          }}
+          loadBubble.innerText = `⚠️ API 回傳錯誤 (${{errDetail}})\n請檢查 API Key 是否正確，或至 Google AI Studio 確認額度。`;
+          curTopic.history.pop();
+          saveTopics();
+          return;
+        }}
+
+        if (data.candidates && data.candidates[0].content && data.candidates[0].content.parts) {{
+          const textParts = data.candidates[0].content.parts
+            .filter(p => !p.thought && typeof p.text === "string")
+            .map(p => p.text);
+          const aiText = textParts.join("").trim() || (data.candidates[0].content.parts[0].text || "（無文字回應）");
+          loadBubble.innerText = aiText;
+
+          const act = document.createElement("div");
+          act.className = "bubble-actions";
+          act.innerHTML = `
+            <button type="button" class="btn-copy-bubble" onclick="copyBubbleText(this.parentElement.parentElement.innerText.replace('複製', '').trim(), this)">
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              複製
+            </button>
+          `;
+          loadBubble.appendChild(act);
+
+          curTopic.history.push({{ role: "model", parts: [{{ text: aiText }}] }});
+          saveTopics();
+        }} else {{
+          loadBubble.innerText = "回傳結構異常，請稍後重試：" + JSON.stringify(data);
+          curTopic.history.pop();
+          saveTopics();
+        }}
+      }} catch (err) {{
+        if (err.name === "AbortError") {{
+          loadBubble.innerText = "⚠️ 連線超時（35 秒無回應）：可能處於地下鐵或網路訊號盲區，請確認網路後重新提問。";
+        }} else {{
+          loadBubble.innerText = "連線失敗：" + err.message;
+        }}
+        curTopic.history.pop();
+        saveTopics();
+      }} finally {{
+        isAiQueryInProgress = false;
+        if (sendBtn) {{
+          sendBtn.disabled = false;
+          sendBtn.innerHTML = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg><span>發送</span>';
+        }}
+        box.scrollTop = box.scrollHeight;
+      }}
+    }}
+
+    // --- CJK IME Composition Safe Input Listener ---
+    const chatInputEl = document.getElementById("chatInputBox");
+    if (chatInputEl) {{
+      chatInputEl.addEventListener("keydown", (e) => {{
+        if (e.key === "Enter" && !e.isComposing) {{
+          e.preventDefault();
+          sendAiQuery();
+        }}
+      }});
+    }}
+
+    // --- Initialization ---
+    applyFontScale(currentFontScale, false);
+    renderPokemon();
+    updateKeyStatusUI();
+    initTopics();
+    selectMode(currentMode);
+    initGeolocation();
+    updateJSTUI();
+    setInterval(updateJSTUI, 10000);
+
+    // Auto-init Pokemon map if on pokemon view
+    const pokeViewEl = document.getElementById("viewPokemon");
+    if (pokeViewEl && pokeViewEl.style.display !== "none") {{
+      setTimeout(initOrRefreshPokemonMap, 200);
+    }}
+
+    // Deep link support (?tab=gemini or #gemini)
+    try {{
+      const urlParams = new URLSearchParams(window.location.search);
+      const targetTab = urlParams.get('tab') || window.location.hash.replace('#', '');
+      if (targetTab && VIEWS.includes(targetTab)) {{
+        switchNavTab(targetTab);
+      }}
+    }} catch (e) {{}}
+  </script>
+</body>
+</html>
+'''
+
+with open(TARGET_HTML, "w", encoding="utf-8", newline="") as f:
+    f.write(HTML_CONTENT)
+
+print(f"✅ 成功產出 Tokyo Trip Assistant v1.5.2 PRO index.html！(大小: {len(HTML_CONTENT)} 位元組)")
