@@ -3,8 +3,8 @@
 > 專為 2026/11/26 ～ 12/01 全家人（2 大 2 小）量身打造的一頁式自適應隨身旅行戰情室 Web App。
 
 [![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-Live%20Online-success)](https://ethanexoticdvm-tech.github.io/tokyo-trip-2026/)
-[![Version](https://img.shields.io/badge/Version-v1.5.2-rose)](https://github.com/ethanexoticdvm-tech/tokyo-trip-2026)
-[![Model](https://img.shields.io/badge/AI%20Brain-Gemini%203.8%20Flash-purple)](https://aistudio.google.com/)
+[![Version](https://img.shields.io/badge/Version-v1.5.3-rose)](https://github.com/ethanexoticdvm-tech/tokyo-trip-2026)
+[![Model](https://img.shields.io/badge/AI%20Brain-Gemini%204%20Hydrogen%20(High)-purple)](https://aistudio.google.com/)
 
 ---
 
@@ -36,8 +36,8 @@
 - **Day 5 去程 箱根41號 (EXE10)**：04 號車廂 `8C, 8D, 9C, 9D` (07:37 新宿 ➔ 09:22 箱根湯本)
 - **Day 5 回程 箱根18號 (MSE6)**：04 號車廂 `8C, 8D, 9C, 9D` (17:46 箱根湯本 ➔ 19:26 新宿)
 
-### 3. 🤖 Gemini 3.8 Flash 隨身導遊大腦
-- 對接 Google 最新 `gemini-3.8-flash` 模型。
+### 3. 🤖 Gemini 4 Hydrogen (High) 隨身導遊大腦
+- 對接 Google 最新 `gemini-4-hydrogen` 模型（預設啟用 `thinkingLevel: HIGH` 深度思考）。
 - 內建行程專屬 System Instruction（熟知 6 天全行程、飯店、死線與座位）。
 - 快捷提問晶片：
   - 📋 拍菜單問推薦（兒童友善、避辣）

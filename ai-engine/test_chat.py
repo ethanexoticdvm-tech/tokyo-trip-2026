@@ -41,12 +41,17 @@ def get_api_key() -> str:
     return key or ""
 
 def call_gemini_38_flash(contents: list, system_instruction: str, api_key: str) -> dict:
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key={api_key}"
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-4-hydrogen:generateContent?key={api_key}"
     payload = {
         "system_instruction": {
             "parts": [{"text": system_instruction}]
         },
-        "contents": contents
+        "contents": contents,
+        "generationConfig": {
+            "thinkingConfig": {
+                "thinkingLevel": "HIGH"
+            }
+        }
     }
     data_bytes = json.dumps(payload).encode("utf-8")
     req = urllib.request.Request(
