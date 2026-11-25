@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>新宿・橫濱・箱根 6日遊隨身戰情室 v1.5.5 PRO</title>
+  <title>新宿・橫濱・箱根 6日遊隨身戰情室 v1.5.6 PRO</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="theme-color" content="#070a12">
@@ -1740,7 +1740,7 @@
       <button type="button" class="brand-btn" onclick="openSettingsModal()" aria-label="開啟系統設定（密鑰與字體大小）" title="點擊楓葉開啟設定">
         <div class="brand-icon" aria-hidden="true">🍁</div>
         <div class="brand-title">
-          新宿6日 <span class="badge-ver">v1.5.5 PRO</span>
+          新宿6日 <span class="badge-ver">v1.5.6 PRO</span>
         </div>
         <span class="settings-gear-hint" aria-hidden="true">
           <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
@@ -1903,9 +1903,17 @@
             導遊決策模式切換：
           </div>
           <div class="mode-pills-grid" role="radiogroup" aria-label="導遊決策模式選擇">
+            <button type="button" class="mode-pill-btn" data-mode="brief" onclick="selectMode('brief')" role="radio" aria-checked="false">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+              <span>精簡</span>
+            </button>
             <button type="button" class="mode-pill-btn active" data-mode="concise" onclick="selectMode('concise')" role="radio" aria-checked="true">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
               <span>簡潔</span>
+            </button>
+            <button type="button" class="mode-pill-btn" data-mode="relaxed" onclick="selectMode('relaxed')" role="radio" aria-checked="false">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 8h1a4 4 0 0 1 0 8h-1M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+              <span>輕鬆</span>
             </button>
             <button type="button" class="mode-pill-btn" data-mode="detailed" onclick="selectMode('detailed')" role="radio" aria-checked="false">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
@@ -1914,14 +1922,6 @@
             <button type="button" class="mode-pill-btn" data-mode="serious" onclick="selectMode('serious')" role="radio" aria-checked="false">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
               <span>嚴肅</span>
-            </button>
-            <button type="button" class="mode-pill-btn" data-mode="relaxed" onclick="selectMode('relaxed')" role="radio" aria-checked="false">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 8h1a4 4 0 0 1 0 8h-1M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
-              <span>輕鬆</span>
-            </button>
-            <button type="button" class="mode-pill-btn" data-mode="brief" onclick="selectMode('brief')" role="radio" aria-checked="false">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-              <span>精簡</span>
             </button>
           </div>
           <div class="mode-desc-callout" id="modeDescCallout">
@@ -2245,7 +2245,7 @@
         <!-- Section 3: App Info -->
         <div class="settings-section" style="border-bottom:none; padding-bottom:0; margin-bottom:0;">
           <div style="font-size:0.75rem; color:var(--text-3); display:flex; justify-content:space-between; align-items:center;">
-            <span>Tokyo Trip Assistant v1.5.5 PRO</span>
+            <span>Tokyo Trip Assistant v1.5.6 PRO</span>
             <button type="button" onclick="resetPreferences()" style="background:none; border:none; color:var(--text-3); font-size:0.75rem; cursor:pointer; text-decoration:underline;">恢復預設值</button>
           </div>
         </div>
@@ -2955,27 +2955,7 @@
 ## 🎭 5 大導遊實質決策模式指引 (Mode Execution Protocols)
 每次提問時，系統會於開頭注入 \`【指定導遊模式】\`，你必須嚴格執行該模式之實質決策邏輯：
 
-### 1. ☕ 輕鬆模式 (Relaxed - 青少年潮玩慢活 ＋ 美食放鬆)
-- **實質策略**：啟動「青少年降壓慢活防線」。若察覺時間緊或景點枯燥，主動建議砍掉無趣的枯燥逛街點。
-- **核心內容**：主動推薦周邊 11/12 歲喜愛的潮玩熱點（大型扭蛋店、夾娃娃機遊樂場、一番賞專門店、動漫專門店、寶可夢打卡），以及高人氣街頭排隊小吃（現烤大龍蝦仙貝、Satou炸肉餅、龍貓泡芙、水果聖代）。
-- **體能節奏**：適時安排飲品甜點休息站，避免青少年走太多無聊路起厭世情緒。
-
-### 2. 📝 詳細模式 (Detailed - 深度全景推演 ＋ Plan B 備案 ＋ 份量預約全攻略)
-- **實質策略**：啟動 **Gemini 4 Hydrogen High 深度思考**。進行多重備案與深度細節推演。
-- **核心內容**：
-  - **全家份量配餐精算**：分析推薦菜色份量（2大2小發育期怎麼點最澎湃且吃得飽，Center Beef、檸檬牛舌、Surya Sajilo、MOS PREMIUM 如何配餐CP值最高）。
-  - **手作預約與參觀攻略**：合味道杯麵館 3F 繪製杯麵與選料細節、紅磚聖誕市集入場排隊動線、弁天丸搭船避走回頭路攻略。
-  - **交通與費用精算**：小田急周遊券搭乘邊界、Suica 兒童卡 vs 大人卡刷卡陷阱、轉乘月台與班次。
-  - **青少趣味文化解說**：附帶適合 11/12 歲聽的景點冷知識（如鐮倉大佛海嘯倖存傳奇、灌籃高手平交道取景故事、箱根火山地質原理）。
-
-### 3. 🛡️ 嚴肅模式 (Serious - 軍事級死線防禦 ＋ 危機預警 ＋ 安全第一)
-- **實質策略**：啟動 **Gemini 4 Hydrogen High 深度思考**。啟動最高危機警戒，字字千金，零客套廢話。
-- **核心內容**：
-  - **強制倒推安全撤退時間**：15:15 大涌谷纜車、17:46 箱根浪漫特快、20:34 檸檬牛舌，**一律強制倒推 30~45 分鐘作為最後集合撤退線**。
-  - **致命交通陷阱排查**：嚴格防範「江之島誤搭單軌電車往大船」、「新宿車站迷宮出口方向走反」、「未帶實體特急券」。
-  - **人潮走失防護與應急**：大站人潮洶湧，提示集合點約定，隨時備妥派出所(交番)、藥局與緊急日語求助短句。
-
-### 4. 💨 精簡模式 (Brief - HUD 抬頭顯示戰報 ＋ 1秒速讀指令)
+### 1. 💨 精簡模式 (Brief - HUD 抬頭顯示戰報 ＋ 1秒速讀指令)
 - **實質策略**：極速直出 (Thinking: MINIMAL)，專為趕路與快步行走設計。
 - **核心內容**：儀表板化輸出，1 秒看懂：
   - \`【目標】...\`
@@ -2983,9 +2963,29 @@
   - \`【耗時】步行 A 分鐘\`
   - \`【死線】剩餘 B 分鐘\`
 
-### 5. ⚡ 簡潔模式 (Concise - 標準敏捷行動派 - 預設)
+### 2. ⚡ 簡潔模式 (Concise - 標準敏捷行動派 - 預設)
 - **實質策略**：標準平衡型 (Thinking: MEDIUM)。
 - **核心內容**：2~4 點條列核心方案與行動步驟，節奏明快，兼顧青少年喜好與效率。
+
+### 3. ☕ 輕鬆模式 (Relaxed - 青少年潮玩慢活 ＋ 美食放鬆)
+- **實質策略**：啟動「青少年降壓慢活防線」。若察覺時間緊或景點枯燥，主動建議砍掉無趣的枯燥逛街點。
+- **核心內容**：主動推薦周邊 11/12 歲喜愛的潮玩熱點（大型扭蛋店、夾娃娃機遊樂場、一番賞專門店、動漫專門店、寶可夢打卡），以及高人氣街頭排隊小吃（現烤大龍蝦仙貝、Satou炸肉餅、龍貓泡芙、水果聖代）。
+- **體能節奏**：適時安排飲品甜點休息站，避免青少年走太多無聊路起厭世情緒。
+
+### 4. 📝 詳細模式 (Detailed - 深度全景推演 ＋ Plan B 備案 ＋ 份量預約全攻略)
+- **實質策略**：啟動 **Gemini 4 Hydrogen High 深度思考**。進行多重備案與深度細節推演。
+- **核心內容**：
+  - **全家份量配餐精算**：分析推薦菜色份量（2大2小發育期怎麼點最澎湃且吃得飽，Center Beef、檸檬牛舌、Surya Sajilo、MOS PREMIUM 如何配餐CP值最高）。
+  - **手作預約與參觀攻略**：合味道杯麵館 3F 繪製杯麵與選料細節、紅磚聖誕市集入場排隊動線、弁天丸搭船避走回頭路攻略。
+  - **交通與費用精算**：小田急周遊券搭乘邊界、Suica 兒童卡 vs 大人卡刷卡陷阱、轉乘月台與班次。
+  - **青少趣味文化解說**：附帶適合 11/12 歲聽的景點冷知識（如鐮倉大佛海嘯倖存傳奇、灌籃高手平交道取景故事、箱根火山地質原理）。
+
+### 5. 🛡️ 嚴肅模式 (Serious - 軍事級死線防禦 ＋ 危機預警 ＋ 安全第一)
+- **實質策略**：啟動 **Gemini 4 Hydrogen High 深度思考**。啟動最高危機警戒，字字千金，零客套廢話。
+- **核心內容**：
+  - **強制倒推安全撤退時間**：15:15 大涌谷纜車、17:46 箱根浪漫特快、20:34 檸檬牛舌，**一律強制倒推 30~45 分鐘作為最後集合撤退線**。
+  - **致命交通陷阱排查**：嚴格防範「江之島誤搭單軌電車往大船」、「新宿車站迷宮出口方向走反」、「未帶實體特急券」。
+  - **人潮走失防護與應急**：大站人潮洶湧，提示集合點約定，隨時備妥派出所(交番)、藥局與緊急日語求助短句。
 
 ---
 
@@ -3160,11 +3160,11 @@
       });
 
       const descriptions = {
+        brief: "💨 <strong>精簡模式</strong>：HUD 抬頭速讀戰報 (Thinking: LOW)。極速直出，1秒看懂【目標】、【路線/月台】、【耗時】、【死線倒數】極簡格式。",
         concise: "⚡ <strong>簡潔模式</strong>：標準敏捷行動派 (Thinking: LOW 極速串流)。2~4 點條列核心行動，節奏明快，兼顧青少年喜好與效率。",
-        detailed: "📝 <strong>詳細模式</strong>：全景深層推演 (Thinking: HIGH)。精算 2大2小（11/12歲）配餐份量、多重備案 Plan B 與適合青少年的文化冷知識。",
-        serious: "🛡️ <strong>嚴肅模式</strong>：軍事級戰情警戒 (Thinking: HIGH)。直擊核心死線，一律強制倒推 30~45 分鐘安全集合撤退線，防範搭錯車與人潮走失。",
         relaxed: "☕ <strong>輕鬆模式</strong>：青少年潮玩慢活防線 (Thinking: LOW)。主動砍掉枯燥景點，優先推薦扭蛋店、夾娃娃機、一番賞與人氣街頭排隊美食小吃。",
-        brief: "💨 <strong>精簡模式</strong>：HUD 抬頭速讀戰報 (Thinking: LOW)。極速直出，1秒看懂【目標】、【路線/月台】、【耗時】、【死線倒數】極簡格式。"
+        detailed: "📝 <strong>詳細模式</strong>：全景深層推演 (Thinking: HIGH)。精算 2大2小（11/12歲）配餐份量、多重備案 Plan B 與適合青少年的文化冷知識。",
+        serious: "🛡️ <strong>嚴肅模式</strong>：軍事級戰情警戒 (Thinking: HIGH)。直擊核心死線，一律強制倒推 30~45 分鐘安全集合撤退線，防範搭錯車與人潮走失。"
       };
 
       const callout = document.getElementById("modeDescCallout");
@@ -3173,11 +3173,11 @@
       const input = document.getElementById("chatInputBox");
       if (input) {
         const modeTitleMap = {
+          brief: "精簡",
           concise: "簡潔",
-          detailed: "詳細",
-          serious: "嚴肅",
           relaxed: "輕鬆",
-          brief: "精簡"
+          detailed: "詳細",
+          serious: "嚴肅"
         };
         input.placeholder = `問問導遊 [當前模式: ${modeTitleMap[mode] || "簡潔"}]...`;
       }
