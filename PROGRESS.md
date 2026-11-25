@@ -2,12 +2,16 @@
 
 ## 1. 專案目標與定位
 - **專案名稱**：`tokyo-trip-assistant` (新宿・橫濱・箱根 6日遊隨身戰情室)
-- **當前版本**：`v1.5.4` (AI 大腦升級 Gemini 4 Hydrogen High ＋ 手機端頂欄版本號常駐顯示)
+- **當前版本**：`v1.5.5` (修復 AI 導遊無回應：SSE 實時串流 ＋ 滑動式超時 ＋ 修正 MINIMAL 400)
 - **核心目標**：為使用者及全家 2 大 2 小（**小孩年齡 11 歲與 12 歲國小高年級/國中生**，2026/11/26～12/01）提供出國隨身攜帶、整合 Gemini 4 Hydrogen (High) 實時時空雙感知、5 大導遊實質決策模式與 Funliday 動態行程聯動的手機端旅行戰情指揮中心。
 
 ---
 
 ## 2. 已完成工作 (Done)
+- [x] **AI 無回應修復 (v1.5.5)**：
+  - 根因：非串流 `generateContent` + `thinkingLevel: HIGH` 需 36~52 秒，被前端 35 秒硬超時切斷；精簡模式 `MINIMAL` 於 gemini-4-hydrogen 回傳 HTTP 400。
+  - 改用 `streamGenerateContent?alt=sse` 逐字串流，思考進度（秒數/字數）即時顯示，45 秒無資料才中斷（滑動式超時）。
+  - 簡潔/輕鬆/精簡改 `LOW`；詳細/嚴肅維持 `HIGH`（極短測試字元自動 `LOW`）。
 - [x] **AI 大腦升級與版本號常駐顯示 (v1.5.4)**：
   - 🧠 **升級 Gemini 4 Hydrogen (High)**：將前端與測試腳本模型全面升級為 `gemini-4-hydrogen`，預設模式 (`concise`)、`detailed`、`serious` 皆啟用 `thinkingLevel: "HIGH"`。
   - 🔑 **API Key 更新引導**：維持零硬編碼安全架構（密鑰存於各裝置瀏覽器 `localStorage`），並於 API 錯誤提示氣泡內新增「更換 / 設定 API Key」直達按鈕。

@@ -1,9 +1,9 @@
 @echo off
 chcp 65001 >nul
-title Tokyo Trip Assistant v1.5.4 PRO
+title Tokyo Trip Assistant v1.5.5 PRO
 
 echo ========================================================
-echo   Tokyo Trip Assistant v1.5.4 PRO
+echo   Tokyo Trip Assistant v1.5.5 PRO
 echo ========================================================
 echo Launching local browser preview...
 start "" "%~dp0index.html"

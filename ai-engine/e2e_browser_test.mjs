@@ -110,7 +110,7 @@ async function runTest() {
   console.log("👉 Test 1: Verifying active initial view and DOM titles...");
   const title = await evaluate("document.title");
   console.log(`  • Document Title: "${title}"`);
-  if (!title.includes("v1.5.4 PRO")) throw new Error(`Expected title with v1.5.4 PRO, got ${title}`);
+  if (!title.includes("v1.5.5 PRO")) throw new Error(`Expected title with v1.5.5 PRO, got ${title}`);
 
   console.log("👉 Test 2: Verifying Settings Modal & Font Scaling System...");
   // Confirm old key card was deleted

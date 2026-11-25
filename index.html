@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>新宿・橫濱・箱根 6日遊隨身戰情室 v1.5.4 PRO</title>
+  <title>新宿・橫濱・箱根 6日遊隨身戰情室 v1.5.5 PRO</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="theme-color" content="#070a12">
@@ -1740,7 +1740,7 @@
       <button type="button" class="brand-btn" onclick="openSettingsModal()" aria-label="開啟系統設定（密鑰與字體大小）" title="點擊楓葉開啟設定">
         <div class="brand-icon" aria-hidden="true">🍁</div>
         <div class="brand-title">
-          新宿6日 <span class="badge-ver">v1.5.4 PRO</span>
+          新宿6日 <span class="badge-ver">v1.5.5 PRO</span>
         </div>
         <span class="settings-gear-hint" aria-hidden="true">
           <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
@@ -1925,7 +1925,7 @@
             </button>
           </div>
           <div class="mode-desc-callout" id="modeDescCallout">
-            ⚡ <strong>簡潔模式</strong>：標準敏捷行動派 (Thinking: MEDIUM)。2~4 點直擊核心，兼顧青少年喜好與效率。
+            ⚡ <strong>簡潔模式</strong>：標準敏捷行動派 (Thinking: LOW 極速串流)。2~4 點直擊核心，兼顧青少年喜好與效率。
           </div>
         </div>
 
@@ -2245,7 +2245,7 @@
         <!-- Section 3: App Info -->
         <div class="settings-section" style="border-bottom:none; padding-bottom:0; margin-bottom:0;">
           <div style="font-size:0.75rem; color:var(--text-3); display:flex; justify-content:space-between; align-items:center;">
-            <span>Tokyo Trip Assistant v1.5.4 PRO</span>
+            <span>Tokyo Trip Assistant v1.5.5 PRO</span>
             <button type="button" onclick="resetPreferences()" style="background:none; border:none; color:var(--text-3); font-size:0.75rem; cursor:pointer; text-decoration:underline;">恢復預設值</button>
           </div>
         </div>
@@ -3160,11 +3160,11 @@
       });
 
       const descriptions = {
-        concise: "⚡ <strong>簡潔模式</strong>：標準敏捷行動派 (Thinking: MEDIUM)。2~4 點條列核心行動，節奏明快，兼顧青少年喜好與效率。",
+        concise: "⚡ <strong>簡潔模式</strong>：標準敏捷行動派 (Thinking: LOW 極速串流)。2~4 點條列核心行動，節奏明快，兼顧青少年喜好與效率。",
         detailed: "📝 <strong>詳細模式</strong>：全景深層推演 (Thinking: HIGH)。精算 2大2小（11/12歲）配餐份量、多重備案 Plan B 與適合青少年的文化冷知識。",
         serious: "🛡️ <strong>嚴肅模式</strong>：軍事級戰情警戒 (Thinking: HIGH)。直擊核心死線，一律強制倒推 30~45 分鐘安全集合撤退線，防範搭錯車與人潮走失。",
         relaxed: "☕ <strong>輕鬆模式</strong>：青少年潮玩慢活防線 (Thinking: LOW)。主動砍掉枯燥景點，優先推薦扭蛋店、夾娃娃機、一番賞與人氣街頭排隊美食小吃。",
-        brief: "💨 <strong>精簡模式</strong>：HUD 抬頭速讀戰報 (Thinking: MINIMAL)。極速直出，1秒看懂【目標】、【路線/月台】、【耗時】、【死線倒數】極簡格式。"
+        brief: "💨 <strong>精簡模式</strong>：HUD 抬頭速讀戰報 (Thinking: LOW)。極速直出，1秒看懂【目標】、【路線/月台】、【耗時】、【死線倒數】極簡格式。"
       };
 
       const callout = document.getElementById("modeDescCallout");
@@ -3519,29 +3519,30 @@
         return;
       }
 
-      let thinkingLevel = "HIGH";
-      let loadText = "Gemini 4 Hydrogen (High 實時時空感知運算中)...";
+      const isShortProbe = text.replace(/\s/g, "").length <= 2;
+      let thinkingLevel = "LOW";
+      let loadText = "Gemini 4 Hydrogen (LOW 極速模式)...";
       let modeInstruction = "";
 
       if (currentMode === "detailed") {
-        thinkingLevel = "HIGH";
-        loadText = "Gemini 4 Hydrogen (High 深度推演中)...";
+        thinkingLevel = isShortProbe ? "LOW" : "HIGH";
+        loadText = "Gemini 4 Hydrogen (" + thinkingLevel + " 深度推演中)...";
         modeInstruction = "【指定導遊模式】：詳細 (Detailed) - 啟動 High 深度思考。請進行全面全景分析、精算 2大2小（11/12歲發育期）菜色份量與配餐、提供多重 Plan A/B 備案、周遊券邊界精算，並附帶適合青少年的文化趣味小故事。";
       } else if (currentMode === "serious") {
-        thinkingLevel = "HIGH";
-        loadText = "Gemini 4 Hydrogen (High 死線戰情警戒中)...";
+        thinkingLevel = isShortProbe ? "LOW" : "HIGH";
+        loadText = "Gemini 4 Hydrogen (" + thinkingLevel + " 死線戰情警戒中)...";
         modeInstruction = "【指定導遊模式】：嚴肅 (Serious) - 啟動 High 深度思考。軍事級戰情口吻，字字千金，直擊核心死線（一律強制倒推 30~45 分鐘作為最後集合撤退線），預先排查換乘陷阱與人潮走失防護，零客套廢話。";
       } else if (currentMode === "relaxed") {
         thinkingLevel = "LOW";
         loadText = "Gemini 4 Hydrogen (輕鬆潮玩慢活模式)...";
         modeInstruction = "【指定導遊模式】：輕鬆 (Relaxed) - 青少年潮玩慢活防線。若行程太緊或景點枯燥，主動建議砍掉無趣逛街點；優先推薦 11/12 歲喜愛的扭蛋店、夾娃娃機遊樂場、一番賞、動漫店，以及排隊不長的人氣街頭小吃甜點。";
       } else if (currentMode === "brief") {
-        thinkingLevel = "MINIMAL";
+        thinkingLevel = "LOW";
         loadText = "Gemini 4 Hydrogen (HUD 速讀戰報直出)...";
         modeInstruction = "【指定導遊模式】：精簡 (Brief) - HUD 抬頭顯示戰報。禁止客套與成段散文，1秒看懂：以【目標】、【路線/月台】、【耗時】、【死線倒數】極簡格式輸出。";
       } else {
-        thinkingLevel = "HIGH";
-        loadText = "Gemini 4 Hydrogen (High 敏捷行動模式)...";
+        thinkingLevel = "LOW";
+        loadText = "Gemini 4 Hydrogen (敏捷行動模式)...";
         modeInstruction = "【指定導遊模式】：簡潔 (Concise) - 標準敏捷行動派。2~4點條列核心行動，節奏明快，兼顧青少年喜好與效率。";
       }
 
@@ -3550,6 +3551,9 @@
       loadBubble.innerText = loadText;
       box.appendChild(loadBubble);
       box.scrollTop = box.scrollHeight;
+
+      let tickTimer = null;
+      let abortTimer = null;
 
       try {
         const jst = getJSTInfo();
@@ -3587,35 +3591,51 @@
           return item;
         });
 
-        // 35s Mobile Network Timeout Controller
+        // Sliding inactivity timeout: resets on every received chunk (45s without any data = abort)
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 35000);
+        const resetAbortTimer = () => {
+          if (abortTimer) clearTimeout(abortTimer);
+          abortTimer = setTimeout(() => controller.abort(), 45000);
+        };
+        resetAbortTimer();
 
-        let resp;
-        try {
-          resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-4-hydrogen:generateContent?key=${geminiApiKey}`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            signal: controller.signal,
-            body: JSON.stringify({
-              system_instruction: {
-                parts: [{ text: SYSTEM_KNOWLEDGE }]
-              },
-              contents: payloadContents,
-              generationConfig: {
-                thinkingConfig: {
-                  thinkingLevel: thinkingLevel
-                }
+        const startTs = Date.now();
+        let thoughtCharCount = 0;
+        let fullAiText = "";
+        let answerStarted = false;
+
+        tickTimer = setInterval(() => {
+          if (answerStarted) return;
+          const sec = Math.floor((Date.now() - startTs) / 1000);
+          if (thoughtCharCount > 0) {
+            loadBubble.innerText = `🧠 Gemini 4 Hydrogen (${thinkingLevel}) 深度推演中... 已推演 ${thoughtCharCount} 字 · ${sec}s`;
+          } else {
+            loadBubble.innerText = `🧠 Gemini 4 Hydrogen (${thinkingLevel}) 思考推演中... (${sec}s)`;
+          }
+        }, 1000);
+
+        const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-4-hydrogen:streamGenerateContent?alt=sse&key=${geminiApiKey}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          signal: controller.signal,
+          body: JSON.stringify({
+            system_instruction: {
+              parts: [{ text: SYSTEM_KNOWLEDGE }]
+            },
+            contents: payloadContents,
+            generationConfig: {
+              thinkingConfig: {
+                thinkingLevel: thinkingLevel,
+                includeThoughts: true
               }
-            })
-          });
-        } finally {
-          clearTimeout(timeoutId);
-        }
-
-        const data = await resp.json();
+            }
+          })
+        });
 
         if (!resp.ok) {
+          let data = null;
+          try { data = await resp.json(); } catch (e) {}
+          if (Array.isArray(data)) data = data[0];
           let errDetail = `HTTP ${resp.status}`;
           if (data && data.error && data.error.message) {
             errDetail = data.error.message;
@@ -3626,12 +3646,57 @@
           return;
         }
 
-        if (data.candidates && data.candidates[0].content && data.candidates[0].content.parts) {
-          const textParts = data.candidates[0].content.parts
-            .filter(p => !p.thought && typeof p.text === "string")
-            .map(p => p.text);
-          const aiText = textParts.join("").trim() || (data.candidates[0].content.parts[0].text || "（無文字回應）");
-          loadBubble.innerText = aiText;
+        const handleChunk = (obj) => {
+          const cand = obj && obj.candidates && obj.candidates[0];
+          const parts = cand && cand.content && cand.content.parts;
+          if (!parts) return;
+          parts.forEach(p => {
+            if (typeof p.text !== "string") return;
+            if (p.thought) {
+              thoughtCharCount += p.text.length;
+            } else {
+              answerStarted = true;
+              fullAiText += p.text;
+              const nearBottom = box.scrollHeight - box.scrollTop - box.clientHeight < 90;
+              loadBubble.innerText = fullAiText;
+              if (nearBottom) box.scrollTop = box.scrollHeight;
+            }
+          });
+        };
+
+        const handleLine = (rawLine) => {
+          const line = rawLine.replace(/\r$/, "");
+          if (!line.startsWith("data:")) return;
+          const payload = line.slice(5).trim();
+          if (!payload || payload === "[DONE]") return;
+          try { handleChunk(JSON.parse(payload)); } catch (e) {}
+        };
+
+        if (resp.body && resp.body.getReader) {
+          const reader = resp.body.getReader();
+          const decoder = new TextDecoder("utf-8");
+          let buf = "";
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            resetAbortTimer();
+            buf += decoder.decode(value, { stream: true });
+            let nl;
+            while ((nl = buf.indexOf("\n")) >= 0) {
+              handleLine(buf.slice(0, nl));
+              buf = buf.slice(nl + 1);
+            }
+          }
+          buf += decoder.decode();
+          if (buf) handleLine(buf);
+        } else {
+          const rawText = await resp.text();
+          rawText.split("\n").forEach(handleLine);
+        }
+
+        fullAiText = fullAiText.trim();
+        if (fullAiText) {
+          loadBubble.innerText = fullAiText;
 
           const act = document.createElement("div");
           act.className = "bubble-actions";
@@ -3643,22 +3708,24 @@
           `;
           loadBubble.appendChild(act);
 
-          curTopic.history.push({ role: "model", parts: [{ text: aiText }] });
+          curTopic.history.push({ role: "model", parts: [{ text: fullAiText }] });
           saveTopics();
         } else {
-          loadBubble.innerText = "回傳結構異常，請稍後重試：" + JSON.stringify(data);
+          loadBubble.innerText = "（AI 未回傳文字內容，請稍後重新提問）";
           curTopic.history.pop();
           saveTopics();
         }
       } catch (err) {
         if (err.name === "AbortError") {
-          loadBubble.innerText = "⚠️ 連線超時（35 秒無回應）：可能處於地下鐵或網路訊號盲區，請確認網路後重新提問。";
+          loadBubble.innerText = "⚠️ 連線中斷（45 秒未收到任何資料）：可能處於地下鐵或網路訊號盲區，請確認網路後重新提問。";
         } else {
           loadBubble.innerText = "連線失敗：" + err.message;
         }
         curTopic.history.pop();
         saveTopics();
       } finally {
+        if (tickTimer) clearInterval(tickTimer);
+        if (abortTimer) clearTimeout(abortTimer);
         isAiQueryInProgress = false;
         if (sendBtn) {
           sendBtn.disabled = false;

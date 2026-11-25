@@ -62,11 +62,11 @@ def call_gemini_38_flash(contents: list, system_instruction: str, api_key: str) 
     )
     start_t = time.time()
     try:
-        with urllib.request.urlopen(req, timeout=30) as resp:
+        with urllib.request.urlopen(req, timeout=90) as resp:
             dur = time.time() - start_t
             res_json = json.loads(resp.read().decode("utf-8"))
             candidate = res_json.get("candidates", [{}])[0]
-            text = candidate.get("content", {}).get("parts", [{}])[0].get("text", "")
+            text = "".join(p.get("text", "") for p in candidate.get("content", {}).get("parts", []) if not p.get("thought") and p.get("text"))
             usage = res_json.get("usageMetadata", {})
             return {
                 "success": True,
